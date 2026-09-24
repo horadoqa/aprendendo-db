@@ -124,6 +124,22 @@
                     #172554);
         }
 
+        /* LOGO */
+
+        .header-logo {
+            position: absolute;
+
+            top: 25px;
+            left: 30px;
+
+            width: 90px;
+            height: auto;
+
+            object-fit: contain;
+
+            z-index: 2;
+        }
+
         header::before {
             content: "";
 

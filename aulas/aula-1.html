@@ -1,0 +1,1221 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="icon" type="image/png" href="./assets/images/logo.png">
+
+    <title>Aula 1 — Banco de Dados, SGBD e Aplicação</title>
+</head>
+
+<body>
+
+    <header>
+
+        <img src="../assets/images/logo.png" alt="Logo">
+
+        <button
+            class="theme-toggle"
+            id="themeToggle"
+            type="button"
+            aria-label="Alternar tema"
+        >
+            <span class="theme-icon" id="themeIcon">
+                ☀️
+            </span>
+
+            <span class="theme-label" id="themeLabel">
+                Modo claro
+            </span>
+        </button>
+
+        <div class="header-content">
+
+            <span class="eyebrow">
+                AULA 1 • FUNDAMENTOS DE BANCO DE DADOS
+            </span>
+
+            <h1>
+                Banco de Dados, SGBD e Aplicação
+            </h1>
+
+            <p>
+                Entenda a diferença entre os dados, o software que
+                gerencia esses dados e a aplicação que utiliza essas
+                informações.
+            </p>
+
+        </div>
+
+    </header>
+
+
+    <main>
+
+        <!-- =====================================================
+             OBJETIVOS DA AULA
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Objetivos da aula
+            </h2>
+
+            <p>
+                Antes de aprender SQL, modelagem ou NoSQL, é importante
+                entender alguns conceitos fundamentais.
+            </p>
+
+            <p>
+                Nesta aula, você vai aprender a diferenciar:
+            </p>
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <div class="icon">
+                        🗄️
+                    </div>
+
+                    <h3>
+                        Banco de Dados
+                    </h3>
+
+                    <p>
+                        Onde os dados são armazenados e organizados.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        ⚙️
+                    </div>
+
+                    <h3>
+                        SGBD
+                    </h3>
+
+                    <p>
+                        Software responsável por gerenciar os
+                        bancos de dados.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        💻
+                    </div>
+
+                    <h3>
+                        Aplicação
+                    </h3>
+
+                    <p>
+                        Software que oferece funcionalidades aos
+                        usuários e utiliza os dados.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             VISÃO GERAL
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Os três conceitos em uma visão geral
+            </h2>
+
+            <p>
+                Uma aplicação normalmente precisa armazenar e consultar
+                informações. Para isso, ela utiliza um SGBD, que por sua
+                vez gerencia um ou mais bancos de dados.
+            </p>
+
+            <div class="highlight">
+
+                <p>
+                    <strong>Aplicação</strong>
+                    → solicita operações.
+                </p>
+
+                <p>
+                    <strong>SGBD</strong>
+                    → gerencia essas operações.
+                </p>
+
+                <p>
+                    <strong>Banco de Dados</strong>
+                    → contém os dados armazenados.
+                </p>
+
+            </div>
+
+            <p>
+                Essa separação de responsabilidades é uma das ideias
+                fundamentais para compreender como os sistemas que
+                trabalham com dados são construídos.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             BANCO DE DADOS
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                1. O que é um Banco de Dados?
+            </h2>
+
+            <p>
+                Um <strong>banco de dados</strong> é uma coleção
+                organizada de dados que pode ser armazenada,
+                consultada e modificada de acordo com as necessidades
+                de um sistema.
+            </p>
+
+            <p>
+                Os dados armazenados dependem do objetivo da aplicação.
+                Uma loja virtual, por exemplo, pode armazenar
+                informações sobre clientes, produtos e pedidos.
+            </p>
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <div class="icon">
+                        👤
+                    </div>
+
+                    <h3>
+                        Clientes
+                    </h3>
+
+                    <p>
+                        Nome, e-mail, telefone e endereço.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        📦
+                    </div>
+
+                    <h3>
+                        Produtos
+                    </h3>
+
+                    <p>
+                        Nome, preço, estoque e categoria.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🛒
+                    </div>
+
+                    <h3>
+                        Pedidos
+                    </h3>
+
+                    <p>
+                        Cliente, produtos, quantidades e valores.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        💳
+                    </div>
+
+                    <h3>
+                        Pagamentos
+                    </h3>
+
+                    <p>
+                        Valor, método e status do pagamento.
+                    </p>
+
+                </div>
+
+            </div>
+
+            <div class="highlight">
+
+                <strong>Importante:</strong>
+
+                <p>
+                    O banco de dados representa os
+                    <strong>dados armazenados e organizados</strong>.
+                    Ele não é a aplicação que o usuário utiliza.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             EXEMPLO DE BANCO DE DADOS
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Exemplo de um banco de dados
+            </h2>
+
+            <p>
+                Em um banco de dados relacional, os dados podem ser
+                organizados em tabelas.
+            </p>
+
+            <p>
+                Imagine uma tabela responsável por armazenar
+                informações dos clientes:
+            </p>
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+                            <th>ID</th>
+                            <th>Nome</th>
+                            <th>E-mail</th>
+                            <th>Cidade</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        <tr>
+                            <td>1</td>
+                            <td>Ana Silva</td>
+                            <td>ana@email.com</td>
+                            <td>Rio de Janeiro</td>
+                        </tr>
+
+                        <tr>
+                            <td>2</td>
+                            <td>João Santos</td>
+                            <td>joao@email.com</td>
+                            <td>São Paulo</td>
+                        </tr>
+
+                        <tr>
+                            <td>3</td>
+                            <td>Maria Oliveira</td>
+                            <td>maria@email.com</td>
+                            <td>Belo Horizonte</td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            <p style="margin-top: 20px;">
+                Nesse exemplo, os registros dos clientes fazem parte
+                dos dados armazenados no banco.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             SGBD
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                2. O que é um SGBD?
+            </h2>
+
+            <p>
+                <strong>SGBD</strong> significa
+                <strong>Sistema de Gerenciamento de Banco de Dados</strong>.
+            </p>
+
+            <p>
+                O SGBD é o software responsável por gerenciar bancos
+                de dados e fornecer mecanismos para que aplicações
+                possam trabalhar com os dados armazenados.
+            </p>
+
+            <p>
+                Entre suas responsabilidades estão operações de
+                consulta e alteração de dados, controle de acesso,
+                gerenciamento de transações e outros mecanismos
+                necessários para o funcionamento do banco.
+            </p>
+
+            <div class="highlight">
+
+                <strong>Uma forma simples de entender:</strong>
+
+                <p>
+                    O <strong>banco de dados</strong> contém os dados.
+                    O <strong>SGBD</strong> é o software que gerencia
+                    esses dados.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             EXEMPLOS DE SGBD
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Exemplos de SGBDs
+            </h2>
+
+            <p>
+                Existem diferentes tipos de SGBDs, desenvolvidos para
+                diferentes modelos de armazenamento.
+            </p>
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <span class="badge">
+                        RELACIONAL
+                    </span>
+
+                    <h3>
+                        PostgreSQL
+                    </h3>
+
+                    <p>
+                        SGBD relacional que utiliza SQL para trabalhar
+                        com bancos de dados relacionais.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <span class="badge">
+                        RELACIONAL
+                    </span>
+
+                    <h3>
+                        MySQL
+                    </h3>
+
+                    <p>
+                        SGBD relacional amplamente utilizado em
+                        aplicações e sistemas web.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <span class="badge">
+                        DOCUMENTOS
+                    </span>
+
+                    <h3>
+                        MongoDB
+                    </h3>
+
+                    <p>
+                        SGBD orientado a documentos, baseado em um
+                        modelo de dados diferente do relacional.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             APLICAÇÃO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                3. O que é uma Aplicação?
+            </h2>
+
+            <p>
+                Uma <strong>aplicação</strong> é um software criado
+                para realizar determinadas tarefas e oferecer
+                funcionalidades aos usuários ou a outros sistemas.
+            </p>
+
+            <p>
+                Uma aplicação pode ser um site, aplicativo de celular,
+                sistema empresarial, API, programa desktop ou outro
+                tipo de software.
+            </p>
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <div class="icon">
+                        🛒
+                    </div>
+
+                    <h3>
+                        E-commerce
+                    </h3>
+
+                    <p>
+                        Permite pesquisar produtos, realizar compras
+                        e acompanhar pedidos.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        📱
+                    </div>
+
+                    <h3>
+                        Aplicativo
+                    </h3>
+
+                    <p>
+                        Permite que o usuário execute operações
+                        através de uma interface.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🔌
+                    </div>
+
+                    <h3>
+                        API
+                    </h3>
+
+                    <p>
+                        Permite que diferentes sistemas se comuniquem
+                        e troquem informações.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             RELAÇÃO ENTRE ELES
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Como eles trabalham juntos?
+            </h2>
+
+            <p>
+                Imagine uma pessoa acessando uma loja virtual e
+                consultando seus pedidos.
+            </p>
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <div class="icon">
+                        👤
+                    </div>
+
+                    <h3>
+                        1. Usuário
+                    </h3>
+
+                    <p>
+                        Solicita uma ação através da aplicação.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        💻
+                    </div>
+
+                    <h3>
+                        2. Aplicação
+                    </h3>
+
+                    <p>
+                        Recebe a solicitação e executa as regras
+                        necessárias.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        ⚙️
+                    </div>
+
+                    <h3>
+                        3. SGBD
+                    </h3>
+
+                    <p>
+                        Processa as operações solicitadas pela
+                        aplicação.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🗄️
+                    </div>
+
+                    <h3>
+                        4. Banco de Dados
+                    </h3>
+
+                    <p>
+                        Contém os dados que precisam ser consultados
+                        ou modificados.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             EXEMPLO PRÁTICO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Exemplo prático
+            </h2>
+
+            <p>
+                Imagine que um cliente queira consultar seus pedidos.
+            </p>
+
+            <div class="highlight">
+
+                <p>
+                    <strong>1. Usuário:</strong>
+                    solicita "Meus pedidos".
+                </p>
+
+                <p>
+                    ↓
+                </p>
+
+                <p>
+                    <strong>2. Aplicação:</strong>
+                    recebe a solicitação e identifica o cliente.
+                </p>
+
+                <p>
+                    ↓
+                </p>
+
+                <p>
+                    <strong>3. SGBD:</strong>
+                    recebe uma operação solicitada pela aplicação.
+                </p>
+
+                <p>
+                    ↓
+                </p>
+
+                <p>
+                    <strong>4. Banco de Dados:</strong>
+                    contém os registros dos pedidos.
+                </p>
+
+                <p>
+                    ↓
+                </p>
+
+                <p>
+                    <strong>5. Aplicação:</strong>
+                    apresenta os resultados para o usuário.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             ONDE ENTRA O SQL
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                E onde entra o SQL?
+            </h2>
+
+            <p>
+                Agora podemos introduzir mais um conceito:
+                <strong>SQL</strong>.
+            </p>
+
+            <p>
+                SQL significa
+                <strong>Structured Query Language</strong>.
+                É uma linguagem utilizada principalmente para
+                consultar e manipular dados em bancos de dados
+                relacionais.
+            </p>
+
+            <div class="highlight">
+
+                <strong>Não confunda:</strong>
+
+                <p>
+                    SQL <strong>não é um banco de dados</strong>.
+                </p>
+
+                <p>
+                    SQL <strong>não é um SGBD</strong>.
+                </p>
+
+                <p>
+                    SQL é uma <strong>linguagem</strong> utilizada
+                    para trabalhar com bancos de dados relacionais.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             EXEMPLO SQL
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Um exemplo de SQL
+            </h2>
+
+            <p>
+                Uma aplicação pode solicitar ao SGBD uma consulta
+                como esta:
+            </p>
+
+            <pre><code><span class="sql-keyword">SELECT</span> *
+<span class="sql-keyword">FROM</span> clientes
+<span class="sql-keyword">WHERE</span> cidade = <span class="sql-string">'Rio de Janeiro'</span>;</code></pre>
+
+            <p>
+                O SQL descreve a operação que queremos realizar.
+                O SGBD é responsável por interpretar essa operação
+                e trabalhar com o banco de dados.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             DIFERENÇAS
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Banco de Dados × SGBD × Aplicação × SQL
+            </h2>
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+                            <th>Conceito</th>
+                            <th>O que é?</th>
+                            <th>Função</th>
+                            <th>Exemplo</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>
+                                <strong>Banco de Dados</strong>
+                            </td>
+
+                            <td>
+                                Coleção organizada de dados.
+                            </td>
+
+                            <td>
+                                Armazenar e organizar informações.
+                            </td>
+
+                            <td>
+                                Dados de clientes, produtos e pedidos.
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                <strong>SGBD</strong>
+                            </td>
+
+                            <td>
+                                Software de gerenciamento de banco de dados.
+                            </td>
+
+                            <td>
+                                Gerenciar o armazenamento e o acesso
+                                aos dados.
+                            </td>
+
+                            <td>
+                                PostgreSQL, MySQL, MongoDB.
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                <strong>Aplicação</strong>
+                            </td>
+
+                            <td>
+                                Software que implementa funcionalidades.
+                            </td>
+
+                            <td>
+                                Permitir que usuários ou sistemas
+                                realizem operações.
+                            </td>
+
+                            <td>
+                                E-commerce, aplicativo ou API.
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                <strong>SQL</strong>
+                            </td>
+
+                            <td>
+                                Linguagem.
+                            </td>
+
+                            <td>
+                                Expressar operações sobre dados
+                                em bancos relacionais.
+                            </td>
+
+                            <td>
+                                SELECT, INSERT, UPDATE, DELETE.
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             ANALOGIA
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Uma analogia para memorizar
+            </h2>
+
+            <p>
+                Imagine uma biblioteca.
+            </p>
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <div class="icon">
+                        📚
+                    </div>
+
+                    <h3>
+                        Banco de Dados
+                    </h3>
+
+                    <p>
+                        É como o acervo da biblioteca:
+                        contém as informações armazenadas.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        ⚙️
+                    </div>
+
+                    <h3>
+                        SGBD
+                    </h3>
+
+                    <p>
+                        É como o sistema responsável por organizar
+                        e controlar o acesso ao acervo.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🖥️
+                    </div>
+
+                    <h3>
+                        Aplicação
+                    </h3>
+
+                    <p>
+                        É como a interface utilizada pelo usuário
+                        para realizar suas solicitações.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🔎
+                    </div>
+
+                    <h3>
+                        SQL
+                    </h3>
+
+                    <p>
+                        É como uma linguagem usada para expressar
+                        o que queremos encontrar ou modificar
+                        no acervo.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             ERROS COMUNS
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Erros comuns
+            </h2>
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <h3>
+                        ❌ "PostgreSQL é um banco de dados"
+                    </h3>
+
+                    <p>
+                        De forma mais precisa, PostgreSQL é um
+                        <strong>SGBD relacional</strong>.
+                        Ele pode gerenciar bancos de dados.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        ❌ "SQL é um banco de dados"
+                    </h3>
+
+                    <p>
+                        SQL é uma <strong>linguagem</strong>.
+                        Ele é utilizado principalmente para trabalhar
+                        com bancos de dados relacionais.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        ❌ "O site é o banco de dados"
+                    </h3>
+
+                    <p>
+                        O site faz parte da
+                        <strong>aplicação</strong>.
+                        A aplicação pode utilizar um SGBD para
+                        acessar os dados.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        ❌ "O banco de dados é a aplicação"
+                    </h3>
+
+                    <p>
+                        São componentes diferentes.
+                        A aplicação implementa funcionalidades,
+                        enquanto o banco armazena os dados.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             RESUMO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Resumindo
+            </h2>
+
+            <div class="highlight">
+
+                <p>
+                    🗄️ <strong>Banco de Dados</strong>
+                    → é onde os dados são armazenados e organizados.
+                </p>
+
+                <p>
+                    ⚙️ <strong>SGBD</strong>
+                    → é o software que gerencia os bancos de dados.
+                </p>
+
+                <p>
+                    💻 <strong>Aplicação</strong>
+                    → é o software que implementa funcionalidades
+                    e utiliza os dados.
+                </p>
+
+                <p>
+                    🔤 <strong>SQL</strong>
+                    → é uma linguagem utilizada principalmente para
+                    trabalhar com bancos de dados relacionais.
+                </p>
+
+            </div>
+
+            <p>
+                A partir desses conceitos, podemos começar a estudar
+                como os dados são modelados, relacionados e consultados.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             CHECKPOINT
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🧠 Você entendeu?
+            </h2>
+
+            <p>
+                Antes de avançar para a próxima aula, tente responder:
+            </p>
+
+            <ul>
+
+                <li>
+                    O que é um banco de dados?
+                </li>
+
+                <li>
+                    Qual é a função de um SGBD?
+                </li>
+
+                <li>
+                    Qual é a função de uma aplicação?
+                </li>
+
+                <li>
+                    O que é SQL?
+                </li>
+
+                <li>
+                    PostgreSQL é banco de dados, SGBD ou linguagem?
+                </li>
+
+                <li>
+                    Qual é a relação entre aplicação, SGBD e banco de dados?
+                </li>
+
+            </ul>
+
+        </section>
+
+
+        <!-- =====================================================
+             CTA
+        ====================================================== -->
+
+        <section class="cta">
+
+            <h2>
+                Aula 1 concluída!
+            </h2>
+
+            <p>
+                Agora você já consegue diferenciar banco de dados,
+                SGBD, aplicação e SQL.
+            </p>
+
+            <a
+                href="./aulas/aula-2.html"
+                class="cta-button"
+            >
+                Aula 2 →
+            </a>
+
+        </section>
+
+    </main>
+
+
+    <!-- =====================================================
+       FOOTER
+    ====================================================== -->
+
+    <footer>
+
+        <p>
+            Guia de Banco de Dados
+        </p>
+
+        <p>
+            Aula 1 • Fundamentos de Banco de Dados
+        </p>
+
+    </footer>
+
+
+    <!-- =====================================================
+       JAVASCRIPT — DARK / LIGHT MODE
+    ====================================================== -->
+
+    <script src="../assets/js/script.js"></script>
+
+</body>
+
+</html>
