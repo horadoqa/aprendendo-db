@@ -1,0 +1,1932 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="./style.css">
+
+    <link rel="icon" type="image/png" href="./assets/images/logo.png">
+
+    <title>Aula 31 — Projeto Prático com MongoDB</title>
+
+</head>
+
+<body>
+
+
+    <!-- =====================================================
+       HEADER
+    ====================================================== -->
+
+    <header>
+
+        <button class="theme-toggle" id="themeToggle" type="button" aria-label="Alternar tema">
+
+            <span class="theme-icon" id="themeIcon">
+                ☀️
+            </span>
+
+            <span class="theme-label" id="themeLabel">
+                Modo claro
+            </span>
+
+        </button>
+
+
+        <div class="header-content">
+
+            <span class="eyebrow">
+                AULA 31 • PROJETO MONGODB
+            </span>
+
+            <h1>
+                Projeto Prático: API de Loja com MongoDB
+            </h1>
+
+            <p>
+                Vamos juntar os conhecimentos das aulas anteriores
+                construindo a estrutura de um sistema de loja utilizando
+                MongoDB.
+            </p>
+
+        </div>
+
+    </header>
+
+
+    <!-- =====================================================
+       CONTEÚDO
+    ====================================================== -->
+
+    <main>
+
+
+        <!-- =====================================================
+           OBJETIVOS
+        ====================================================== -->
+
+        <section>
+
+            <h2>🎯 Objetivos da aula</h2>
+
+            <p>
+                Nesta aula vamos deixar a teoria um pouco de lado
+                e pensar como um desenvolvedor que precisa construir
+                uma aplicação real.
+            </p>
+
+            <p>
+                Nosso projeto será uma pequena API de uma loja virtual.
+            </p>
+
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <div class="icon">
+                        🗄️
+                    </div>
+
+                    <h3>
+                        Banco
+                    </h3>
+
+                    <p>
+                        Criar a estrutura de dados no MongoDB.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        📦
+                    </div>
+
+                    <h3>
+                        Produtos
+                    </h3>
+
+                    <p>
+                        Cadastrar e consultar produtos.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        👤
+                    </div>
+
+                    <h3>
+                        Clientes
+                    </h3>
+
+                    <p>
+                        Armazenar informações dos clientes.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🛒
+                    </div>
+
+                    <h3>
+                        Pedidos
+                    </h3>
+
+                    <p>
+                        Registrar compras realizadas.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           PROJETO
+        ====================================================== -->
+
+        <section>
+
+            <h2>🏪 O projeto</h2>
+
+            <p>
+                Imagine que uma empresa contratou você para desenvolver
+                o backend de uma pequena loja virtual.
+            </p>
+
+            <p>
+                O sistema precisa permitir:
+            </p>
+
+
+            <ul>
+
+                <li>
+                    Cadastrar clientes.
+                </li>
+
+                <li>
+                    Cadastrar produtos.
+                </li>
+
+                <li>
+                    Consultar produtos.
+                </li>
+
+                <li>
+                    Atualizar produtos.
+                </li>
+
+                <li>
+                    Remover produtos.
+                </li>
+
+                <li>
+                    Criar pedidos.
+                </li>
+
+                <li>
+                    Consultar pedidos.
+                </li>
+
+                <li>
+                    Calcular informações sobre vendas.
+                </li>
+
+                <li>
+                    Proteger o acesso ao banco.
+                </li>
+
+            </ul>
+
+        </section>
+
+
+        <!-- =====================================================
+           ARQUITETURA
+        ====================================================== -->
+
+        <section>
+
+            <h2>🏗️ Arquitetura da aplicação</h2>
+
+            <p>
+                Antes de criar qualquer código, precisamos entender
+                como as partes do sistema se relacionam.
+            </p>
+
+
+            <pre><code>
+                USUÁRIO
+                   │
+                   ↓
+              FRONTEND
+                   │
+                   ↓
+                API
+                   │
+          ┌────────┴────────┐
+          │                 │
+          ↓                 ↓
+     Autenticação       Regras de negócio
+          │                 │
+          └────────┬────────┘
+                   ↓
+                MongoDB
+            </code></pre>
+
+
+            <div class="highlight">
+
+                <strong>
+                    O frontend não precisa acessar diretamente o MongoDB.
+                </strong>
+
+                <p>
+                    A API funciona como intermediária entre o cliente
+                    e o banco de dados.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           BANCO
+        ====================================================== -->
+
+        <section>
+
+            <h2>🗄️ Criando o banco de dados</h2>
+
+            <p>
+                Vamos imaginar que nosso banco se chama:
+            </p>
+
+
+            <pre><code>loja_db</code></pre>
+
+
+            <p>
+                Dentro dele teremos algumas coleções.
+            </p>
+
+
+            <pre><code>loja_db
+│
+├── usuarios
+│
+├── produtos
+│
+├── pedidos
+│
+└── categorias</code></pre>
+
+        </section>
+
+
+        <!-- =====================================================
+           PRODUTOS
+        ====================================================== -->
+
+        <section>
+
+            <h2>📦 Coleção de produtos</h2>
+
+            <p>
+                Um produto pode possuir informações como:
+            </p>
+
+
+            <pre><code>{
+    nome: "Notebook",
+    categoria: "Eletrônicos",
+    preco: 3500,
+    estoque: 10,
+    ativo: true
+}</code></pre>
+
+
+            <p>
+                Diferentemente de uma tabela relacional tradicional,
+                o documento MongoDB pode armazenar essa estrutura
+                diretamente como um documento BSON.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+           CLIENTES
+        ====================================================== -->
+
+        <section>
+
+            <h2>👤 Coleção de usuários</h2>
+
+            <p>
+                Para os usuários, podemos armazenar informações como:
+            </p>
+
+
+            <pre><code>{
+    nome: "Ana Silva",
+    email: "ana@email.com",
+    ativo: true
+}</code></pre>
+
+
+            <div class="highlight">
+
+                <strong>
+                    Atenção:
+                </strong>
+
+                <p>
+                    Em uma aplicação real, senhas não devem ser armazenadas
+                    em texto puro.
+                </p>
+
+                <p>
+                    Elas devem ser tratadas utilizando mecanismos
+                    apropriados de hash de senha.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           PEDIDOS
+        ====================================================== -->
+
+        <section>
+
+            <h2>🛒 Coleção de pedidos</h2>
+
+            <p>
+                Um pedido pode possuir informações sobre o cliente,
+                produtos comprados, valores e status.
+            </p>
+
+
+            <pre><code>{
+    clienteId: ObjectId("..."),
+
+    itens: [
+
+        {
+            produtoId: ObjectId("..."),
+            quantidade: 2,
+            preco: 150
+        },
+
+        {
+            produtoId: ObjectId("..."),
+            quantidade: 1,
+            preco: 300
+        }
+
+    ],
+
+    status: "pago",
+
+    total: 600,
+
+    criadoEm: ISODate("2026-01-10")
+}</code></pre>
+
+
+            <p>
+                Observe que o campo <strong>itens</strong> é um array
+                de objetos.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+           MODELAGEM
+        ====================================================== -->
+
+        <section>
+
+            <h2>🧩 Modelagem do projeto</h2>
+
+            <p>
+                Podemos visualizar uma relação conceitual entre
+                as principais entidades:
+            </p>
+
+
+            <pre><code>
+USUÁRIO
+   │
+   │ realiza
+   ↓
+PEDIDO
+   │
+   │ contém
+   ↓
+PRODUTOS
+   │
+   │ pertencem
+   ↓
+CATEGORIAS
+            </code></pre>
+
+
+            <p>
+                No MongoDB, não precisamos transformar automaticamente
+                esse modelo em várias tabelas.
+            </p>
+
+            <p>
+                Podemos decidir entre referências e documentos embutidos
+                de acordo com as necessidades da aplicação.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+           CRUD
+        ====================================================== -->
+
+        <section>
+
+            <h2>🔄 CRUD dos produtos</h2>
+
+            <p>
+                Nosso primeiro objetivo será implementar as quatro
+                operações fundamentais.
+            </p>
+
+
+            <div class="cards">
+
+                <div class="card crud-card create">
+
+                    <h3>
+                        🟢 Create
+                    </h3>
+
+                    <p>
+                        Criar produtos.
+                    </p>
+
+                </div>
+
+
+                <div class="card crud-card read">
+
+                    <h3>
+                        🔵 Read
+                    </h3>
+
+                    <p>
+                        Consultar produtos.
+                    </p>
+
+                </div>
+
+
+                <div class="card crud-card update">
+
+                    <h3>
+                        🟡 Update
+                    </h3>
+
+                    <p>
+                        Atualizar produtos.
+                    </p>
+
+                </div>
+
+
+                <div class="card crud-card delete">
+
+                    <h3>
+                        🔴 Delete
+                    </h3>
+
+                    <p>
+                        Remover produtos.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           CREATE
+        ====================================================== -->
+
+        <section>
+
+            <h2>🟢 Create — Criando um produto</h2>
+
+            <p>
+                Podemos inserir um documento utilizando:
+            </p>
+
+
+            <pre><code>db.produtos.insertOne({
+
+    nome: "Teclado Mecânico",
+
+    categoria: "Periféricos",
+
+    preco: 350,
+
+    estoque: 25,
+
+    ativo: true
+
+})</code></pre>
+
+        </section>
+
+
+        <!-- =====================================================
+           READ
+        ====================================================== -->
+
+        <section>
+
+            <h2>🔵 Read — Consultando produtos</h2>
+
+            <p>
+                Para consultar produtos:
+            </p>
+
+
+            <pre><code>db.produtos.find()</code></pre>
+
+
+            <p>
+                Podemos também buscar apenas produtos ativos:
+            </p>
+
+
+            <pre><code>db.produtos.find({
+
+    ativo: true
+
+})</code></pre>
+
+
+            <p>
+                Ou procurar produtos dentro de uma faixa de preço:
+            </p>
+
+
+            <pre><code>db.produtos.find({
+
+    preco: {
+        $gte: 100,
+        $lte: 500
+    }
+
+})</code></pre>
+
+        </section>
+
+
+        <!-- =====================================================
+           UPDATE
+        ====================================================== -->
+
+        <section>
+
+            <h2>🟡 Update — Atualizando produtos</h2>
+
+            <p>
+                Imagine que precisamos alterar o estoque.
+            </p>
+
+
+            <pre><code>db.produtos.updateOne(
+
+    { nome: "Teclado Mecânico" },
+
+    {
+        $set: {
+            estoque: 20
+        }
+    }
+
+)</code></pre>
+
+
+            <p>
+                O operador <strong>$set</strong> altera o campo indicado
+                sem substituir todo o documento.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+           DELETE
+        ====================================================== -->
+
+        <section>
+
+            <h2>🔴 Delete — Removendo produtos</h2>
+
+            <p>
+                Para remover um documento:
+            </p>
+
+
+            <pre><code>db.produtos.deleteOne({
+
+    nome: "Teclado Mecânico"
+
+})</code></pre>
+
+
+            <div class="highlight">
+
+                <strong>
+                    ⚠️ Cuidado!
+                </strong>
+
+                <p>
+                    Operações de exclusão devem ser utilizadas com
+                    atenção, principalmente em produção.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           CONSULTAS
+        ====================================================== -->
+
+        <section>
+
+            <h2>🔎 Consultas mais úteis</h2>
+
+            <p>
+                Nossa API precisará de consultas diferentes.
+            </p>
+
+
+            <pre><code>// Produtos ativos
+
+db.produtos.find({
+    ativo: true
+})
+
+
+// Produtos de uma categoria
+
+db.produtos.find({
+    categoria: "Periféricos"
+})
+
+
+// Produtos acima de R$ 500
+
+db.produtos.find({
+    preco: {
+        $gt: 500
+    }
+})
+
+
+// Produtos com estoque
+
+db.produtos.find({
+    estoque: {
+        $gt: 0
+    }
+})</code></pre>
+
+        </section>
+
+
+        <!-- =====================================================
+           SORT LIMIT
+        ====================================================== -->
+
+        <section>
+
+            <h2>📊 Ordenação e limite</h2>
+
+            <p>
+                Podemos ordenar os produtos por preço.
+            </p>
+
+
+            <pre><code>db.produtos
+    .find()
+    .sort({
+        preco: -1
+    })</code></pre>
+
+
+            <p>
+                E limitar a quantidade de resultados:
+            </p>
+
+
+            <pre><code>db.produtos
+    .find()
+    .sort({
+        preco: -1
+    })
+    .limit(10)</code></pre>
+
+
+            <p>
+                Isso pode ser utilizado, por exemplo, para montar
+                uma página com os produtos mais caros.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+           PAGINAÇÃO
+        ====================================================== -->
+
+        <section>
+
+            <h2>📄 Paginação</h2>
+
+            <p>
+                Imagine que existem milhares de produtos.
+                Não seria interessante retornar todos de uma vez.
+            </p>
+
+
+            <p>
+                Uma estratégia simples utiliza:
+            </p>
+
+
+            <pre><code>skip()
+limit()</code></pre>
+
+
+            <p>
+                Exemplo:
+            </p>
+
+
+            <pre><code>db.produtos
+    .find()
+    .skip(20)
+    .limit(10)</code></pre>
+
+
+            <p>
+                Nesse exemplo, podemos interpretar a consulta como
+                uma forma simples de buscar uma página posterior
+                dos resultados.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>
+                    Em sistemas muito grandes, existem estratégias
+                    de paginação mais eficientes do que depender apenas
+                    de skip().
+                </strong>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           AGGREGATION
+        ====================================================== -->
+
+        <section>
+
+            <h2>📈 Relatórios com Aggregation Pipeline</h2>
+
+            <p>
+                Agora podemos utilizar o conhecimento da
+                <strong>Aggregation Pipeline</strong>.
+            </p>
+
+
+            <p>
+                Imagine que queremos descobrir quanto cada categoria
+                possui em estoque.
+            </p>
+
+
+            <pre><code>db.produtos.aggregate([
+
+    {
+        $group: {
+            _id: "$categoria",
+
+            quantidade: {
+                $sum: "$estoque"
+            }
+        }
+    }
+
+])</code></pre>
+
+
+            <p>
+                Podemos também calcular o preço médio:
+            </p>
+
+
+            <pre><code>db.produtos.aggregate([
+
+    {
+        $group: {
+            _id: "$categoria",
+
+            precoMedio: {
+                $avg: "$preco"
+            }
+        }
+    }
+
+])</code></pre>
+
+        </section>
+
+
+        <!-- =====================================================
+           RELATÓRIO DE VENDAS
+        ====================================================== -->
+
+        <section>
+
+            <h2>💰 Relatório de vendas</h2>
+
+            <p>
+                Imagine que queremos descobrir o valor total
+                dos pedidos agrupados por status.
+            </p>
+
+
+            <pre><code>db.pedidos.aggregate([
+
+    {
+        $group: {
+
+            _id: "$status",
+
+            total: {
+                $sum: "$total"
+            }
+
+        }
+    }
+
+])</code></pre>
+
+
+            <p>
+                Essa mesma ideia pode ser utilizada para criar
+                dashboards e relatórios.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+           ÍNDICES
+        ====================================================== -->
+
+        <section>
+
+            <h2>⚡ Índices</h2>
+
+            <p>
+                Imagine que a aplicação consulta produtos
+                constantemente pelo nome.
+            </p>
+
+
+            <p>
+                Podemos criar um índice:
+            </p>
+
+
+            <pre><code>db.produtos.createIndex({
+
+    nome: 1
+
+})</code></pre>
+
+
+            <p>
+                Depois podemos verificar os índices:
+            </p>
+
+
+            <pre><code>db.produtos.getIndexes()</code></pre>
+
+
+            <div class="highlight">
+
+                <strong>
+                    Índices podem acelerar consultas,
+                    mas também possuem custo de armazenamento
+                    e manutenção.
+                </strong>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           API
+        ====================================================== -->
+
+        <section>
+
+            <h2>🌐 Desenhando a API</h2>
+
+            <p>
+                Agora precisamos pensar nas rotas da nossa aplicação.
+            </p>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Método
+                            </th>
+
+                            <th>
+                                Rota
+                            </th>
+
+                            <th>
+                                Função
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>
+                                GET
+                            </td>
+
+                            <td>
+                                /produtos
+                            </td>
+
+                            <td>
+                                Listar produtos
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                GET
+                            </td>
+
+                            <td>
+                                /produtos/:id
+                            </td>
+
+                            <td>
+                                Buscar produto
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                POST
+                            </td>
+
+                            <td>
+                                /produtos
+                            </td>
+
+                            <td>
+                                Criar produto
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                PUT
+                            </td>
+
+                            <td>
+                                /produtos/:id
+                            </td>
+
+                            <td>
+                                Atualizar produto
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                DELETE
+                            </td>
+
+                            <td>
+                                /produtos/:id
+                            </td>
+
+                            <td>
+                                Excluir produto
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           FLUXO
+        ====================================================== -->
+
+        <section>
+
+            <h2>🔄 Fluxo de uma requisição</h2>
+
+            <p>
+                Quando o usuário solicita um produto, podemos imaginar
+                o seguinte fluxo:
+            </p>
+
+
+            <pre><code>
+Usuário
+   │
+   ↓
+GET /produtos/123
+   │
+   ↓
+API
+   │
+   ↓
+Validação
+   │
+   ↓
+Regra de negócio
+   │
+   ↓
+MongoDB
+   │
+   ↓
+Documento
+   │
+   ↓
+API
+   │
+   ↓
+Resposta JSON
+   │
+   ↓
+Usuário
+            </code></pre>
+
+        </section>
+
+
+        <!-- =====================================================
+           JSON RESPONSE
+        ====================================================== -->
+
+        <section>
+
+            <h2>📤 Resposta da API</h2>
+
+            <p>
+                A API pode retornar o produto em formato JSON:
+            </p>
+
+
+            <pre><code>{
+    "id": "65abc123",
+    "nome": "Teclado Mecânico",
+    "categoria": "Periféricos",
+    "preco": 350,
+    "estoque": 20,
+    "ativo": true
+}</code></pre>
+
+        </section>
+
+
+        <!-- =====================================================
+           VALIDAÇÃO
+        ====================================================== -->
+
+        <section>
+
+            <h2>✅ Validação dos dados</h2>
+
+            <p>
+                Antes de inserir um produto, precisamos verificar
+                se os dados são válidos.
+            </p>
+
+
+            <p>
+                Por exemplo:
+            </p>
+
+
+            <ul>
+
+                <li>
+                    Nome é obrigatório.
+                </li>
+
+                <li>
+                    Preço deve ser maior que zero.
+                </li>
+
+                <li>
+                    Estoque não pode ser negativo.
+                </li>
+
+                <li>
+                    Categoria deve ser válida.
+                </li>
+
+                <li>
+                    Campos inesperados podem ser rejeitados.
+                </li>
+
+            </ul>
+
+
+            <pre><code>{
+    nome: "Teclado",
+    preco: 350,
+    estoque: 10
+}</code></pre>
+
+        </section>
+
+
+        <!-- =====================================================
+           SEGURANÇA
+        ====================================================== -->
+
+        <section>
+
+            <h2>🔐 Segurança do projeto</h2>
+
+            <p>
+                Tudo o que aprendemos na aula anterior também
+                deve ser aplicado aqui.
+            </p>
+
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <h3>
+                        🔑 Credenciais
+                    </h3>
+
+                    <p>
+                        Não colocar senhas diretamente no código.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        🛡️ Permissões
+                    </h3>
+
+                    <p>
+                        Utilizar usuários com permissões adequadas.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        🌐 Rede
+                    </h3>
+
+                    <p>
+                        Evitar exposição desnecessária do banco.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        ✅ Validação
+                    </h3>
+
+                    <p>
+                        Validar dados recebidos pela API.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           VARIÁVEL DE AMBIENTE
+        ====================================================== -->
+
+        <section>
+
+            <h2>⚙️ Configuração do projeto</h2>
+
+            <p>
+                Uma configuração possível seria:
+            </p>
+
+
+            <pre><code>DB_URI=mongodb://localhost:27017/loja_db</code></pre>
+
+
+            <p>
+                A aplicação poderia acessar essa informação
+                por meio de uma variável de ambiente.
+            </p>
+
+
+            <pre><code>process.env.DB_URI</code></pre>
+
+        </section>
+
+
+        <!-- =====================================================
+           TESTES
+        ====================================================== -->
+
+        <section>
+
+            <h2>🧪 Testando a API</h2>
+
+            <p>
+                Depois de implementar as rotas, precisamos testar
+                os comportamentos esperados.
+            </p>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Teste
+                            </th>
+
+                            <th>
+                                Resultado esperado
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>
+                                Criar produto válido
+                            </td>
+
+                            <td>
+                                Produto criado
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Criar produto sem nome
+                            </td>
+
+                            <td>
+                                Erro de validação
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Buscar produto existente
+                            </td>
+
+                            <td>
+                                Produto retornado
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Buscar produto inexistente
+                            </td>
+
+                            <td>
+                                Recurso não encontrado
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Atualizar produto
+                            </td>
+
+                            <td>
+                                Produto atualizado
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Excluir produto
+                            </td>
+
+                            <td>
+                                Produto removido
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           ESTRUTURA DO PROJETO
+        ====================================================== -->
+
+        <section>
+
+            <h2>📁 Estrutura sugerida</h2>
+
+            <p>
+                Uma possível organização do projeto:
+            </p>
+
+
+            <pre><code>loja-api/
+│
+├── src/
+│   │
+│   ├── controllers/
+│   │
+│   ├── models/
+│   │
+│   ├── routes/
+│   │
+│   ├── services/
+│   │
+│   ├── database/
+│   │
+│   └── app.js
+│
+├── .env
+├── .gitignore
+├── package.json
+└── README.md</code></pre>
+
+
+            <p>
+                A estrutura exata pode variar de acordo com a linguagem,
+                framework e arquitetura escolhidos.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+           FLUXO COMPLETO
+        ====================================================== -->
+
+        <section>
+
+            <h2>🧠 Juntando tudo</h2>
+
+            <p>
+                Observe quantos conceitos estudados até aqui aparecem
+                no mesmo projeto:
+            </p>
+
+
+            <pre><code>
+                 APLICAÇÃO
+                     │
+                     ↓
+                AUTENTICAÇÃO
+                     │
+                     ↓
+                  VALIDAÇÃO
+                     │
+                     ↓
+               REGRA DE NEGÓCIO
+                     │
+                     ↓
+                   CRUD
+                     │
+                     ↓
+                 MONGODB
+                     │
+          ┌──────────┼──────────┐
+          ↓          ↓          ↓
+       Queries   Aggregation  Indexes
+          │          │          │
+          └──────────┼──────────┘
+                     ↓
+                  RESULTADO
+            </code></pre>
+
+        </section>
+
+
+        <!-- =====================================================
+           CHECKPOINT
+        ====================================================== -->
+
+        <section>
+
+            <h2>🧠 Checkpoint</h2>
+
+            <p>
+                Antes de considerar o projeto concluído,
+                tente responder:
+            </p>
+
+
+            <ol>
+
+                <li>
+                    Qual é a função da API entre o frontend e o MongoDB?
+                </li>
+
+                <li>
+                    Quais coleções existem no projeto?
+                </li>
+
+                <li>
+                    Quando você utilizaria um documento embutido?
+                </li>
+
+                <li>
+                    Quando uma referência pode ser mais adequada?
+                </li>
+
+                <li>
+                    Como realizaria o CRUD de produtos?
+                </li>
+
+                <li>
+                    Para que serve uma Aggregation Pipeline?
+                </li>
+
+                <li>
+                    Por que criar índices?
+                </li>
+
+                <li>
+                    Por que não devemos dar privilégios administrativos
+                    para qualquer usuário da aplicação?
+                </li>
+
+                <li>
+                    Onde devemos armazenar as credenciais da aplicação?
+                </li>
+
+                <li>
+                    Como você testaria essa API?
+                </li>
+
+            </ol>
+
+        </section>
+
+
+        <!-- =====================================================
+           DESAFIO FINAL
+        ====================================================== -->
+
+        <section>
+
+            <h2>🏆 Desafio final</h2>
+
+            <p>
+                Agora é sua vez de construir o projeto.
+            </p>
+
+
+            <p>
+                Crie uma API de loja contendo pelo menos:
+            </p>
+
+
+            <ul>
+
+                <li>
+                    👤 Cadastro de usuários.
+                </li>
+
+                <li>
+                    📦 CRUD de produtos.
+                </li>
+
+                <li>
+                    🏷️ Categorias.
+                </li>
+
+                <li>
+                    🛒 Criação de pedidos.
+                </li>
+
+                <li>
+                    🔎 Consultas com filtros.
+                </li>
+
+                <li>
+                    📄 Paginação.
+                </li>
+
+                <li>
+                    📊 Pelo menos uma Aggregation Pipeline.
+                </li>
+
+                <li>
+                    ⚡ Pelo menos dois índices.
+                </li>
+
+                <li>
+                    🔐 Autenticação.
+                </li>
+
+                <li>
+                    🛡️ Controle de permissões.
+                </li>
+
+                <li>
+                    💾 Estratégia de backup.
+                </li>
+
+            </ul>
+
+
+            <div class="highlight">
+
+                <strong>
+                    🚀 Regra do desafio:
+                </strong>
+
+                <p>
+                    Não copie simplesmente os exemplos desta aula.
+                </p>
+
+                <p>
+                    Tente projetar a estrutura sozinho e utilize
+                    os conceitos aprendidos nas aulas anteriores
+                    para resolver os problemas.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           O QUE VOCÊ APRENDEU
+        ====================================================== -->
+
+        <section>
+
+            <h2>🎓 O que você aprendeu até aqui?</h2>
+
+            <p>
+                Depois dessas aulas, você já possui uma base importante
+                para começar a trabalhar com MongoDB.
+            </p>
+
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <h3>
+                        🗄️ Fundamentos
+                    </h3>
+
+                    <p>
+                        Banco de dados, SGBD e aplicação.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        🧩 Modelagem
+                    </h3>
+
+                    <p>
+                        Documentos, referências e estruturas.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        🔄 CRUD
+                    </h3>
+
+                    <p>
+                        Inserção, consulta, atualização e exclusão.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        📊 Aggregation
+                    </h3>
+
+                    <p>
+                        Processamento e análise de dados.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        ⚡ Performance
+                    </h3>
+
+                    <p>
+                        Índices e otimização de consultas.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        🔐 Segurança
+                    </h3>
+
+                    <p>
+                        Autenticação, autorização e boas práticas.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           TRANSIÇÃO SQL
+        ====================================================== -->
+
+        <section>
+
+            <h2>🔀 E agora, SQL?</h2>
+
+            <p>
+                Você decidiu começar a trilha estudando NoSQL.
+                Agora já conhece os principais conceitos necessários
+                para entender como um banco orientado a documentos
+                funciona na prática.
+            </p>
+
+
+            <p>
+                O próximo grande passo será conhecer o mundo dos
+                <strong>bancos relacionais e SQL</strong>.
+            </p>
+
+
+            <div class="highlight">
+
+                <p>
+                    No MongoDB aprendemos a trabalhar principalmente
+                    com <strong>documentos e coleções</strong>.
+                </p>
+
+                <p>
+                    Em bancos relacionais vamos trabalhar principalmente
+                    com <strong>tabelas, linhas, colunas e relacionamentos</strong>.
+                </p>
+
+                <p>
+                    Depois vamos utilizar <strong>SQL</strong> para consultar
+                    e manipular esses dados.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           RESUMO
+        ====================================================== -->
+
+        <section>
+
+            <h2>📝 Resumindo</h2>
+
+
+            <div class="highlight">
+
+                <p>
+                    Um projeto de banco de dados não consiste apenas
+                    em criar coleções e inserir documentos.
+                </p>
+
+                <p>
+                    Precisamos pensar em <strong>modelagem</strong>,
+                    <strong>consultas</strong>,
+                    <strong>performance</strong>,
+                    <strong>segurança</strong> e
+                    <strong>regras de negócio</strong>.
+                </p>
+
+                <p>
+                    MongoDB fornece os recursos para armazenar,
+                    consultar e processar documentos.
+                </p>
+
+                <p>
+                    A aplicação é responsável por implementar as regras
+                    que fazem o sistema funcionar.
+                </p>
+
+                <p>
+                    A API conecta o mundo externo às operações
+                    realizadas no banco.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           CTA
+        ====================================================== -->
+
+        <section class="cta">
+
+            <h2>
+                🎓 Fim da trilha introdutória de MongoDB
+            </h2>
+
+            <p>
+                Você chegou ao final da etapa de MongoDB.
+            </p>
+
+            <p>
+                Agora podemos começar uma nova etapa:
+                <strong>Parquet</strong>
+            </p>
+
+
+            <a href="./32.html" class="cta-button">
+                Iniciar Parquet →
+            </a>
+
+        </section>
+
+
+    </main>
+
+
+    <!-- =====================================================
+       FOOTER
+    ====================================================== -->
+
+    <footer>
+
+        <p>
+            Guia de Banco de Dados
+        </p>
+
+        <p>
+            Aula 31 • Projeto Prático com MongoDB
+        </p>
+
+    </footer>
+
+
+    <!-- =====================================================
+       JAVASCRIPT — DARK / LIGHT MODE
+    ====================================================== -->
+
+    <script src="./script.js"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,2267 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="./style.css">
+
+    <link rel="icon" type="image/png" href="./assets/images/logo.png">
+
+    <title>Aula 14 — Índices e Otimização de Consultas SQL</title>
+
+</head>
+
+<body>
+
+
+    <!-- =====================================================
+         HEADER
+    ====================================================== -->
+
+    <header>
+
+        <button
+            class="theme-toggle"
+            id="themeToggle"
+            type="button"
+            aria-label="Alternar tema">
+
+            <span class="theme-icon" id="themeIcon">
+                ☀️
+            </span>
+
+            <span class="theme-label" id="themeLabel">
+                Modo claro
+            </span>
+
+        </button>
+
+
+        <div class="header-content">
+
+            <span class="eyebrow">
+                AULA 14 • ÍNDICES E PERFORMANCE
+            </span>
+
+            <h1>
+                Índices e Otimização de Consultas SQL
+            </h1>
+
+            <p>
+                Aprenda como os índices funcionam, como analisar
+                consultas SQL e como identificar oportunidades
+                de melhoria de performance.
+            </p>
+
+        </div>
+
+    </header>
+
+
+    <!-- =====================================================
+         CONTEÚDO
+    ====================================================== -->
+
+    <main>
+
+
+        <!-- =====================================================
+             OBJETIVOS
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Objetivos da aula
+            </h2>
+
+            <p>
+                À medida que uma aplicação cresce, suas tabelas podem
+                armazenar milhares, milhões ou até bilhões de registros.
+            </p>
+
+            <p>
+                Uma consulta que funciona rapidamente com 100 registros
+                pode apresentar um comportamento completamente diferente
+                quando a tabela cresce.
+            </p>
+
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <div class="icon">
+                        ⚡
+                    </div>
+
+                    <h3>
+                        Performance
+                    </h3>
+
+                    <p>
+                        Entender por que algumas consultas
+                        são mais rápidas que outras.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        📇
+                    </div>
+
+                    <h3>
+                        Índices
+                    </h3>
+
+                    <p>
+                        Aprender como índices ajudam o banco
+                        a localizar dados.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🔍
+                    </div>
+
+                    <h3>
+                        EXPLAIN
+                    </h3>
+
+                    <p>
+                        Analisar como o SGBD pretende executar
+                        uma consulta.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🛠️
+                    </div>
+
+                    <h3>
+                        Otimização
+                    </h3>
+
+                    <p>
+                        Identificar consultas e estruturas que
+                        podem ser melhoradas.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             O PROBLEMA
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Por que uma consulta pode ficar lenta?
+            </h2>
+
+            <p>
+                Imagine uma tabela com milhões de clientes.
+            </p>
+
+
+            <pre><code>clientes
+
+id
+nome
+email
+cidade
+data_cadastro</code></pre>
+
+
+            <p>
+                Agora imagine que precisamos encontrar um cliente
+                pelo endereço de e-mail:
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span> *
+<span class="sql-keyword">FROM</span> clientes
+<span class="sql-keyword">WHERE</span> email = <span class="sql-string">'ana@email.com'</span>;</code></pre>
+
+
+            <p>
+                Se o banco precisar verificar uma enorme quantidade
+                de registros para encontrar o resultado, a consulta
+                pode se tornar custosa.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>É aqui que os índices entram.</strong>
+
+                <p>
+                    Um índice pode fornecer uma estrutura auxiliar
+                    que permite ao SGBD localizar determinados dados
+                    de maneira mais eficiente.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             O QUE É ÍNDICE
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                O que é um índice?
+            </h2>
+
+            <p>
+                Um <strong>índice</strong> é uma estrutura de dados
+                mantida pelo SGBD para acelerar determinadas operações
+                de acesso aos dados.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>Analogia:</strong>
+
+                <p>
+                    Imagine um livro com 1.000 páginas.
+                </p>
+
+                <p>
+                    Sem um índice, para encontrar um determinado assunto
+                    você poderia precisar procurar página por página.
+                </p>
+
+                <p>
+                    Com um índice, você pode localizar rapidamente
+                    a página onde o assunto aparece.
+                </p>
+
+            </div>
+
+
+            <p>
+                O conceito é semelhante no banco de dados:
+                uma estrutura adicional pode ajudar o SGBD a encontrar
+                determinadas linhas sem precisar examinar toda a tabela.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             CRIANDO ÍNDICE
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Criando um índice
+            </h2>
+
+            <p>
+                Uma sintaxe comum em bancos relacionais é:
+            </p>
+
+
+            <pre><code><span class="sql-keyword">CREATE INDEX</span> idx_clientes_email
+<span class="sql-keyword">ON</span> clientes (email);</code></pre>
+
+
+            <p>
+                Nesse exemplo:
+            </p>
+
+
+            <ul>
+
+                <li>
+                    <strong>CREATE INDEX</strong> cria o índice.
+                </li>
+
+                <li>
+                    <strong>idx_clientes_email</strong> é o nome
+                    escolhido para o índice.
+                </li>
+
+                <li>
+                    <strong>clientes</strong> é a tabela.
+                </li>
+
+                <li>
+                    <strong>email</strong> é a coluna indexada.
+                </li>
+
+            </ul>
+
+        </section>
+
+
+        <!-- =====================================================
+             ANTES E DEPOIS
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Antes e depois do índice
+            </h2>
+
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <div class="icon">
+                        🐢
+                    </div>
+
+                    <h3>
+                        Sem índice
+                    </h3>
+
+                    <p>
+                        Dependendo da consulta e do plano escolhido,
+                        o SGBD pode precisar examinar muitas linhas.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🚀
+                    </div>
+
+                    <h3>
+                        Com índice
+                    </h3>
+
+                    <p>
+                        O SGBD pode utilizar a estrutura indexada
+                        para localizar os dados de maneira mais eficiente.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="highlight">
+
+                <strong>Importante:</strong>
+
+                <p>
+                    Criar um índice não garante automaticamente que
+                    toda consulta ficará mais rápida.
+                </p>
+
+                <p>
+                    O otimizador do SGBD decide se o índice é adequado
+                    para determinado plano de execução.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             B-TREE
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                B-tree
+            </h2>
+
+            <p>
+                Um dos tipos de índice mais conhecidos em bancos
+                relacionais é o baseado em <strong>B-tree</strong>.
+            </p>
+
+
+            <p>
+                Ele é adequado para diversos tipos de operações,
+                incluindo muitos casos de:
+            </p>
+
+
+            <ul>
+
+                <li>
+                    Comparações de igualdade.
+                </li>
+
+                <li>
+                    Ordenação.
+                </li>
+
+                <li>
+                    Consultas por intervalo.
+                </li>
+
+                <li>
+                    Operadores como
+                    <strong>&gt;</strong>,
+                    <strong>&lt;</strong>,
+                    <strong>&gt;=</strong> e
+                    <strong>&lt;=</strong>.
+                </li>
+
+            </ul>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span> *
+<span class="sql-keyword">FROM</span> produtos
+<span class="sql-keyword">WHERE</span> preco &gt; <span class="sql-number">100</span>;</code></pre>
+
+
+            <p>
+                A estrutura exata e os tipos disponíveis dependem
+                do SGBD.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             ÍNDICE HASH
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Índices Hash
+            </h2>
+
+            <p>
+                Índices baseados em hash podem ser adequados para
+                determinados tipos de busca por igualdade.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">WHERE</span> email = <span class="sql-string">'ana@email.com'</span></code></pre>
+
+
+            <div class="highlight">
+
+                <strong>Atenção:</strong>
+
+                <p>
+                    Hash não deve ser entendido como "sempre mais rápido".
+                    As vantagens dependem da implementação, do SGBD,
+                    da consulta e do tipo de operação.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             ÍNDICE COMPOSTO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Índice composto
+            </h2>
+
+            <p>
+                Um índice também pode utilizar mais de uma coluna.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">CREATE INDEX</span> idx_clientes_cidade_nome
+<span class="sql-keyword">ON</span> clientes (cidade, nome);</code></pre>
+
+
+            <p>
+                Esse índice possui duas colunas:
+            </p>
+
+
+            <pre><code>cidade
+nome</code></pre>
+
+
+            <p>
+                A ordem das colunas do índice é importante para
+                determinar quais consultas podem aproveitá-lo melhor.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>Regra prática:</strong>
+
+                <p>
+                    Não pense em índices compostos apenas como
+                    "um índice com várias colunas".
+                </p>
+
+                <p>
+                    A ordem das colunas influencia o conjunto de
+                    consultas para as quais o índice pode ser útil.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             EXEMPLO ÍNDICE COMPOSTO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Exemplo de índice composto
+            </h2>
+
+
+            <pre><code><span class="sql-keyword">CREATE INDEX</span> idx_pedidos_cliente_data
+<span class="sql-keyword">ON</span> pedidos (cliente_id, data_pedido);</code></pre>
+
+
+            <p>
+                Esse índice pode ser interessante para consultas
+                relacionadas a um determinado cliente e sua data
+                de pedido.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span> *
+<span class="sql-keyword">FROM</span> pedidos
+<span class="sql-keyword">WHERE</span> cliente_id = <span class="sql-number">10</span>
+<span class="sql-keyword">ORDER BY</span> data_pedido;</code></pre>
+
+
+            <p>
+                Porém, o benefício concreto depende do plano de execução,
+                da distribuição dos dados e das características do SGBD.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             ÍNDICE UNIQUE
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Índice UNIQUE
+            </h2>
+
+            <p>
+                Um índice <strong>UNIQUE</strong> ajuda a garantir
+                que os valores indexados não se repitam, de acordo
+                com as regras do SGBD.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">CREATE UNIQUE INDEX</span> idx_usuarios_email
+<span class="sql-keyword">ON</span> usuarios (email);</code></pre>
+
+
+            <p>
+                Nesse caso, não podemos ter dois registros com
+                o mesmo valor de <strong>email</strong>, respeitando
+                as regras específicas de valores nulos do SGBD.
+            </p>
+
+
+            <div class="highlight">
+
+                <p>
+                    Em muitos projetos, essa regra é expressa por
+                    uma <strong>UNIQUE CONSTRAINT</strong>, que também
+                    pode levar o SGBD a criar ou utilizar uma estrutura
+                    de índice para garantir a unicidade.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             PRIMARY KEY
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                E a Primary Key?
+            </h2>
+
+            <p>
+                Uma <strong>PRIMARY KEY</strong> identifica
+                unicamente os registros de uma tabela.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">CREATE TABLE</span> usuarios (
+
+    id <span class="sql-keyword">INTEGER PRIMARY KEY</span>,
+
+    nome <span class="sql-keyword">VARCHAR</span>(100)
+
+);</code></pre>
+
+
+            <p>
+                A forma como a restrição é implementada depende do SGBD,
+                mas é comum que exista uma estrutura indexada associada
+                à chave primária.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             CUSTO DOS ÍNDICES
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Índices também possuem custo
+            </h2>
+
+            <p>
+                Um erro comum é imaginar que devemos criar índices
+                em todas as colunas.
+            </p>
+
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <div class="icon">
+                        💾
+                    </div>
+
+                    <h3>
+                        Espaço
+                    </h3>
+
+                    <p>
+                        Índices ocupam espaço adicional
+                        de armazenamento.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        ✏️
+                    </div>
+
+                    <h3>
+                        Escritas
+                    </h3>
+
+                    <p>
+                        INSERT, UPDATE e DELETE podem precisar
+                        atualizar os índices.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🧩
+                    </div>
+
+                    <h3>
+                        Manutenção
+                    </h3>
+
+                    <p>
+                        Muitos índices aumentam a complexidade
+                        da estrutura do banco.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        ⚖️
+                    </div>
+
+                    <h3>
+                        Equilíbrio
+                    </h3>
+
+                    <p>
+                        É necessário equilibrar velocidade de leitura
+                        e custo das operações de escrita.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             SELETIVIDADE
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Seletividade
+            </h2>
+
+            <p>
+                A <strong>seletividade</strong> está relacionada
+                à capacidade de uma condição filtrar uma pequena
+                parte dos registros.
+            </p>
+
+
+            <p>
+                Imagine uma tabela com 10 milhões de usuários.
+            </p>
+
+
+            <p>
+                Uma coluna como:
+            </p>
+
+
+            <pre><code>email</code></pre>
+
+
+            <p>
+                normalmente possui muitos valores distintos.
+            </p>
+
+
+            <p>
+                Já uma coluna como:
+            </p>
+
+
+            <pre><code>sexo</code></pre>
+
+
+            <p>
+                pode possuir poucos valores distintos, dependendo
+                do modelo utilizado.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>Ideia importante:</strong>
+
+                <p>
+                    O fato de uma coluna possuir um índice não significa
+                    que o otimizador sempre encontrará vantagem em utilizá-lo.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             EXPLAIN
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                EXPLAIN
+            </h2>
+
+            <p>
+                Uma das ferramentas mais importantes para entender
+                performance de consultas é o comando
+                <strong>EXPLAIN</strong>.
+            </p>
+
+
+            <p>
+                Ele permite visualizar informações sobre o plano
+                de execução escolhido pelo SGBD.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">EXPLAIN</span>
+<span class="sql-keyword">SELECT</span> *
+<span class="sql-keyword">FROM</span> clientes
+<span class="sql-keyword">WHERE</span> email = <span class="sql-string">'ana@email.com'</span>;</code></pre>
+
+
+            <div class="highlight">
+
+                <strong>Importante:</strong>
+
+                <p>
+                    EXPLAIN normalmente mostra o plano estimado.
+                    Para medir a execução real, muitos SGBDs oferecem
+                    recursos adicionais, como
+                    <strong>EXPLAIN ANALYZE</strong>.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             EXPLAIN ANALYZE
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                EXPLAIN ANALYZE
+            </h2>
+
+            <p>
+                Em SGBDs que oferecem esse recurso,
+                <strong>EXPLAIN ANALYZE</strong> executa a consulta
+                e apresenta informações observadas durante a execução.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">EXPLAIN ANALYZE</span>
+<span class="sql-keyword">SELECT</span> *
+<span class="sql-keyword">FROM</span> pedidos
+<span class="sql-keyword">WHERE</span> cliente_id = <span class="sql-number">10</span>;</code></pre>
+
+
+            <p>
+                No PostgreSQL, por exemplo, o resultado pode apresentar
+                informações como:
+            </p>
+
+
+            <ul>
+
+                <li>
+                    Tipo de operação executada.
+                </li>
+
+                <li>
+                    Estimativas de custo.
+                </li>
+
+                <li>
+                    Quantidade estimada e real de linhas.
+                </li>
+
+                <li>
+                    Tempo de execução.
+                </li>
+
+                <li>
+                    Uso de índices.
+                </li>
+
+            </ul>
+
+        </section>
+
+
+        <!-- =====================================================
+             SEQ SCAN
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Sequential Scan
+            </h2>
+
+            <p>
+                Um <strong>Sequential Scan</strong>, também chamado
+                de varredura sequencial, ocorre quando o SGBD percorre
+                as páginas da tabela para encontrar os registros
+                relevantes.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>Importante:</strong>
+
+                <p>
+                    Sequential Scan não significa necessariamente
+                    que a consulta está mal otimizada.
+                </p>
+
+                <p>
+                    Para tabelas pequenas ou consultas que precisam
+                    retornar uma grande parte dos registros, uma
+                    varredura sequencial pode ser uma escolha adequada.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             INDEX SCAN
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Index Scan
+            </h2>
+
+            <p>
+                Em um <strong>Index Scan</strong>, o SGBD utiliza
+                um índice para localizar os registros necessários.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">CREATE INDEX</span> idx_clientes_email
+<span class="sql-keyword">ON</span> clientes (email);</code></pre>
+
+
+            <p>
+                Uma consulta por e-mail pode então ter um plano
+                que utilize esse índice, dependendo das estatísticas
+                e do custo estimado.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             INDEX ONLY SCAN
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Index Only Scan
+            </h2>
+
+            <p>
+                Alguns SGBDs, como o PostgreSQL, possuem estratégias
+                nas quais determinadas consultas podem obter os dados
+                necessários diretamente a partir do índice, quando
+                todas as informações relevantes estão disponíveis
+                nele e as demais condições são satisfeitas.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>Ideia:</strong>
+
+                <p>
+                    Se a consulta precisa apenas de informações
+                    presentes no índice, pode ser possível evitar
+                    parte do acesso à tabela.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             SELECT *
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Evite usar SELECT * sem necessidade
+            </h2>
+
+            <p>
+                Compare:
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span> *
+<span class="sql-keyword">FROM</span> clientes
+<span class="sql-keyword">WHERE</span> id = <span class="sql-number">10</span>;</code></pre>
+
+
+            <p>
+                com:
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span> nome, email
+<span class="sql-keyword">FROM</span> clientes
+<span class="sql-keyword">WHERE</span> id = <span class="sql-number">10</span>;</code></pre>
+
+
+            <p>
+                Selecionar somente as colunas necessárias pode tornar
+                o código mais claro e, em determinados cenários,
+                reduzir a quantidade de dados transferidos ou processados.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>Mas atenção:</strong>
+
+                <p>
+                    Evitar SELECT * é uma boa prática de clareza e
+                    controle de dados, mas não significa que essa
+                    mudança, sozinha, sempre produzirá uma grande
+                    melhoria de performance.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             WHERE
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Use filtros adequados
+            </h2>
+
+            <p>
+                Sempre que possível, faça a consulta retornar
+                somente os dados necessários.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span> nome, email
+<span class="sql-keyword">FROM</span> clientes
+<span class="sql-keyword">WHERE</span> cidade = <span class="sql-string">'Rio de Janeiro'</span>;</code></pre>
+
+
+            <p>
+                O banco ainda precisará executar o plano escolhido,
+                mas reduzir o conjunto de dados trabalhado pode ser
+                importante para a aplicação.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             FUNÇÕES EM WHERE
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Cuidado com funções nas colunas
+            </h2>
+
+            <p>
+                Algumas expressões podem dificultar o aproveitamento
+                de um índice, dependendo do SGBD e do índice disponível.
+            </p>
+
+
+            <p>
+                Por exemplo:
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span> *
+<span class="sql-keyword">FROM</span> clientes
+<span class="sql-keyword">WHERE</span> <span class="sql-keyword">LOWER</span>(email)
+      = <span class="sql-string">'ana@email.com'</span>;</code></pre>
+
+
+            <p>
+                Uma possibilidade, dependendo do SGBD, é utilizar
+                um índice apropriado para a expressão ou alterar
+                a estratégia de armazenamento e consulta.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>Regra importante:</strong>
+
+                <p>
+                    Não altere uma consulta apenas por uma "regra de internet".
+                    Analise o plano de execução e meça o comportamento
+                    no ambiente real.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             LIKE
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                LIKE e índices
+            </h2>
+
+            <p>
+                Consultas com <strong>LIKE</strong> podem ter
+                comportamentos diferentes dependendo do padrão utilizado,
+                do SGBD e do tipo de índice.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span> *
+<span class="sql-keyword">FROM</span> clientes
+<span class="sql-keyword">WHERE</span> nome <span class="sql-keyword">LIKE</span> <span class="sql-string">'Ana%'</span>;</code></pre>
+
+
+            <p>
+                Um padrão que começa com um valor conhecido pode
+                ter oportunidades de otimização diferentes de um
+                padrão que começa com um curinga.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">LIKE</span> <span class="sql-string">'%Ana%'</span></code></pre>
+
+
+            <div class="highlight">
+
+                <p>
+                    O comportamento exato depende do SGBD, collation,
+                    operador, índice e configuração utilizada.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             ORDENACAO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                ORDER BY e índices
+            </h2>
+
+            <p>
+                Índices também podem ser relevantes para consultas
+                que precisam ordenar resultados.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span> *
+<span class="sql-keyword">FROM</span> produtos
+<span class="sql-keyword">ORDER BY</span> preco;</code></pre>
+
+
+            <p>
+                Um índice adequado pode, em determinados cenários,
+                ajudar o SGBD a produzir os dados na ordem necessária.
+            </p>
+
+
+            <p>
+                Porém, novamente, a decisão depende do plano
+                de execução e do custo estimado.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             LIMIT
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                LIMIT e paginação
+            </h2>
+
+            <p>
+                Quando a aplicação precisa mostrar apenas uma parte
+                dos resultados, podemos utilizar mecanismos de
+                paginação.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span> id, nome
+<span class="sql-keyword">FROM</span> clientes
+<span class="sql-keyword">ORDER BY</span> id
+<span class="sql-keyword">LIMIT</span> <span class="sql-number">20</span>;</code></pre>
+
+
+            <p>
+                Para conjuntos muito grandes, paginação baseada em
+                um valor de referência pode ser uma alternativa
+                interessante.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span> id, nome
+<span class="sql-keyword">FROM</span> clientes
+<span class="sql-keyword">WHERE</span> id &gt; <span class="sql-number">1000</span>
+<span class="sql-keyword">ORDER BY</span> id
+<span class="sql-keyword">LIMIT</span> <span class="sql-number">20</span>;</code></pre>
+
+
+            <div class="highlight">
+
+                <strong>Importante:</strong>
+
+                <p>
+                    O uso de OFFSET em páginas muito profundas pode
+                    se tornar custoso em alguns cenários, porque o
+                    banco pode precisar percorrer e descartar muitas
+                    linhas antes de chegar ao resultado desejado.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             OFFSET
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                OFFSET
+            </h2>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span> id, nome
+<span class="sql-keyword">FROM</span> clientes
+<span class="sql-keyword">ORDER BY</span> id
+<span class="sql-keyword">LIMIT</span> <span class="sql-number">20</span>
+<span class="sql-keyword">OFFSET</span> <span class="sql-number">100000</span>;</code></pre>
+
+
+            <p>
+                Dependendo do banco e do plano, consultar páginas muito
+                distantes pode exigir trabalho significativo.
+            </p>
+
+
+            <p>
+                Uma alternativa é utilizar paginação baseada em cursor
+                ou em uma coluna ordenada.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span> id, nome
+<span class="sql-keyword">FROM</span> clientes
+<span class="sql-keyword">WHERE</span> id &gt; <span class="sql-number">100000</span>
+<span class="sql-keyword">ORDER BY</span> id
+<span class="sql-keyword">LIMIT</span> <span class="sql-number">20</span>;</code></pre>
+
+        </section>
+
+
+        <!-- =====================================================
+             JOINS
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Performance em JOINs
+            </h2>
+
+            <p>
+                Consultas com JOIN podem envolver grandes quantidades
+                de dados.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span>
+    p.id,
+    p.data_pedido,
+    c.nome
+<span class="sql-keyword">FROM</span> pedidos p
+<span class="sql-keyword">JOIN</span> clientes c
+    <span class="sql-keyword">ON</span> c.id = p.cliente_id;</code></pre>
+
+
+            <p>
+                Colunas utilizadas frequentemente em relacionamentos
+                podem precisar de índices apropriados, dependendo
+                das consultas e do plano escolhido.
+            </p>
+
+
+            <div class="highlight">
+
+                <p>
+                    Um JOIN não é necessariamente lento.
+                    O importante é analisar o plano de execução,
+                    cardinalidade, índices e quantidade de dados envolvidos.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             N+1
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                O problema N+1
+            </h2>
+
+            <p>
+                O problema <strong>N+1</strong> acontece quando
+                a aplicação executa uma consulta para obter uma
+                lista e depois executa uma nova consulta para
+                cada item dessa lista.
+            </p>
+
+
+            <p>
+                Por exemplo:
+            </p>
+
+
+            <pre><code>1 consulta → buscar pedidos
+
++ 100 consultas → buscar cliente de cada pedido
+
+= 101 consultas</code></pre>
+
+
+            <div class="highlight">
+
+                <strong>Possível alternativa:</strong>
+
+                <p>
+                    Em muitos casos, podemos utilizar um JOIN
+                    ou outra estratégia de carregamento de dados
+                    para reduzir a quantidade de viagens ao banco.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             ESTATÍSTICAS
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Estatísticas e otimizador
+            </h2>
+
+            <p>
+                O SGBD utiliza estatísticas sobre os dados para
+                estimar o custo de diferentes planos de execução.
+            </p>
+
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <div class="icon">
+                        📊
+                    </div>
+
+                    <h3>
+                        Estatísticas
+                    </h3>
+
+                    <p>
+                        Informações sobre distribuição e quantidade
+                        dos dados.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🧠
+                    </div>
+
+                    <h3>
+                        Otimizador
+                    </h3>
+
+                    <p>
+                        Compara estratégias possíveis para
+                        executar a consulta.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🗺️
+                    </div>
+
+                    <h3>
+                        Plano
+                    </h3>
+
+                    <p>
+                        Define como a consulta será executada.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <p>
+                Se as estatísticas estiverem desatualizadas,
+                o otimizador pode fazer estimativas menos precisas.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             OTIMIZAR NÃO É ADIVINHAR
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Otimização não é adivinhação
+            </h2>
+
+            <div class="highlight">
+
+                <p>
+                    Uma das principais ideias desta aula é:
+                </p>
+
+                <p>
+                    <strong>
+                        Não otimize apenas pelo que parece mais rápido.
+                        Meça e analise.
+                    </strong>
+                </p>
+
+            </div>
+
+
+            <p>
+                Uma boa estratégia é:
+            </p>
+
+
+            <ol>
+
+                <li>
+                    Identificar uma consulta lenta.
+                </li>
+
+                <li>
+                    Medir o comportamento atual.
+                </li>
+
+                <li>
+                    Analisar o plano de execução.
+                </li>
+
+                <li>
+                    Identificar o gargalo.
+                </li>
+
+                <li>
+                    Fazer uma alteração.
+                </li>
+
+                <li>
+                    Executar novamente a medição.
+                </li>
+
+                <li>
+                    Comparar os resultados.
+                </li>
+
+            </ol>
+
+        </section>
+
+
+        <!-- =====================================================
+             PROCESSO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Processo de otimização
+            </h2>
+
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <div class="icon">
+                        1️⃣
+                    </div>
+
+                    <h3>
+                        Medir
+                    </h3>
+
+                    <p>
+                        Descobrir quanto tempo a consulta
+                        realmente está levando.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        2️⃣
+                    </div>
+
+                    <h3>
+                        Analisar
+                    </h3>
+
+                    <p>
+                        Examinar o plano e identificar
+                        operações custosas.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        3️⃣
+                    </div>
+
+                    <h3>
+                        Alterar
+                    </h3>
+
+                    <p>
+                        Criar índice, modificar consulta
+                        ou ajustar a estrutura.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        4️⃣
+                    </div>
+
+                    <h3>
+                        Medir novamente
+                    </h3>
+
+                    <p>
+                        Confirmar se a mudança realmente
+                        melhorou o cenário.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             EXEMPLO COMPLETO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Exemplo completo
+            </h2>
+
+            <p>
+                Imagine uma tabela de pedidos:
+            </p>
+
+
+            <pre><code>pedidos
+
+id
+cliente_id
+data_pedido
+status
+valor</code></pre>
+
+
+            <p>
+                A aplicação realiza frequentemente:
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span> *
+<span class="sql-keyword">FROM</span> pedidos
+<span class="sql-keyword">WHERE</span> cliente_id = <span class="sql-number">10</span>
+<span class="sql-keyword">ORDER BY</span> data_pedido <span class="sql-keyword">DESC</span>;</code></pre>
+
+
+            <p>
+                Uma possibilidade seria estudar um índice composto:
+            </p>
+
+
+            <pre><code><span class="sql-keyword">CREATE INDEX</span> idx_pedidos_cliente_data
+<span class="sql-keyword">ON</span> pedidos (cliente_id, data_pedido);</code></pre>
+
+
+            <p>
+                Depois, podemos comparar o plano de execução antes
+                e depois da alteração.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>Processo correto:</strong>
+
+                <p>
+                    Não basta criar o índice.
+                    Precisamos verificar se ele realmente foi utilizado
+                    e se houve melhoria mensurável.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             ÍNDICES DESNECESSÁRIOS
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Quando não criar um índice?
+            </h2>
+
+
+            <p>
+                Um índice pode não ser interessante quando:
+            </p>
+
+
+            <ul>
+
+                <li>
+                    A tabela é muito pequena e uma varredura completa
+                    é suficientemente barata.
+                </li>
+
+                <li>
+                    A coluna possui baixa utilidade para as consultas
+                    realizadas.
+                </li>
+
+                <li>
+                    O índice não é utilizado pelos planos relevantes.
+                </li>
+
+                <li>
+                    O custo adicional nas operações de escrita
+                    supera o benefício obtido nas leituras.
+                </li>
+
+                <li>
+                    Já existe outro índice que atende às consultas
+                    necessárias.
+                </li>
+
+            </ul>
+
+
+            <div class="highlight">
+
+                <strong>Importante:</strong>
+
+                <p>
+                    Não existe uma quantidade universal de índices
+                    que seja "ideal" para todas as aplicações.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             CHECKLIST
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Checklist de performance
+            </h2>
+
+
+            <ul>
+
+                <li>
+                    🔍 A consulta realmente está lenta?
+                </li>
+
+                <li>
+                    🔍 Qual é o plano de execução?
+                </li>
+
+                <li>
+                    🔍 O filtro utiliza uma coluna adequada?
+                </li>
+
+                <li>
+                    🔍 Existe um índice relevante?
+                </li>
+
+                <li>
+                    🔍 O índice realmente é utilizado?
+                </li>
+
+                <li>
+                    🔍 O índice possui uma ordem adequada?
+                </li>
+
+                <li>
+                    🔍 A consulta está retornando dados demais?
+                </li>
+
+                <li>
+                    🔍 Existe um problema de N+1?
+                </li>
+
+                <li>
+                    🔍 As estatísticas estão atualizadas?
+                </li>
+
+                <li>
+                    🔍 A alteração melhorou o desempenho depois de medida?
+                </li>
+
+            </ul>
+
+        </section>
+
+
+        <!-- =====================================================
+             EXERCÍCIO 1
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🧪 Exercício 1 — Criando um índice
+            </h2>
+
+            <p>
+                Considere:
+            </p>
+
+
+            <pre><code>usuarios
+
+id
+nome
+email
+cidade</code></pre>
+
+
+            <p>
+                Crie um índice para acelerar buscas por
+                <strong>email</strong>.
+            </p>
+
+
+            <p>
+                Depois escreva uma consulta que procure
+                um usuário pelo e-mail.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             EXERCÍCIO 2
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🧪 Exercício 2 — Índice composto
+            </h2>
+
+            <p>
+                Considere:
+            </p>
+
+
+            <pre><code>pedidos
+
+id
+cliente_id
+data_pedido
+valor</code></pre>
+
+
+            <p>
+                Crie um índice composto para uma consulta
+                que frequentemente filtre por
+                <strong>cliente_id</strong> e ordene por
+                <strong>data_pedido</strong>.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             EXERCÍCIO 3
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🧪 Exercício 3 — EXPLAIN
+            </h2>
+
+            <p>
+                Escolha uma tabela do seu banco de estudos.
+            </p>
+
+
+            <p>
+                Execute uma consulta simples e utilize
+                <strong>EXPLAIN</strong> para analisar seu plano.
+            </p>
+
+
+            <p>
+                Procure identificar:
+            </p>
+
+
+            <ul>
+
+                <li>
+                    Qual operação de acesso à tabela foi utilizada?
+                </li>
+
+                <li>
+                    O banco utilizou algum índice?
+                </li>
+
+                <li>
+                    Quantas linhas foram estimadas?
+                </li>
+
+                <li>
+                    Qual foi o custo estimado?
+                </li>
+
+            </ul>
+
+        </section>
+
+
+        <!-- =====================================================
+             EXERCÍCIO 4
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🧪 Exercício 4 — Encontrando um problema
+            </h2>
+
+            <p>
+                Imagine que uma aplicação execute:
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span> *
+<span class="sql-keyword">FROM</span> clientes
+<span class="sql-keyword">WHERE</span> nome <span class="sql-keyword">LIKE</span> <span class="sql-string">'%Silva%'</span>;</code></pre>
+
+
+            <p>
+                Pesquise como o SGBD escolhido trata essa consulta
+                e explique por que um índice B-tree convencional
+                pode não ser suficiente para determinados padrões
+                iniciados por <strong>%</strong>.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             DESAFIO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🎯 Desafio da aula
+            </h2>
+
+            <p>
+                Crie uma tabela de pedidos com pelo menos
+                100.000 registros.
+            </p>
+
+
+            <p>
+                Depois:
+            </p>
+
+
+            <ol>
+
+                <li>
+                    Execute uma consulta filtrando por cliente.
+                </li>
+
+                <li>
+                    Analise o plano com EXPLAIN.
+                </li>
+
+                <li>
+                    Crie um índice adequado.
+                </li>
+
+                <li>
+                    Execute novamente a consulta.
+                </li>
+
+                <li>
+                    Compare os planos.
+                </li>
+
+                <li>
+                    Registre o que mudou.
+                </li>
+
+            </ol>
+
+
+            <div class="highlight">
+
+                <strong>Objetivo:</strong>
+
+                <p>
+                    Não é simplesmente "fazer o banco usar um índice".
+                </p>
+
+                <p>
+                    O objetivo é aprender a identificar quando um
+                    índice realmente resolve um problema de performance.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             MAPA MENTAL
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🧠 Mapa mental da aula
+            </h2>
+
+
+            <div class="highlight">
+
+                <p>
+                    <strong>ÍNDICE</strong>
+                    → estrutura auxiliar para acesso eficiente aos dados.
+                </p>
+
+                <p>
+                    <strong>B-TREE</strong>
+                    → estrutura de índice muito utilizada em bancos relacionais.
+                </p>
+
+                <p>
+                    <strong>ÍNDICE COMPOSTO</strong>
+                    → índice baseado em múltiplas colunas.
+                </p>
+
+                <p>
+                    <strong>EXPLAIN</strong>
+                    → mostra informações sobre o plano de execução.
+                </p>
+
+                <p>
+                    <strong>EXPLAIN ANALYZE</strong>
+                    → em SGBDs que suportam o recurso, executa a consulta
+                    e apresenta métricas observadas.
+                </p>
+
+                <p>
+                    <strong>OTIMIZAÇÃO</strong>
+                    → medir → analisar → alterar → medir novamente.
+                </p>
+
+                <p>
+                    <strong>N+1</strong>
+                    → muitas consultas desnecessárias geradas pela aplicação.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             RESUMO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Resumindo
+            </h2>
+
+
+            <div class="highlight">
+
+                <p>
+                    Um <strong>índice</strong> é uma estrutura auxiliar
+                    criada para tornar determinadas operações de acesso
+                    aos dados mais eficientes.
+                </p>
+
+                <p>
+                    Índices podem acelerar consultas, mas também ocupam
+                    espaço e aumentam o custo de determinadas operações
+                    de escrita.
+                </p>
+
+                <p>
+                    O <strong>otimizador</strong> escolhe um plano de
+                    execução com base em estimativas de custo e
+                    informações disponíveis.
+                </p>
+
+                <p>
+                    <strong>EXPLAIN</strong> ajuda a entender o plano
+                    escolhido pelo SGBD.
+                </p>
+
+                <p>
+                    Otimização deve ser baseada em
+                    <strong>medição e análise</strong>, não apenas
+                    em suposições.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             CHECKPOINT
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🧠 Você entendeu?
+            </h2>
+
+            <p>
+                Antes de avançar, tente responder:
+            </p>
+
+
+            <ul>
+
+                <li>
+                    O que é um índice?
+                </li>
+
+                <li>
+                    Por que um índice pode acelerar uma consulta?
+                </li>
+
+                <li>
+                    Por que não devemos criar índices em todas
+                    as colunas?
+                </li>
+
+                <li>
+                    O que é um índice composto?
+                </li>
+
+                <li>
+                    Por que a ordem das colunas em um índice composto
+                    importa?
+                </li>
+
+                <li>
+                    O que é EXPLAIN?
+                </li>
+
+                <li>
+                    Qual a diferença entre EXPLAIN e EXPLAIN ANALYZE
+                    nos SGBDs que oferecem ambos?
+                </li>
+
+                <li>
+                    O que é um Sequential Scan?
+                </li>
+
+                <li>
+                    O que é o problema N+1?
+                </li>
+
+                <li>
+                    Por que devemos medir o resultado de uma otimização?
+                </li>
+
+            </ul>
+
+        </section>
+
+
+        <!-- =====================================================
+             PRÓXIMA AULA
+        ====================================================== -->
+
+        <section class="cta">
+
+            <h2>
+                Aula 14 concluída!
+            </h2>
+
+            <p>
+                Agora você já conhece os fundamentos dos índices,
+                planos de execução e otimização de consultas SQL.
+            </p>
+
+            <p>
+                Na próxima aula, vamos aprofundar a análise de
+                performance com <strong>JOINs, agregações, subconsultas
+                e estratégias de consulta</strong>.
+            </p>
+
+
+            <a
+                href="./15.html"
+                class="cta-button">
+
+                Aula 15 →
+
+            </a>
+
+        </section>
+
+
+    </main>
+
+
+    <!-- =====================================================
+         FOOTER
+    ====================================================== -->
+
+    <footer>
+
+        <p>
+            Guia de Banco de Dados
+        </p>
+
+        <p>
+            Aula 14 • Índices e Otimização de Consultas SQL
+        </p>
+
+    </footer>
+
+
+    <!-- =====================================================
+         JAVASCRIPT — DARK / LIGHT MODE
+    ====================================================== -->
+
+    <script src="./script.js"></script>
+
+</body>
+
+</html>

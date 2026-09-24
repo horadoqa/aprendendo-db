@@ -1,0 +1,1965 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="./style.css">
+
+    <link rel="icon" type="image/png" href="./assets/images/logo.png">
+
+    <title>Aula 15 — Revisão e Consolidação de SQL</title>
+
+</head>
+
+<body>
+
+
+    <!-- =====================================================
+         HEADER
+    ====================================================== -->
+
+    <header>
+
+        <button
+            class="theme-toggle"
+            id="themeToggle"
+            type="button"
+            aria-label="Alternar tema">
+
+            <span class="theme-icon" id="themeIcon">
+                ☀️
+            </span>
+
+            <span class="theme-label" id="themeLabel">
+                Modo claro
+            </span>
+
+        </button>
+
+
+        <div class="header-content">
+
+            <span class="eyebrow">
+                AULA 15 • ENCERRAMENTO DO MÓDULO SQL
+            </span>
+
+            <h1>
+                Revisão e Consolidação de SQL
+            </h1>
+
+            <p>
+                Vamos revisar os principais conceitos estudados até aqui,
+                conectar as peças e preparar a transição de SQL para NoSQL.
+            </p>
+
+        </div>
+
+    </header>
+
+
+    <!-- =====================================================
+         CONTEÚDO
+    ====================================================== -->
+
+    <main>
+
+
+        <!-- =====================================================
+             OBJETIVOS
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🎯 Objetivos da aula
+            </h2>
+
+            <p>
+                Esta aula não apresenta um novo conjunto de comandos.
+                O objetivo é consolidar o conhecimento adquirido
+                durante o módulo de bancos de dados relacionais.
+            </p>
+
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <div class="icon">
+                        🧠
+                    </div>
+
+                    <h3>
+                        Revisar
+                    </h3>
+
+                    <p>
+                        Relembrar os principais conceitos
+                        de SQL e bancos relacionais.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🔗
+                    </div>
+
+                    <h3>
+                        Conectar
+                    </h3>
+
+                    <p>
+                        Entender como os conceitos estudados
+                        trabalham juntos.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🛠️
+                    </div>
+
+                    <h3>
+                        Praticar
+                    </h3>
+
+                    <p>
+                        Resolver um pequeno projeto utilizando
+                        SQL de forma integrada.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🚀
+                    </div>
+
+                    <h3>
+                        Preparar
+                    </h3>
+
+                    <p>
+                        Criar uma base sólida para começar
+                        o estudo de NoSQL.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             O QUE FOI ESTUDADO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                O que aprendemos até aqui?
+            </h2>
+
+            <p>
+                Durante as aulas anteriores, construímos nosso conhecimento
+                partindo dos fundamentos até chegar a conceitos importantes
+                de consultas, modelagem e performance.
+            </p>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Conceito
+                            </th>
+
+                            <th>
+                                O que significa
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>
+                                Banco de dados
+                            </td>
+
+                            <td>
+                                Estrutura organizada para armazenar e
+                                gerenciar informações.
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                SGBD
+                            </td>
+
+                            <td>
+                                Software responsável por gerenciar
+                                bancos de dados.
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                SQL
+                            </td>
+
+                            <td>
+                                Linguagem utilizada para trabalhar
+                                com bancos relacionais.
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Tabela
+                            </td>
+
+                            <td>
+                                Estrutura utilizada para organizar
+                                dados em linhas e colunas.
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Primary Key
+                            </td>
+
+                            <td>
+                                Identifica unicamente um registro.
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Foreign Key
+                            </td>
+
+                            <td>
+                                Representa um relacionamento entre
+                                registros de tabelas.
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                JOIN
+                            </td>
+
+                            <td>
+                                Permite combinar dados de diferentes
+                                tabelas.
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Transação
+                            </td>
+
+                            <td>
+                                Agrupamento de operações tratado
+                                como uma unidade lógica.
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                ACID
+                            </td>
+
+                            <td>
+                                Propriedades importantes para
+                                transações confiáveis.
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Índice
+                            </td>
+
+                            <td>
+                                Estrutura auxiliar que pode melhorar
+                                determinadas consultas.
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                EXPLAIN
+                            </td>
+
+                            <td>
+                                Ferramenta para analisar o plano
+                                de execução de uma consulta.
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             CRUD
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                CRUD: as quatro operações fundamentais
+            </h2>
+
+            <p>
+                Uma grande parte das aplicações realiza quatro tipos
+                básicos de operações sobre os dados.
+            </p>
+
+
+            <div class="cards">
+
+                <div class="card crud-card create">
+
+                    <h3>
+                        🟢 CREATE
+                    </h3>
+
+                    <p>
+                        Criar novos registros.
+                    </p>
+
+                    <pre><code><span class="sql-keyword">INSERT INTO</span> usuarios
+(nome, email)
+<span class="sql-keyword">VALUES</span>
+(<span class="sql-string">'Ana'</span>, <span class="sql-string">'ana@email.com'</span>);</code></pre>
+
+                </div>
+
+
+                <div class="card crud-card read">
+
+                    <h3>
+                        🔵 READ
+                    </h3>
+
+                    <p>
+                        Consultar registros.
+                    </p>
+
+                    <pre><code><span class="sql-keyword">SELECT</span> *
+<span class="sql-keyword">FROM</span> usuarios;</code></pre>
+
+                </div>
+
+
+                <div class="card crud-card update">
+
+                    <h3>
+                        🟡 UPDATE
+                    </h3>
+
+                    <p>
+                        Alterar registros existentes.
+                    </p>
+
+                    <pre><code><span class="sql-keyword">UPDATE</span> usuarios
+<span class="sql-keyword">SET</span> nome = <span class="sql-string">'Maria'</span>
+<span class="sql-keyword">WHERE</span> id = <span class="sql-number">1</span>;</code></pre>
+
+                </div>
+
+
+                <div class="card crud-card delete">
+
+                    <h3>
+                        🔴 DELETE
+                    </h3>
+
+                    <p>
+                        Remover registros.
+                    </p>
+
+                    <pre><code><span class="sql-keyword">DELETE FROM</span> usuarios
+<span class="sql-keyword">WHERE</span> id = <span class="sql-number">1</span>;</code></pre>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             SELECT
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                SELECT: consultando dados
+            </h2>
+
+            <p>
+                O comando SELECT é uma das operações mais importantes
+                do SQL.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span>
+    nome,
+    email
+<span class="sql-keyword">FROM</span> clientes;</code></pre>
+
+
+            <p>
+                Podemos adicionar filtros:
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span>
+    nome,
+    email
+<span class="sql-keyword">FROM</span> clientes
+<span class="sql-keyword">WHERE</span> cidade = <span class="sql-string">'Rio de Janeiro'</span>;</code></pre>
+
+
+            <p>
+                E também ordenar:
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span>
+    nome,
+    email
+<span class="sql-keyword">FROM</span> clientes
+<span class="sql-keyword">WHERE</span> cidade = <span class="sql-string">'Rio de Janeiro'</span>
+<span class="sql-keyword">ORDER BY</span> nome;</code></pre>
+
+        </section>
+
+
+        <!-- =====================================================
+             JOINS
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🔗 JOIN: relacionando tabelas
+            </h2>
+
+            <p>
+                Em bancos relacionais, os dados normalmente são
+                distribuídos entre diferentes tabelas.
+            </p>
+
+
+            <p>
+                Por exemplo:
+            </p>
+
+
+            <pre><code>clientes
+
+id
+nome
+
+
+pedidos
+
+id
+cliente_id
+valor</code></pre>
+
+
+            <p>
+                Podemos relacionar essas informações utilizando JOIN.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span>
+    clientes.nome,
+    pedidos.valor
+<span class="sql-keyword">FROM</span> clientes
+
+<span class="sql-keyword">JOIN</span> pedidos
+    <span class="sql-keyword">ON</span> pedidos.cliente_id = clientes.id;</code></pre>
+
+
+            <div class="highlight">
+
+                <strong>Ideia fundamental:</strong>
+
+                <p>
+                    O JOIN permite combinar informações relacionadas
+                    que estão armazenadas em diferentes tabelas.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             GROUP BY
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                📊 GROUP BY e agregações
+            </h2>
+
+            <p>
+                SQL também permite realizar cálculos sobre conjuntos
+                de registros.
+            </p>
+
+
+            <p>
+                Algumas funções importantes:
+            </p>
+
+
+            <ul>
+
+                <li>
+                    <strong>COUNT()</strong> — quantidade de registros.
+                </li>
+
+                <li>
+                    <strong>SUM()</strong> — soma.
+                </li>
+
+                <li>
+                    <strong>AVG()</strong> — média.
+                </li>
+
+                <li>
+                    <strong>MIN()</strong> — menor valor.
+                </li>
+
+                <li>
+                    <strong>MAX()</strong> — maior valor.
+                </li>
+
+            </ul>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span>
+    cliente_id,
+    <span class="sql-keyword">COUNT</span>(*) <span class="sql-keyword">AS</span> quantidade_pedidos
+<span class="sql-keyword">FROM</span> pedidos
+<span class="sql-keyword">GROUP BY</span> cliente_id;</code></pre>
+
+
+            <p>
+                Podemos ainda filtrar grupos utilizando HAVING:
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span>
+    cliente_id,
+    <span class="sql-keyword">COUNT</span>(*) <span class="sql-keyword">AS</span> quantidade
+<span class="sql-keyword">FROM</span> pedidos
+<span class="sql-keyword">GROUP BY</span> cliente_id
+<span class="sql-keyword">HAVING</span> <span class="sql-keyword">COUNT</span>(*) &gt; <span class="sql-number">5</span>;</code></pre>
+
+        </section>
+
+
+        <!-- =====================================================
+             SUBQUERY
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Subconsultas
+            </h2>
+
+            <p>
+                Uma consulta SQL pode utilizar outra consulta como
+                parte da sua operação.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span> nome
+<span class="sql-keyword">FROM</span> clientes
+<span class="sql-keyword">WHERE</span> id <span class="sql-keyword">IN</span> (
+
+    <span class="sql-keyword">SELECT</span> cliente_id
+    <span class="sql-keyword">FROM</span> pedidos
+    <span class="sql-keyword">WHERE</span> valor &gt; <span class="sql-number">1000</span>
+
+);</code></pre>
+
+
+            <p>
+                Subconsultas podem ser úteis, mas também é importante
+                conhecer outras estratégias, como JOINs e CTEs,
+                dependendo do problema.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             CTE
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                CTE — Common Table Expression
+            </h2>
+
+            <p>
+                Uma CTE permite criar uma consulta temporária dentro
+                de outra consulta utilizando a cláusula WITH.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">WITH</span> pedidos_grandes <span class="sql-keyword">AS</span> (
+
+    <span class="sql-keyword">SELECT</span> *
+    <span class="sql-keyword">FROM</span> pedidos
+    <span class="sql-keyword">WHERE</span> valor &gt; <span class="sql-number">1000</span>
+
+)
+
+<span class="sql-keyword">SELECT</span> *
+<span class="sql-keyword">FROM</span> pedidos_grandes;</code></pre>
+
+
+            <p>
+                CTEs podem ajudar na organização e legibilidade
+                de consultas mais complexas.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             CONSTRAINTS
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🔒 Constraints
+            </h2>
+
+            <p>
+                Constraints são regras utilizadas para garantir
+                a integridade dos dados.
+            </p>
+
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <h3>
+                        PRIMARY KEY
+                    </h3>
+
+                    <p>
+                        Identifica unicamente cada registro.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        FOREIGN KEY
+                    </h3>
+
+                    <p>
+                        Representa um relacionamento entre tabelas.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        UNIQUE
+                    </h3>
+
+                    <p>
+                        Impede duplicidade conforme a regra definida.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        NOT NULL
+                    </h3>
+
+                    <p>
+                        Impede valores nulos naquela coluna.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        CHECK
+                    </h3>
+
+                    <p>
+                        Permite definir uma condição que os dados
+                        precisam respeitar.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             MODELAGEM
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🧩 Modelagem de dados
+            </h2>
+
+            <p>
+                Antes de escrever consultas, precisamos pensar
+                em como os dados serão organizados.
+            </p>
+
+
+            <p>
+                Em um modelo relacional, normalmente identificamos:
+            </p>
+
+
+            <ul>
+
+                <li>
+                    Entidades.
+                </li>
+
+                <li>
+                    Atributos.
+                </li>
+
+                <li>
+                    Relacionamentos.
+                </li>
+
+                <li>
+                    Chaves primárias.
+                </li>
+
+                <li>
+                    Chaves estrangeiras.
+                </li>
+
+                <li>
+                    Regras de integridade.
+                </li>
+
+            </ul>
+
+
+            <div class="highlight">
+
+                <strong>Exemplo:</strong>
+
+                <p>
+                    Um sistema de vendas pode possuir as entidades
+                    Cliente, Produto e Pedido.
+                </p>
+
+                <p>
+                    O pedido pode estar relacionado a um cliente
+                    e possuir vários produtos.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             NORMALIZAÇÃO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Normalização
+            </h2>
+
+            <p>
+                A normalização é um conjunto de princípios utilizados
+                para organizar os dados e reduzir determinados tipos
+                de redundância e anomalias.
+            </p>
+
+
+            <p>
+                Entre os conceitos estudados estão:
+            </p>
+
+
+            <ul>
+
+                <li>
+                    1ª Forma Normal.
+                </li>
+
+                <li>
+                    2ª Forma Normal.
+                </li>
+
+                <li>
+                    3ª Forma Normal.
+                </li>
+
+            </ul>
+
+
+            <div class="highlight">
+
+                <p>
+                    Normalizar não significa simplesmente "separar
+                    tudo em várias tabelas".
+                </p>
+
+                <p>
+                    É necessário entender dependências e regras
+                    do domínio da aplicação.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             TRANSAÇÕES
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                💳 Transações
+            </h2>
+
+            <p>
+                Uma transação agrupa operações que devem ser tratadas
+                como uma unidade lógica.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">BEGIN</span>;
+
+<span class="sql-keyword">UPDATE</span> contas
+<span class="sql-keyword">SET</span> saldo = saldo - <span class="sql-number">100</span>
+<span class="sql-keyword">WHERE</span> id = <span class="sql-number">1</span>;
+
+<span class="sql-keyword">UPDATE</span> contas
+<span class="sql-keyword">SET</span> saldo = saldo + <span class="sql-number">100</span>
+<span class="sql-keyword">WHERE</span> id = <span class="sql-number">2</span>;
+
+<span class="sql-keyword">COMMIT</span>;</code></pre>
+
+
+            <p>
+                Caso algo dê errado antes do commit, podemos utilizar
+                ROLLBACK para desfazer as alterações da transação.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">ROLLBACK</span>;</code></pre>
+
+        </section>
+
+
+        <!-- =====================================================
+             ACID
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                ACID
+            </h2>
+
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <h3>
+                        A — Atomicidade
+                    </h3>
+
+                    <p>
+                        A transação é tratada como uma unidade:
+                        ela é efetivada ou revertida.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        C — Consistência
+                    </h3>
+
+                    <p>
+                        A transação deve preservar as regras
+                        de integridade do banco.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        I — Isolamento
+                    </h3>
+
+                    <p>
+                        Transações concorrentes possuem regras
+                        que controlam a interação entre elas.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        D — Durabilidade
+                    </h3>
+
+                    <p>
+                        Após uma confirmação bem-sucedida,
+                        os dados devem sobreviver às condições
+                        previstas pelo sistema.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             CONCORRÊNCIA
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🔐 Concorrência
+            </h2>
+
+            <p>
+                Em aplicações reais, várias operações podem acontecer
+                simultaneamente.
+            </p>
+
+
+            <p>
+                O SGBD precisa controlar situações como:
+            </p>
+
+
+            <ul>
+
+                <li>
+                    Leituras concorrentes.
+                </li>
+
+                <li>
+                    Atualizações simultâneas.
+                </li>
+
+                <li>
+                    Locks.
+                </li>
+
+                <li>
+                    Conflitos entre transações.
+                </li>
+
+                <li>
+                    Deadlocks.
+                </li>
+
+            </ul>
+
+
+            <div class="highlight">
+
+                <strong>Objetivo:</strong>
+
+                <p>
+                    Permitir concorrência sem comprometer
+                    a integridade dos dados.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             ÍNDICES
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                ⚡ Índices e performance
+            </h2>
+
+            <p>
+                Índices podem acelerar determinadas consultas,
+                mas possuem custos de armazenamento e manutenção.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">CREATE INDEX</span> idx_clientes_email
+<span class="sql-keyword">ON</span> clientes (email);</code></pre>
+
+
+            <p>
+                Para investigar a execução de uma consulta,
+                podemos utilizar ferramentas como EXPLAIN.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">EXPLAIN</span>
+<span class="sql-keyword">SELECT</span> *
+<span class="sql-keyword">FROM</span> clientes
+<span class="sql-keyword">WHERE</span> email = <span class="sql-string">'ana@email.com'</span>;</code></pre>
+
+
+            <div class="highlight">
+
+                <strong>Regra importante:</strong>
+
+                <p>
+                    Performance deve ser medida e analisada.
+                    Não devemos criar índices ou alterar consultas
+                    apenas com base em suposições.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             PROJETO FINAL SQL
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🛠️ Projeto de encerramento do módulo SQL
+            </h2>
+
+            <p>
+                Agora vamos juntar os conceitos estudados em
+                um pequeno sistema de vendas.
+            </p>
+
+
+            <h3>
+                Entidades
+            </h3>
+
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <h3>
+                        👤 Clientes
+                    </h3>
+
+                    <p>
+                        id, nome, email, cidade
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        📦 Produtos
+                    </h3>
+
+                    <p>
+                        id, nome, preço, estoque
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        🛒 Pedidos
+                    </h3>
+
+                    <p>
+                        id, cliente_id, data, status
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        📋 Itens do pedido
+                    </h3>
+
+                    <p>
+                        pedido_id, produto_id, quantidade, preço
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             DESAFIO PROJETO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🎯 Desafio final de SQL
+            </h2>
+
+            <p>
+                Crie o banco de dados de uma pequena loja.
+            </p>
+
+
+            <p>
+                O projeto deve possuir pelo menos:
+            </p>
+
+
+            <ul>
+
+                <li>
+                    Tabela de clientes.
+                </li>
+
+                <li>
+                    Tabela de produtos.
+                </li>
+
+                <li>
+                    Tabela de pedidos.
+                </li>
+
+                <li>
+                    Tabela de itens do pedido.
+                </li>
+
+                <li>
+                    Primary Keys.
+                </li>
+
+                <li>
+                    Foreign Keys.
+                </li>
+
+                <li>
+                    Constraints apropriadas.
+                </li>
+
+                <li>
+                    Índices relevantes.
+                </li>
+
+            </ul>
+
+
+            <h3>
+                Depois implemente:
+            </h3>
+
+
+            <ol>
+
+                <li>
+                    Cadastro de clientes.
+                </li>
+
+                <li>
+                    Cadastro de produtos.
+                </li>
+
+                <li>
+                    Criação de pedidos.
+                </li>
+
+                <li>
+                    Consulta de pedidos de um cliente.
+                </li>
+
+                <li>
+                    Consulta dos produtos mais vendidos.
+                </li>
+
+                <li>
+                    Soma do valor dos pedidos.
+                </li>
+
+                <li>
+                    Consulta de clientes que nunca fizeram pedidos.
+                </li>
+
+                <li>
+                    Atualização do estoque.
+                </li>
+
+                <li>
+                    Uma transação para registrar um pedido.
+                </li>
+
+                <li>
+                    Análise de pelo menos uma consulta utilizando EXPLAIN.
+                </li>
+
+            </ol>
+
+        </section>
+
+
+        <!-- =====================================================
+             DESAFIO CONSULTAS
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🧪 Desafio de consultas
+            </h2>
+
+            <p>
+                Tente escrever as consultas abaixo sem consultar
+                exemplos prontos.
+            </p>
+
+
+            <ol>
+
+                <li>
+                    Liste todos os clientes.
+                </li>
+
+                <li>
+                    Liste todos os produtos com estoque menor que 10.
+                </li>
+
+                <li>
+                    Liste os pedidos de determinado cliente.
+                </li>
+
+                <li>
+                    Calcule o total vendido.
+                </li>
+
+                <li>
+                    Calcule o total vendido por cliente.
+                </li>
+
+                <li>
+                    Encontre o produto mais vendido.
+                </li>
+
+                <li>
+                    Encontre clientes que nunca fizeram pedidos.
+                </li>
+
+                <li>
+                    Liste os cinco produtos mais caros.
+                </li>
+
+                <li>
+                    Conte quantos pedidos existem por cliente.
+                </li>
+
+                <li>
+                    Encontre clientes que fizeram mais de cinco pedidos.
+                </li>
+
+            </ol>
+
+        </section>
+
+
+        <!-- =====================================================
+             O QUE VOCÊ DEVE DOMINAR
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                ✅ O que você deve dominar antes de seguir para NoSQL
+            </h2>
+
+
+            <div class="highlight">
+
+                <p>
+                    Você não precisa memorizar todos os comandos SQL.
+                </p>
+
+                <p>
+                    O mais importante é compreender os conceitos
+                    e conseguir pesquisar a sintaxe necessária.
+                </p>
+
+            </div>
+
+
+            <ul>
+
+                <li>
+                    ✔️ Entender o que é um banco de dados.
+                </li>
+
+                <li>
+                    ✔️ Diferenciar banco de dados, SGBD e aplicação.
+                </li>
+
+                <li>
+                    ✔️ Entender o modelo relacional.
+                </li>
+
+                <li>
+                    ✔️ Criar tabelas.
+                </li>
+
+                <li>
+                    ✔️ Definir Primary Keys.
+                </li>
+
+                <li>
+                    ✔️ Definir Foreign Keys.
+                </li>
+
+                <li>
+                    ✔️ Utilizar INSERT, SELECT, UPDATE e DELETE.
+                </li>
+
+                <li>
+                    ✔️ Utilizar WHERE e ORDER BY.
+                </li>
+
+                <li>
+                    ✔️ Utilizar JOIN.
+                </li>
+
+                <li>
+                    ✔️ Utilizar GROUP BY e funções de agregação.
+                </li>
+
+                <li>
+                    ✔️ Entender subconsultas e CTEs.
+                </li>
+
+                <li>
+                    ✔️ Entender constraints.
+                </li>
+
+                <li>
+                    ✔️ Entender normalização.
+                </li>
+
+                <li>
+                    ✔️ Entender transações.
+                </li>
+
+                <li>
+                    ✔️ Entender ACID.
+                </li>
+
+                <li>
+                    ✔️ Compreender concorrência e locks.
+                </li>
+
+                <li>
+                    ✔️ Entender a finalidade dos índices.
+                </li>
+
+                <li>
+                    ✔️ Utilizar EXPLAIN para investigar consultas.
+                </li>
+
+            </ul>
+
+        </section>
+
+
+        <!-- =====================================================
+             SQL NÃO É BANCO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Uma última distinção importante
+            </h2>
+
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <div class="icon">
+                        🗄️
+                    </div>
+
+                    <h3>
+                        Banco de dados
+                    </h3>
+
+                    <p>
+                        É o conjunto organizado de dados
+                        que precisa ser armazenado e gerenciado.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        ⚙️
+                    </div>
+
+                    <h3>
+                        SGBD
+                    </h3>
+
+                    <p>
+                        É o software responsável por gerenciar
+                        o armazenamento, acesso e operações sobre
+                        os dados.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        💻
+                    </div>
+
+                    <h3>
+                        Aplicação
+                    </h3>
+
+                    <p>
+                        É o software utilizado pelos usuários
+                        ou por outros sistemas para realizar
+                        operações e utilizar os dados.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🔤
+                    </div>
+
+                    <h3>
+                        SQL
+                    </h3>
+
+                    <p>
+                        É uma linguagem utilizada para consultar
+                        e manipular dados em bancos relacionais.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             SQL X NOSQL
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                SQL e NoSQL: por que estudar os dois?
+            </h2>
+
+            <p>
+                SQL e NoSQL não devem ser vistos simplesmente como
+                tecnologias concorrentes em que uma precisa substituir
+                a outra.
+            </p>
+
+
+            <p>
+                Eles representam diferentes modelos e ferramentas
+                para trabalhar com dados.
+            </p>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                SQL
+                            </th>
+
+                            <th>
+                                NoSQL
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>
+                                Forte uso do modelo relacional.
+                            </td>
+
+                            <td>
+                                Pode utilizar diferentes modelos
+                                de dados.
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Tabelas e relacionamentos.
+                            </td>
+
+                            <td>
+                                Documentos, chave-valor, grafos,
+                                colunas largas etc.
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                SQL é uma linguagem padronizada
+                                com implementações específicas.
+                            </td>
+
+                            <td>
+                                As APIs e linguagens de consulta
+                                variam conforme o SGBD.
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Pode utilizar transações complexas
+                                e relacionamentos.
+                            </td>
+
+                            <td>
+                                Pode ser adequado para determinados
+                                modelos de dados e padrões de acesso.
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+            <div class="highlight">
+
+                <strong>O objetivo deste curso:</strong>
+
+                <p>
+                    Não é decorar que "SQL é melhor" ou que
+                    "NoSQL é melhor".
+                </p>
+
+                <p>
+                    É aprender a identificar as características
+                    de cada modelo e compreender quais problemas
+                    cada tecnologia pode resolver.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             TRANSIÇÃO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🚀 Próxima etapa: NoSQL
+            </h2>
+
+            <p>
+                Até aqui trabalhamos principalmente com o
+                <strong>modelo relacional</strong>.
+            </p>
+
+            <p>
+                Agora vamos mudar nossa perspectiva.
+            </p>
+
+
+            <div class="highlight">
+
+                <p>
+                    Em vez de pensar apenas em:
+                </p>
+
+                <p>
+                    <strong>
+                        tabelas → linhas → colunas → relacionamentos
+                    </strong>
+                </p>
+
+
+                <p>
+                    vamos começar a pensar também em:
+                </p>
+
+                <p>
+                    <strong>
+                        documentos → coleções → chave-valor →
+                        agregados → distribuição
+                    </strong>
+                </p>
+
+            </div>
+
+
+            <p>
+                Na próxima aula começaremos oficialmente
+                o módulo de <strong>NoSQL</strong>.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             RESUMO FINAL
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🧠 Resumo do módulo SQL
+            </h2>
+
+
+            <div class="highlight">
+
+                <p>
+                    <strong>Banco relacional</strong>
+                    → organiza dados em estruturas relacionadas.
+                </p>
+
+                <p>
+                    <strong>SQL</strong>
+                    → linguagem utilizada para trabalhar
+                    com dados relacionais.
+                </p>
+
+                <p>
+                    <strong>Modelagem</strong>
+                    → define como os dados serão organizados.
+                </p>
+
+                <p>
+                    <strong>Constraints</strong>
+                    → ajudam a proteger a integridade dos dados.
+                </p>
+
+                <p>
+                    <strong>JOIN</strong>
+                    → combina informações relacionadas.
+                </p>
+
+                <p>
+                    <strong>Transações</strong>
+                    → agrupam operações em uma unidade lógica.
+                </p>
+
+                <p>
+                    <strong>ACID</strong>
+                    → define propriedades importantes para
+                    transações confiáveis.
+                </p>
+
+                <p>
+                    <strong>Índices</strong>
+                    → podem melhorar determinadas operações de acesso.
+                </p>
+
+                <p>
+                    <strong>EXPLAIN</strong>
+                    → ajuda a investigar como uma consulta é executada.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             CHECKPOINT
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🧠 Checkpoint
+            </h2>
+
+            <p>
+                Antes de começar NoSQL, tente explicar com suas
+                próprias palavras:
+            </p>
+
+
+            <ol>
+
+                <li>
+                    O que é um banco de dados relacional?
+                </li>
+
+                <li>
+                    O que é SQL?
+                </li>
+
+                <li>
+                    O que é um SGBD?
+                </li>
+
+                <li>
+                    Qual é a função de uma Primary Key?
+                </li>
+
+                <li>
+                    Qual é a função de uma Foreign Key?
+                </li>
+
+                <li>
+                    Para que serve um JOIN?
+                </li>
+
+                <li>
+                    O que é uma transação?
+                </li>
+
+                <li>
+                    O que significa ACID?
+                </li>
+
+                <li>
+                    Para que serve um índice?
+                </li>
+
+                <li>
+                    Para que serve EXPLAIN?
+                </li>
+
+                <li>
+                    Qual é a diferença entre dados e a aplicação
+                    que utiliza esses dados?
+                </li>
+
+            </ol>
+
+        </section>
+
+
+        <!-- =====================================================
+             CTA
+        ====================================================== -->
+
+        <section class="cta">
+
+            <h2>
+                🎓 Módulo SQL concluído!
+            </h2>
+
+            <p>
+                Você construiu a base necessária para trabalhar
+                com bancos relacionais e SQL.
+            </p>
+
+            <p>
+                Agora vamos mudar o modelo mental e começar
+                a explorar o universo <strong>NoSQL</strong>.
+            </p>
+
+
+            <a
+                href="./16.html"
+                class="cta-button">
+
+                Aula 16 — Introdução ao NoSQL →
+
+            </a>
+
+        </section>
+
+
+    </main>
+
+
+    <!-- =====================================================
+         FOOTER
+    ====================================================== -->
+
+    <footer>
+
+        <p>
+            Guia de Banco de Dados
+        </p>
+
+        <p>
+            Aula 15 • Encerramento do módulo SQL
+        </p>
+
+    </footer>
+
+
+    <!-- =====================================================
+         JAVASCRIPT — DARK / LIGHT MODE
+    ====================================================== -->
+
+    <script src="./script.js"></script>
+
+</body>
+
+</html>

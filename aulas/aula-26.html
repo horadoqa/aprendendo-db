@@ -1,0 +1,1555 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="./style.css">
+
+    <link rel="icon" type="image/png" href="./assets/images/logo.png">
+
+    <title>Aula 25 — Relacionamentos no MongoDB</title>
+
+</head>
+
+<body>
+
+
+    <!-- =====================================================
+         HEADER
+    ====================================================== -->
+
+    <header>
+
+        <button
+            class="theme-toggle"
+            id="themeToggle"
+            type="button"
+            aria-label="Alternar tema">
+
+            <span class="theme-icon" id="themeIcon">
+                ☀️
+            </span>
+
+            <span class="theme-label" id="themeLabel">
+                Modo claro
+            </span>
+
+        </button>
+
+
+        <div class="header-content">
+
+            <span class="eyebrow">
+                AULA 25 • MONGODB
+            </span>
+
+            <h1>
+                Relacionamentos no MongoDB
+            </h1>
+
+            <p>
+                Aprenda como representar relacionamentos 1:1, 1:N e N:N
+                usando documentos incorporados e referências.
+            </p>
+
+        </div>
+
+    </header>
+
+
+    <!-- =====================================================
+         CONTEÚDO
+    ====================================================== -->
+
+    <main>
+
+
+        <!-- =====================================================
+             OBJETIVOS
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🎯 Objetivos da aula
+            </h2>
+
+            <p>
+                Na Aula 24 aprendemos que a modelagem no MongoDB deve
+                considerar a forma como a aplicação acessa os dados.
+            </p>
+
+            <p>
+                Agora vamos estudar como representar diferentes tipos
+                de relacionamento entre documentos.
+            </p>
+
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <div class="icon">
+                        1️⃣
+                    </div>
+
+                    <h3>
+                        1:1
+                    </h3>
+
+                    <p>
+                        Um documento relacionado a apenas um outro documento.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        1️⃣
+                    </div>
+
+                    <h3>
+                        1:N
+                    </h3>
+
+                    <p>
+                        Um documento relacionado a vários outros documentos.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🔀
+                    </div>
+
+                    <h3>
+                        N:N
+                    </h3>
+
+                    <p>
+                        Vários documentos relacionados a vários outros.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🔗
+                    </div>
+
+                    <h3>
+                        Referências
+                    </h3>
+
+                    <p>
+                        Como relacionar documentos através de identificadores.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             O QUE É RELACIONAMENTO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🔗 O que é um relacionamento?
+            </h2>
+
+            <p>
+                Um <strong>relacionamento</strong> representa uma associação
+                entre informações.
+            </p>
+
+            <p>
+                Por exemplo, em uma loja virtual:
+            </p>
+
+
+            <pre><code>Cliente
+   │
+   └── possui
+          │
+          ├── Pedido
+          ├── Pedido
+          └── Pedido</code></pre>
+
+
+            <p>
+                Nesse exemplo, um cliente pode possuir vários pedidos.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>
+                    O tipo de relacionamento depende da quantidade
+                    de elementos envolvidos em cada lado.
+                </strong>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             1:1
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                1️⃣ Relacionamento 1:1
+            </h2>
+
+            <p>
+                Um relacionamento <strong>1:1</strong> significa
+                que um documento está relacionado a apenas um
+                documento de outro conjunto.
+            </p>
+
+
+            <p>
+                Um exemplo simples:
+            </p>
+
+
+            <pre><code>Usuário
+   │
+   └── Perfil</code></pre>
+
+
+            <p>
+                Um usuário possui um perfil.
+            </p>
+
+
+            <h3>
+                Opção 1 — incorporar
+            </h3>
+
+
+            <pre><code>{
+    _id: 101,
+
+    nome: "Ana",
+
+    perfil: {
+        foto: "ana.jpg",
+        biografia: "Desenvolvedora",
+        cidade: "Rio de Janeiro"
+    }
+}</code></pre>
+
+
+            <p>
+                Nesse caso, o perfil está incorporado dentro
+                do documento do usuário.
+            </p>
+
+
+            <h3>
+                Opção 2 — referência
+            </h3>
+
+
+            <pre><code>usuarios
+
+{
+    _id: 101,
+    nome: "Ana",
+    perfilId: 900
+}
+
+
+perfis
+
+{
+    _id: 900,
+    foto: "ana.jpg",
+    biografia: "Desenvolvedora",
+    cidade: "Rio de Janeiro"
+}</code></pre>
+
+
+            <p>
+                Aqui o perfil está separado e é relacionado
+                através do campo <strong>perfilId</strong>.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             QUANDO 1:1
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🤔 Quando usar cada abordagem no 1:1?
+            </h2>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Situação
+                            </th>
+
+                            <th>
+                                Incorporar
+                            </th>
+
+                            <th>
+                                Referenciar
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>
+                                Dados usados sempre juntos
+                            </td>
+
+                            <td>
+                                👍 Interessante
+                            </td>
+
+                            <td>
+                                Pode ser desnecessário
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Dados independentes
+                            </td>
+
+                            <td>
+                                Pode não ser ideal
+                            </td>
+
+                            <td>
+                                👍 Interessante
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Documento pequeno
+                            </td>
+
+                            <td>
+                                👍 Interessante
+                            </td>
+
+                            <td>
+                                Também possível
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Dados com regras próprias
+                            </td>
+
+                            <td>
+                                Depende
+                            </td>
+
+                            <td>
+                                Pode ser interessante
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             1:N
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                1️⃣:N Relacionamento 1:N
+            </h2>
+
+            <p>
+                Um relacionamento <strong>1:N</strong> significa
+                que um documento pode estar relacionado a vários
+                documentos.
+            </p>
+
+
+            <p>
+                Exemplos:
+            </p>
+
+
+            <ul>
+
+                <li>
+                    Um cliente possui vários pedidos.
+                </li>
+
+                <li>
+                    Um professor possui várias aulas.
+                </li>
+
+                <li>
+                    Um post possui vários comentários.
+                </li>
+
+                <li>
+                    Uma categoria possui vários produtos.
+                </li>
+
+            </ul>
+
+
+            <pre><code>Cliente
+   │
+   ├── Pedido
+   ├── Pedido
+   ├── Pedido
+   └── Pedido</code></pre>
+
+        </section>
+
+
+        <!-- =====================================================
+             1:N EMBEDDING
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                📦 1:N com documentos incorporados
+            </h2>
+
+            <p>
+                Em alguns casos, podemos armazenar os elementos
+                relacionados dentro de um array.
+            </p>
+
+
+            <p>
+                Por exemplo, um produto pode possuir algumas
+                características:
+            </p>
+
+
+            <pre><code>{
+    _id: 10,
+
+    nome: "Notebook",
+
+    especificacoes: [
+        {
+            nome: "Memória",
+            valor: "16 GB"
+        },
+
+        {
+            nome: "Armazenamento",
+            valor: "512 GB"
+        },
+
+        {
+            nome: "Tela",
+            valor: "15.6 polegadas"
+        }
+    ]
+}</code></pre>
+
+
+            <p>
+                As especificações fazem parte do contexto do produto
+                e podem ser consultadas junto com ele.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             1:N REFERENCE
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🔗 1:N com referências
+            </h2>
+
+            <p>
+                Quando a quantidade de documentos relacionados pode
+                crescer bastante, uma alternativa é utilizar referências.
+            </p>
+
+
+            <p>
+                Exemplo:
+            </p>
+
+
+            <pre><code>clientes
+
+{
+    _id: 101,
+    nome: "Ana"
+}</code></pre>
+
+
+            <p>
+                Pedidos:
+            </p>
+
+
+            <pre><code>{
+    _id: 5001,
+    clienteId: 101,
+    total: 3500
+}
+
+
+{
+    _id: 5002,
+    clienteId: 101,
+    total: 800
+}
+
+
+{
+    _id: 5003,
+    clienteId: 101,
+    total: 1200
+}</code></pre>
+
+
+            <p>
+                O campo <strong>clienteId</strong> permite relacionar
+                cada pedido ao cliente.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             N:N
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🔀 Relacionamento N:N
+            </h2>
+
+            <p>
+                Um relacionamento <strong>N:N</strong> ocorre quando
+                vários documentos podem estar relacionados a vários
+                outros documentos.
+            </p>
+
+
+            <p>
+                Um exemplo clássico:
+            </p>
+
+
+            <pre><code>Aluno
+   ↕
+Curso</code></pre>
+
+
+            <p>
+                Um aluno pode fazer vários cursos.
+            </p>
+
+            <p>
+                Um curso pode possuir vários alunos.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>
+                    Esse tipo de relacionamento exige um pouco mais
+                    de atenção na modelagem.
+                </strong>
+
+                <p>
+                    Precisamos considerar como os dados serão consultados,
+                    atualizados e relacionados.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             N:N REFERÊNCIAS
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🔗 N:N usando referências
+            </h2>
+
+            <p>
+                Uma possibilidade é armazenar identificadores
+                relacionados nos documentos.
+            </p>
+
+
+            <h3>
+                Aluno
+            </h3>
+
+
+            <pre><code>{
+    _id: 101,
+
+    nome: "Ana",
+
+    cursos: [
+        10,
+        20,
+        30
+    ]
+}</code></pre>
+
+
+            <h3>
+                Curso
+            </h3>
+
+
+            <pre><code>{
+    _id: 10,
+
+    nome: "Banco de Dados",
+
+    alunos: [
+        101,
+        102,
+        103
+    ]
+}</code></pre>
+
+
+            <p>
+                Os identificadores representam os relacionamentos
+                entre alunos e cursos.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             COLEÇÃO DE RELACIONAMENTO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🧩 Coleção intermediária
+            </h2>
+
+            <p>
+                Em determinados cenários, pode ser mais adequado
+                criar uma coleção específica para representar
+                o relacionamento.
+            </p>
+
+
+            <p>
+                Por exemplo, uma matrícula:
+            </p>
+
+
+            <pre><code>{
+    _id: 9001,
+
+    alunoId: 101,
+
+    cursoId: 10,
+
+    dataMatricula: ISODate("2026-02-01"),
+
+    status: "ativa"
+}</code></pre>
+
+
+            <p>
+                Essa abordagem é especialmente interessante quando
+                o relacionamento possui informações próprias.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>
+                    Observe:
+                </strong>
+
+                <p>
+                    A matrícula não é apenas uma ligação entre aluno
+                    e curso. Ela também possui data, status e outras
+                    informações.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             RELACIONAMENTO COM ATRIBUTOS
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                📝 Quando o relacionamento possui dados próprios
+            </h2>
+
+            <p>
+                Considere:
+            </p>
+
+
+            <pre><code>Aluno
+   ↓
+Matrícula
+   ↓
+Curso</code></pre>
+
+
+            <p>
+                A matrícula pode possuir:
+            </p>
+
+
+            <ul>
+
+                <li>
+                    Data de inscrição
+                </li>
+
+                <li>
+                    Status
+                </li>
+
+                <li>
+                    Nota
+                </li>
+
+                <li>
+                    Progresso
+                </li>
+
+                <li>
+                    Data de conclusão
+                </li>
+
+            </ul>
+
+
+            <p>
+                Nesse caso, representar a matrícula como um documento
+                próprio pode facilitar a organização e as consultas.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             JOIN CONCEITUAL
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🔎 E como consultar esses relacionamentos?
+            </h2>
+
+            <p>
+                Em bancos relacionais, estamos acostumados com
+                <strong>JOIN</strong>.
+            </p>
+
+            <p>
+                No MongoDB, quando utilizamos referências, podemos
+                precisar buscar os documentos relacionados.
+            </p>
+
+
+            <p>
+                O MongoDB também possui recursos para realizar
+                operações semelhantes a junções em determinadas
+                consultas, como o <strong>$lookup</strong>.
+            </p>
+
+
+            <pre><code>db.pedidos.aggregate([
+
+    {
+        $lookup: {
+            from: "clientes",
+            localField: "clienteId",
+            foreignField: "_id",
+            as: "cliente"
+        }
+    }
+
+])</code></pre>
+
+
+            <p>
+                O <strong>$lookup</strong> permite combinar informações
+                de coleções diferentes durante uma agregação.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>
+                    Atenção:
+                </strong>
+
+                <p>
+                    A existência do <strong>$lookup</strong> não significa
+                    que devemos transformar todo relacionamento em uma
+                    estrutura semelhante a um banco relacional.
+                </p>
+
+                <p>
+                    A modelagem continua sendo uma decisão baseada
+                    nas necessidades da aplicação.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             EXEMPLO COMPLETO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🛒 Exemplo completo: loja virtual
+            </h2>
+
+            <p>
+                Imagine três entidades:
+            </p>
+
+
+            <pre><code>Cliente
+   │
+   └── Pedidos
+          │
+          └── Itens
+                 │
+                 └── Produto</code></pre>
+
+
+            <p>
+                Uma possível modelagem seria:
+            </p>
+
+
+            <h3>
+                Cliente
+            </h3>
+
+
+            <pre><code>{
+    _id: 101,
+
+    nome: "Ana Silva",
+
+    email: "ana@email.com"
+}</code></pre>
+
+
+            <h3>
+                Produto
+            </h3>
+
+
+            <pre><code>{
+    _id: 10,
+
+    nome: "Notebook",
+
+    preco: 3500,
+
+    estoque: 20
+}</code></pre>
+
+
+            <h3>
+                Pedido
+            </h3>
+
+
+            <pre><code>{
+    _id: 5001,
+
+    clienteId: 101,
+
+    itens: [
+
+        {
+            produtoId: 10,
+            nome: "Notebook",
+            precoUnitario: 3500,
+            quantidade: 1
+        }
+
+    ],
+
+    total: 3500,
+
+    status: "pago"
+}</code></pre>
+
+
+            <p>
+                Observe que o pedido utiliza uma referência para o cliente
+                e incorpora os itens necessários para representar a compra.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             DIFERENÇA ENTRE REFERÊNCIA E EMBEDDING
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                ⚖️ Embedding x Referência
+            </h2>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Característica
+                            </th>
+
+                            <th>
+                                Embedding
+                            </th>
+
+                            <th>
+                                Referência
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>
+                                Dados
+                            </td>
+
+                            <td>
+                                Dentro do documento
+                            </td>
+
+                            <td>
+                                Em documentos separados
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Acesso
+                            </td>
+
+                            <td>
+                                Pode facilitar leitura conjunta
+                            </td>
+
+                            <td>
+                                Pode exigir consultas adicionais
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Duplicação
+                            </td>
+
+                            <td>
+                                Pode ocorrer
+                            </td>
+
+                            <td>
+                                Pode ser reduzida
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Crescimento
+                            </td>
+
+                            <td>
+                                Deve ser observado
+                            </td>
+
+                            <td>
+                                Pode lidar melhor com conjuntos separados
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Complexidade
+                            </td>
+
+                            <td>
+                                Pode simplificar leituras
+                            </td>
+
+                            <td>
+                                Pode exigir combinação de dados
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             REGRA PRÁTICA
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🧠 Uma regra prática
+            </h2>
+
+            <p>
+                Ao modelar um relacionamento no MongoDB, faça algumas
+                perguntas:
+            </p>
+
+
+            <ol>
+
+                <li>
+                    Os dados normalmente são acessados juntos?
+                </li>
+
+                <li>
+                    O relacionamento é forte?
+                </li>
+
+                <li>
+                    Quantos elementos relacionados podem existir?
+                </li>
+
+                <li>
+                    Esse número pode crescer indefinidamente?
+                </li>
+
+                <li>
+                    Os dados precisam ser atualizados independentemente?
+                </li>
+
+                <li>
+                    O relacionamento possui informações próprias?
+                </li>
+
+                <li>
+                    Quais consultas serão mais frequentes?
+                </li>
+
+            </ol>
+
+
+            <div class="highlight">
+
+                <strong>
+                    Não existe uma regra universal.
+                </strong>
+
+                <p>
+                    A melhor modelagem depende do comportamento esperado
+                    da aplicação e das consultas que precisam ser realizadas.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             ERROS COMUNS
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                ❌ Erros comuns
+            </h2>
+
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <h3>
+                        ❌ Incorporar tudo
+                    </h3>
+
+                    <p>
+                        Colocar todos os dados relacionados dentro
+                        de um único documento pode causar documentos
+                        grandes e difíceis de gerenciar.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        ❌ Referenciar tudo
+                    </h3>
+
+                    <p>
+                        Separar absolutamente tudo pode aumentar
+                        a quantidade de consultas necessárias.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        ❌ Ignorar crescimento
+                    </h3>
+
+                    <p>
+                        Uma estrutura pequena hoje pode crescer
+                        muito no futuro.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        ❌ Ignorar as consultas
+                    </h3>
+
+                    <p>
+                        A estrutura precisa considerar como os dados
+                        serão utilizados pela aplicação.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             CHECKPOINT
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🧠 Checkpoint
+            </h2>
+
+            <p>
+                Antes de avançar, tente responder:
+            </p>
+
+
+            <ol>
+
+                <li>
+                    O que significa um relacionamento 1:1?
+                </li>
+
+                <li>
+                    Dê um exemplo de relacionamento 1:N.
+                </li>
+
+                <li>
+                    Dê um exemplo de relacionamento N:N.
+                </li>
+
+                <li>
+                    Qual é a diferença entre embedding e referência?
+                </li>
+
+                <li>
+                    Quando um relacionamento pode ser representado
+                    por uma coleção própria?
+                </li>
+
+                <li>
+                    O que significa um relacionamento possuir
+                    atributos próprios?
+                </li>
+
+                <li>
+                    Para que serve o $lookup?
+                </li>
+
+                <li>
+                    Por que não devemos referenciar ou incorporar
+                    tudo automaticamente?
+                </li>
+
+                <li>
+                    Por que o crescimento dos dados deve ser considerado?
+                </li>
+
+            </ol>
+
+        </section>
+
+
+        <!-- =====================================================
+             DESAFIO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🧪 Desafio da aula
+            </h2>
+
+            <p>
+                Vamos modelar uma plataforma de cursos.
+            </p>
+
+
+            <p>
+                Temos:
+            </p>
+
+
+            <ul>
+
+                <li>
+                    Alunos
+                </li>
+
+                <li>
+                    Professores
+                </li>
+
+                <li>
+                    Cursos
+                </li>
+
+                <li>
+                    Aulas
+                </li>
+
+                <li>
+                    Matrículas
+                </li>
+
+                <li>
+                    Comentários
+                </li>
+
+            </ul>
+
+
+            <p>
+                Agora responda:
+            </p>
+
+
+            <ol>
+
+                <li>
+                    Um aluno pode fazer vários cursos?
+                </li>
+
+                <li>
+                    Um curso pode possuir vários alunos?
+                </li>
+
+                <li>
+                    Que tipo de relacionamento existe entre aluno e curso?
+                </li>
+
+                <li>
+                    Uma matrícula possui informações próprias?
+                </li>
+
+                <li>
+                    As aulas deveriam ser incorporadas ao curso
+                    ou armazenadas separadamente?
+                </li>
+
+                <li>
+                    Como você representaria um comentário?
+                </li>
+
+                <li>
+                    Quais informações poderiam ser incorporadas?
+                </li>
+
+                <li>
+                    Quais informações deveriam ser referenciadas?
+                </li>
+
+            </ol>
+
+
+            <div class="highlight">
+
+                <strong>
+                    Desafio prático:
+                </strong>
+
+                <p>
+                    Crie pelo menos três documentos MongoDB:
+                </p>
+
+                <ul>
+
+                    <li>
+                        Um aluno.
+                    </li>
+
+                    <li>
+                        Um curso.
+                    </li>
+
+                    <li>
+                        Uma matrícula.
+                    </li>
+
+                </ul>
+
+                <p>
+                    Depois explique quais relacionamentos existem
+                    entre eles e por que você escolheu embedding
+                    ou referência.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             RESUMO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                📝 Resumindo
+            </h2>
+
+
+            <div class="highlight">
+
+                <p>
+                    <strong>1:1</strong> representa uma relação entre
+                    um documento e outro.
+                </p>
+
+                <p>
+                    <strong>1:N</strong> representa um documento
+                    relacionado a vários outros.
+                </p>
+
+                <p>
+                    <strong>N:N</strong> representa vários documentos
+                    relacionados a vários outros.
+                </p>
+
+                <p>
+                    <strong>Embedding</strong> coloca dados relacionados
+                    dentro do documento principal.
+                </p>
+
+                <p>
+                    <strong>Referências</strong> conectam documentos
+                    separados através de identificadores.
+                </p>
+
+                <p>
+                    Um relacionamento que possui informações próprias
+                    pode ser representado por um documento específico.
+                </p>
+
+                <p>
+                    A escolha da estratégia deve considerar consultas,
+                    crescimento, atualização e comportamento da aplicação.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             PRÓXIMA AULA
+        ====================================================== -->
+
+        <section class="cta">
+
+            <h2>
+                🚀 Próxima aula: Aggregation Pipeline
+            </h2>
+
+            <p>
+                Agora que você já sabe modelar documentos e relacionamentos,
+                vamos aprender a transformar e analisar dados usando
+                o poderoso sistema de agregação do MongoDB.
+            </p>
+
+            <p>
+                Você vai conhecer operadores como
+                <strong>$match</strong>, <strong>$group</strong>,
+                <strong>$project</strong>, <strong>$sort</strong>
+                e <strong>$lookup</strong>.
+            </p>
+
+
+            <a
+                href="./26.html"
+                class="cta-button">
+
+                Aula 26 — Aggregation Pipeline →
+
+            </a>
+
+        </section>
+
+
+    </main>
+
+
+    <!-- =====================================================
+         FOOTER
+    ====================================================== -->
+
+    <footer>
+
+        <p>
+            Guia de Banco de Dados
+        </p>
+
+        <p>
+            Aula 25 • Relacionamentos no MongoDB
+        </p>
+
+    </footer>
+
+
+    <!-- =====================================================
+         JAVASCRIPT — DARK / LIGHT MODE
+    ====================================================== -->
+
+    <script src="./script.js"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,1805 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="./style.css">
+
+    <link rel="icon" type="image/png" href="./assets/images/logo.png">
+
+    <title>Aula 32 — Apache Parquet</title>
+
+</head>
+
+<body>
+
+
+    <!-- =====================================================
+       HEADER
+    ====================================================== -->
+
+    <header>
+
+        <button class="theme-toggle" id="themeToggle" type="button" aria-label="Alternar tema">
+
+            <span class="theme-icon" id="themeIcon">
+                ☀️
+            </span>
+
+            <span class="theme-label" id="themeLabel">
+                Modo claro
+            </span>
+
+        </button>
+
+
+        <div class="header-content">
+
+            <span class="eyebrow">
+                AULA 32 • BIG DATA
+            </span>
+
+            <h1>
+                Apache Parquet
+            </h1>
+
+            <p>
+                Entenda como o formato Parquet organiza grandes volumes
+                de dados de forma eficiente para armazenamento e análise.
+            </p>
+
+        </div>
+
+    </header>
+
+
+    <!-- =====================================================
+       CONTEÚDO
+    ====================================================== -->
+
+    <main>
+
+
+        <!-- =====================================================
+           OBJETIVOS
+        ====================================================== -->
+
+        <section>
+
+            <h2>🎯 Objetivos da aula</h2>
+
+            <p>
+                Até agora estudamos bancos de dados e vimos como
+                aplicações podem armazenar e consultar informações.
+            </p>
+
+            <p>
+                Agora vamos conhecer uma tecnologia muito utilizada
+                em ambientes de <strong>Big Data</strong>:
+                o <strong>Apache Parquet</strong>.
+            </p>
+
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <div class="icon">
+                        📦
+                    </div>
+
+                    <h3>
+                        Parquet
+                    </h3>
+
+                    <p>
+                        Entender o que é e para que serve.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        📊
+                    </div>
+
+                    <h3>
+                        Dados
+                    </h3>
+
+                    <p>
+                        Entender como grandes volumes são armazenados.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        ⚡
+                    </div>
+
+                    <h3>
+                        Performance
+                    </h3>
+
+                    <p>
+                        Entender por que o formato pode ser eficiente
+                        para análises.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🗄️
+                    </div>
+
+                    <h3>
+                        Data Lake
+                    </h3>
+
+                    <p>
+                        Conhecer um dos ambientes onde Parquet é utilizado.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           O QUE É PARQUET
+        ====================================================== -->
+
+        <section>
+
+            <h2>📦 O que é Apache Parquet?</h2>
+
+            <p>
+                <strong>Apache Parquet</strong> é um formato de arquivo
+                desenvolvido para armazenar dados de maneira eficiente,
+                especialmente em cargas de trabalho analíticas.
+            </p>
+
+            <p>
+                Ele é um formato <strong>colunar</strong>.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>
+                    Importante:
+                </strong>
+
+                <p>
+                    Parquet não é um banco de dados.
+                </p>
+
+                <p>
+                    Parquet também não é um SGBD.
+                </p>
+
+                <p>
+                    Parquet é um <strong>formato de armazenamento de dados</strong>.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           BANCO VS PARQUET
+        ====================================================== -->
+
+        <section>
+
+            <h2>🧩 Banco de dados x Parquet</h2>
+
+            <p>
+                É importante não confundir os conceitos.
+            </p>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Conceito
+                            </th>
+
+                            <th>
+                                O que é?
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>
+                                Banco de dados
+                            </td>
+
+                            <td>
+                                Estrutura organizada para armazenar dados.
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                SGBD
+                            </td>
+
+                            <td>
+                                Software que gerencia bancos de dados.
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                SQL
+                            </td>
+
+                            <td>
+                                Linguagem utilizada para consultar e
+                                manipular dados em bancos relacionais.
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Parquet
+                            </td>
+
+                            <td>
+                                Formato de arquivo colunar para armazenamento
+                                eficiente de dados.
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           EXEMPLO
+        ====================================================== -->
+
+        <section>
+
+            <h2>📊 Imagine uma grande quantidade de dados</h2>
+
+            <p>
+                Imagine uma empresa de comércio eletrônico.
+            </p>
+
+            <p>
+                Todos os dias ela registra milhões de eventos:
+            </p>
+
+
+            <ul>
+
+                <li>
+                    👤 Usuários acessando o site.
+                </li>
+
+                <li>
+                    🔎 Produtos pesquisados.
+                </li>
+
+                <li>
+                    🛒 Produtos adicionados ao carrinho.
+                </li>
+
+                <li>
+                    💳 Compras realizadas.
+                </li>
+
+                <li>
+                    📦 Pedidos enviados.
+                </li>
+
+                <li>
+                    📱 Acessos realizados por dispositivos móveis.
+                </li>
+
+            </ul>
+
+
+            <p>
+                Depois de alguns anos, podemos ter
+                <strong>bilhões de registros</strong>.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+           CSV
+        ====================================================== -->
+
+        <section>
+
+            <h2>📄 Uma alternativa simples: CSV</h2>
+
+            <p>
+                Uma forma muito conhecida de armazenar dados é o
+                formato CSV.
+            </p>
+
+
+            <pre><code>id,nome,cidade,idade
+1,Ana,Rio de Janeiro,25
+2,João,São Paulo,31
+3,Maria,Belo Horizonte,28</code></pre>
+
+
+            <p>
+                É simples e possui grande compatibilidade.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>
+                    Mas será que é a melhor opção para grandes volumes
+                    de dados analíticos?
+                </strong>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           ROW VS COLUMN
+        ====================================================== -->
+
+        <section>
+
+            <h2>↔️ Armazenamento por linha</h2>
+
+            <p>
+                Imagine uma tabela:
+            </p>
+
+
+            <pre><code>
+ID | Nome  | Cidade          | Idade
+-------------------------------------
+1  | Ana   | Rio de Janeiro  | 25
+2  | João  | São Paulo       | 31
+3  | Maria | Belo Horizonte  | 28
+            </code></pre>
+
+
+            <p>
+                Em um armazenamento orientado a linhas,
+                os dados de cada registro ficam agrupados.
+            </p>
+
+
+            <pre><code>Registro 1
+→ 1, Ana, Rio de Janeiro, 25
+
+Registro 2
+→ 2, João, São Paulo, 31
+
+Registro 3
+→ 3, Maria, Belo Horizonte, 28</code></pre>
+
+        </section>
+
+
+        <!-- =====================================================
+           COLUMNAR
+        ====================================================== -->
+
+        <section>
+
+            <h2>⬇️ Armazenamento por coluna</h2>
+
+            <p>
+                No armazenamento colunar, os valores de uma mesma
+                coluna são agrupados.
+            </p>
+
+
+            <pre><code>ID:
+1
+2
+3
+
+Nome:
+Ana
+João
+Maria
+
+Cidade:
+Rio de Janeiro
+São Paulo
+Belo Horizonte
+
+Idade:
+25
+31
+28</code></pre>
+
+
+            <p>
+                Essa organização é especialmente interessante
+                para determinados tipos de consultas analíticas.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+           PARQUET
+        ====================================================== -->
+
+        <section>
+
+            <h2>⚡ Por que Parquet é eficiente?</h2>
+
+            <p>
+                Uma das principais características do Parquet é
+                seu armazenamento orientado a colunas.
+            </p>
+
+
+            <p>
+                Isso pode ser muito útil quando uma análise precisa
+                acessar apenas algumas colunas de um conjunto de dados
+                muito grande.
+            </p>
+
+
+            <p>
+                Imagine um arquivo com:
+            </p>
+
+
+            <pre><code>100 milhões de registros
+
+50 colunas</code></pre>
+
+
+            <p>
+                Mas a consulta precisa apenas de:
+            </p>
+
+
+            <pre><code>cliente_id
+valor
+data</code></pre>
+
+
+            <div class="highlight">
+
+                <strong>
+                    Em formatos colunares, mecanismos de processamento
+                    podem evitar ler dados de colunas que não são necessárias
+                    para determinada consulta.
+                </strong>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           EXEMPLO ANALÍTICO
+        ====================================================== -->
+
+        <section>
+
+            <h2>🔎 Um exemplo de análise</h2>
+
+            <p>
+                Imagine que temos milhões de vendas:
+            </p>
+
+
+            <pre><code>cliente_id
+produto_id
+categoria
+cidade
+data
+quantidade
+preco
+forma_pagamento
+dispositivo
+idade_cliente
+...</code></pre>
+
+
+            <p>
+                Agora queremos descobrir:
+            </p>
+
+
+            <pre><code>
+Qual foi o faturamento total por categoria?
+            </code></pre>
+
+
+            <p>
+                Talvez precisemos apenas das colunas:
+            </p>
+
+
+            <pre><code>categoria
+preco
+quantidade</code></pre>
+
+
+            <p>
+                As outras colunas não são necessárias para esse cálculo.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+           COMPRESSÃO
+        ====================================================== -->
+
+        <section>
+
+            <h2>🗜️ Compressão</h2>
+
+            <p>
+                Outra característica importante do Parquet é sua
+                capacidade de trabalhar bem com compressão.
+            </p>
+
+
+            <p>
+                Como valores semelhantes de uma mesma coluna ficam
+                próximos, determinados algoritmos de compressão podem
+                aproveitar essa organização.
+            </p>
+
+
+            <pre><code>
+Cidade:
+
+Rio de Janeiro
+Rio de Janeiro
+Rio de Janeiro
+Rio de Janeiro
+São Paulo
+São Paulo
+São Paulo
+...
+            </code></pre>
+
+
+            <p>
+                Dados com padrões semelhantes podem apresentar
+                boas oportunidades de compressão.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>
+                    Menos dados armazenados também significa,
+                    em muitos cenários, menos dados para movimentar
+                    e processar.
+                </strong>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           SCHEMA
+        ====================================================== -->
+
+        <section>
+
+            <h2>🧬 Schema</h2>
+
+            <p>
+                Arquivos Parquet armazenam informações sobre a estrutura
+                e os tipos dos dados.
+            </p>
+
+
+            <p>
+                Por exemplo:
+            </p>
+
+
+            <pre><code>id       → inteiro
+
+nome     → texto
+
+preco    → decimal
+
+ativo    → boolean
+
+data     → timestamp</code></pre>
+
+
+            <p>
+                Essas informações ajudam ferramentas de processamento
+                a interpretar os dados corretamente.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+           TIPOS
+        ====================================================== -->
+
+        <section>
+
+            <h2>🧱 Tipos de dados</h2>
+
+            <p>
+                Diferentemente de um CSV puramente textual,
+                Parquet possui suporte a tipos de dados.
+            </p>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Campo
+                            </th>
+
+                            <th>
+                                Tipo
+                            </th>
+
+                            <th>
+                                Exemplo
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>
+                                id
+                            </td>
+
+                            <td>
+                                Inteiro
+                            </td>
+
+                            <td>
+                                1001
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                nome
+                            </td>
+
+                            <td>
+                                Texto
+                            </td>
+
+                            <td>
+                                Ana
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                preco
+                            </td>
+
+                            <td>
+                                Decimal
+                            </td>
+
+                            <td>
+                                199.90
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                ativo
+                            </td>
+
+                            <td>
+                                Boolean
+                            </td>
+
+                            <td>
+                                true
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                data
+                            </td>
+
+                            <td>
+                                Timestamp
+                            </td>
+
+                            <td>
+                                2026-01-10
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           PARQUET VS CSV
+        ====================================================== -->
+
+        <section>
+
+            <h2>⚖️ Parquet x CSV</h2>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Característica
+                            </th>
+
+                            <th>
+                                CSV
+                            </th>
+
+                            <th>
+                                Parquet
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>
+                                Organização
+                            </td>
+
+                            <td>
+                                Texto delimitado
+                            </td>
+
+                            <td>
+                                Colunar
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Tipos de dados
+                            </td>
+
+                            <td>
+                                Geralmente interpretados externamente
+                            </td>
+
+                            <td>
+                                Metadados de tipos
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Compressão
+                            </td>
+
+                            <td>
+                                Possível, dependendo da ferramenta
+                            </td>
+
+                            <td>
+                                Muito utilizada
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Análise em grande escala
+                            </td>
+
+                            <td>
+                                Pode ser menos eficiente
+                            </td>
+
+                            <td>
+                                Frequentemente adequado
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Legibilidade humana
+                            </td>
+
+                            <td>
+                                Alta
+                            </td>
+
+                            <td>
+                                Baixa
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           DATA LAKE
+        ====================================================== -->
+
+        <section>
+
+            <h2>🏞️ Parquet e Data Lake</h2>
+
+            <p>
+                Parquet é frequentemente encontrado em arquiteturas
+                de <strong>Data Lake</strong>.
+            </p>
+
+
+            <p>
+                Um Data Lake pode armazenar grandes quantidades de dados
+                em diferentes formatos.
+            </p>
+
+
+            <pre><code>
+                    DATA LAKE
+                       │
+        ┌──────────────┼──────────────┐
+        ↓              ↓              ↓
+      CSV           JSON          PARQUET
+        │              │              │
+        └──────────────┼──────────────┘
+                       ↓
+                 PROCESSAMENTO
+                       │
+                       ↓
+                  ANALYTICS
+            </code></pre>
+
+        </section>
+
+
+        <!-- =====================================================
+           DATA WAREHOUSE
+        ====================================================== -->
+
+        <section>
+
+            <h2>🏢 Data Lake x Data Warehouse</h2>
+
+            <p>
+                É importante não confundir esses conceitos.
+            </p>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Data Lake
+                            </th>
+
+                            <th>
+                                Data Warehouse
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>
+                                Pode armazenar dados em diferentes formatos.
+                            </td>
+
+                            <td>
+                                Normalmente possui dados estruturados
+                                para análise.
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Pode armazenar dados brutos.
+                            </td>
+
+                            <td>
+                                Dados geralmente preparados para análise.
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Pode utilizar arquivos Parquet.
+                            </td>
+
+                            <td>
+                                Pode utilizar diferentes tecnologias
+                                de armazenamento.
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           FERRAMENTAS
+        ====================================================== -->
+
+        <section>
+
+            <h2>🛠️ Quem trabalha com Parquet?</h2>
+
+            <p>
+                Parquet não funciona sozinho como um banco de dados.
+                Ele normalmente é utilizado por ferramentas de
+                processamento e análise.
+            </p>
+
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <h3>
+                        ⚡ Apache Spark
+                    </h3>
+
+                    <p>
+                        Processamento distribuído de grandes volumes
+                        de dados.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        🦆 DuckDB
+                    </h3>
+
+                    <p>
+                        Banco analítico que consegue consultar arquivos
+                        como Parquet diretamente.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        ☁️ Data Lake
+                    </h3>
+
+                    <p>
+                        Armazenamento de grandes volumes de dados
+                        em ambientes distribuídos.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        📊 Ferramentas analíticas
+                    </h3>
+
+                    <p>
+                        Diversas ferramentas modernas conseguem
+                        ler e processar arquivos Parquet.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           PYTHON
+        ====================================================== -->
+
+        <section>
+
+            <h2>🐍 Parquet com Python</h2>
+
+            <p>
+                Uma forma comum de trabalhar com arquivos Parquet
+                é utilizando bibliotecas de análise de dados.
+            </p>
+
+
+            <p>
+                Por exemplo, utilizando pandas:
+            </p>
+
+
+            <pre><code>import pandas as pd
+
+df = pd.read_parquet("vendas.parquet")
+
+print(df.head())</code></pre>
+
+
+            <p>
+                Também podemos salvar um DataFrame como Parquet:
+            </p>
+
+
+            <pre><code>df.to_parquet(
+    "vendas.parquet"
+)</code></pre>
+
+        </section>
+
+
+        <!-- =====================================================
+           EXEMPLO
+        ====================================================== -->
+
+        <section>
+
+            <h2>📁 Exemplo de arquivo</h2>
+
+            <p>
+                Imagine que temos:
+            </p>
+
+
+            <pre><code>vendas.csv
+vendas.parquet</code></pre>
+
+
+            <p>
+                Os dois podem representar os mesmos dados, mas
+                internamente possuem estruturas diferentes.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>
+                    CSV é um formato textual simples.
+                </strong>
+
+                <p>
+                    Parquet é um formato binário orientado a colunas,
+                    projetado para armazenamento e processamento eficiente.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           BIG DATA
+        ====================================================== -->
+
+        <section>
+
+            <h2>🌎 Parquet e Big Data</h2>
+
+            <p>
+                Quando falamos de Big Data, frequentemente encontramos
+                conjuntos de dados que possuem:
+            </p>
+
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <div class="icon">
+                        📈
+                    </div>
+
+                    <h3>
+                        Volume
+                    </h3>
+
+                    <p>
+                        Grande quantidade de dados.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        ⚡
+                    </div>
+
+                    <h3>
+                        Velocidade
+                    </h3>
+
+                    <p>
+                        Dados sendo gerados rapidamente.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🧩
+                    </div>
+
+                    <h3>
+                        Variedade
+                    </h3>
+
+                    <p>
+                        Diferentes tipos e fontes de dados.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <p>
+                Formatos colunares como Parquet são bastante úteis
+                em pipelines de dados voltados para análise.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+           QUANDO USAR
+        ====================================================== -->
+
+        <section>
+
+            <h2>✅ Quando Parquet faz sentido?</h2>
+
+
+            <ul>
+
+                <li>
+                    Grandes conjuntos de dados analíticos.
+                </li>
+
+                <li>
+                    Data Lakes.
+                </li>
+
+                <li>
+                    Processamento distribuído.
+                </li>
+
+                <li>
+                    Consultas que utilizam apenas algumas colunas.
+                </li>
+
+                <li>
+                    Pipelines de dados.
+                </li>
+
+                <li>
+                    Machine Learning e análise de dados.
+                </li>
+
+                <li>
+                    Armazenamento de dados históricos.
+                </li>
+
+            </ul>
+
+        </section>
+
+
+        <!-- =====================================================
+           QUANDO NÃO USAR
+        ====================================================== -->
+
+        <section>
+
+            <h2>❌ Parquet não substitui um banco de dados</h2>
+
+            <p>
+                É importante entender que Parquet não foi criado
+                para substituir todos os bancos de dados.
+            </p>
+
+
+            <p>
+                Por exemplo, uma aplicação web precisa frequentemente
+                realizar operações como:
+            </p>
+
+
+            <pre><code>INSERT
+UPDATE
+DELETE</code></pre>
+
+
+            <p>
+                em dados que estão sendo modificados constantemente.
+            </p>
+
+
+            <p>
+                Para esse tipo de cenário, um banco de dados pode ser
+                mais apropriado.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>
+                    Parquet é especialmente interessante como formato
+                    de armazenamento e intercâmbio para cargas analíticas,
+                    não como substituto universal de um SGBD.
+                </strong>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           TRANSACTIONAL VS ANALYTICAL
+        ====================================================== -->
+
+        <section>
+
+            <h2>🔄 OLTP x OLAP</h2>
+
+            <p>
+                Essa diferença nos leva a dois tipos importantes
+                de cargas de trabalho.
+            </p>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                OLTP
+                            </th>
+
+                            <th>
+                                OLAP
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>
+                                Sistemas transacionais
+                            </td>
+
+                            <td>
+                                Análise de dados
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Muitas operações pequenas
+                            </td>
+
+                            <td>
+                                Consultas analíticas
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Aplicações do dia a dia
+                            </td>
+
+                            <td>
+                                Relatórios e dashboards
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Exemplo: sistema de pedidos
+                            </td>
+
+                            <td>
+                                Exemplo: análise de vendas
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+            <p>
+                Parquet aparece principalmente no contexto de
+                processamento analítico.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+           ARQUITETURA
+        ====================================================== -->
+
+        <section>
+
+            <h2>🏗️ Uma arquitetura simples</h2>
+
+
+            <pre><code>
+        APLICAÇÃO
+            │
+            ↓
+       BANCO OPERACIONAL
+            │
+            │
+       Extração de dados
+            │
+            ↓
+         DATA LAKE
+            │
+            ↓
+         PARQUET
+            │
+            ↓
+     PROCESSAMENTO ANALÍTICO
+            │
+            ↓
+       DASHBOARD / BI
+            </code></pre>
+
+
+            <p>
+                Nesse cenário, o banco operacional pode armazenar
+                os dados utilizados pela aplicação enquanto os dados
+                históricos são preparados para análise.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+           RESUMO
+        ====================================================== -->
+
+        <section>
+
+            <h2>📝 Resumindo</h2>
+
+
+            <div class="highlight">
+
+                <p>
+                    <strong>Parquet</strong> é um formato de arquivo
+                    orientado a colunas.
+                </p>
+
+                <p>
+                    Ele é especialmente útil para armazenamento
+                    e processamento analítico de grandes volumes
+                    de dados.
+                </p>
+
+                <p>
+                    Parquet não é um banco de dados e não é um SGBD.
+                </p>
+
+                <p>
+                    Seu formato colunar permite que ferramentas
+                    processem somente as colunas necessárias
+                    para determinadas consultas.
+                </p>
+
+                <p>
+                    Compressão e metadados de tipos também contribuem
+                    para sua eficiência.
+                </p>
+
+                <p>
+                    É comum encontrar Parquet em Data Lakes,
+                    pipelines de dados e ambientes de Big Data.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           CHECKPOINT
+        ====================================================== -->
+
+        <section>
+
+            <h2>🧠 Checkpoint</h2>
+
+            <p>
+                Antes de continuar, tente responder:
+            </p>
+
+
+            <ol>
+
+                <li>
+                    O que é Apache Parquet?
+                </li>
+
+                <li>
+                    Parquet é um banco de dados?
+                </li>
+
+                <li>
+                    Parquet é um SGBD?
+                </li>
+
+                <li>
+                    Qual é a diferença entre armazenamento por linha
+                    e armazenamento por coluna?
+                </li>
+
+                <li>
+                    Por que o armazenamento colunar pode ser interessante
+                    para análises?
+                </li>
+
+                <li>
+                    Qual é a vantagem de armazenar tipos de dados
+                    e metadados?
+                </li>
+
+                <li>
+                    Qual é a relação entre Parquet e Data Lake?
+                </li>
+
+                <li>
+                    Qual é a diferença entre OLTP e OLAP?
+                </li>
+
+                <li>
+                    Quando Parquet pode ser uma boa escolha?
+                </li>
+
+                <li>
+                    Por que Parquet não substitui automaticamente
+                    um banco de dados?
+                </li>
+
+            </ol>
+
+        </section>
+
+
+        <!-- =====================================================
+           DESAFIO
+        ====================================================== -->
+
+        <section>
+
+            <h2>🧪 Desafio da aula</h2>
+
+            <p>
+                Imagine que uma empresa possui
+                <strong>500 milhões de registros de vendas</strong>.
+            </p>
+
+
+            <p>
+                Cada registro possui:
+            </p>
+
+
+            <pre><code>id
+cliente_id
+produto_id
+categoria
+cidade
+data
+quantidade
+preco
+forma_pagamento
+dispositivo</code></pre>
+
+
+            <p>
+                Um analista precisa descobrir:
+            </p>
+
+
+            <pre><code>
+Faturamento total por categoria
+durante o ano de 2026.
+            </code></pre>
+
+
+            <p>
+                Pense:
+            </p>
+
+
+            <ol>
+
+                <li>
+                    Quais colunas são realmente necessárias?
+                </li>
+
+                <li>
+                    Por que um formato colunar pode ajudar?
+                </li>
+
+                <li>
+                    Por que não seria necessário carregar todas
+                    as colunas para essa análise?
+                </li>
+
+                <li>
+                    Onde esse arquivo poderia ser armazenado?
+                </li>
+
+                <li>
+                    Qual ferramenta poderia processar esses dados?
+                </li>
+
+            </ol>
+
+
+            <div class="highlight">
+
+                <strong>
+                    🚀 Desafio extra
+                </strong>
+
+                <p>
+                    Imagine que os dados são armazenados diariamente:
+                </p>
+
+                <pre><code>
+vendas/
+│
+├── ano=2026/
+│   │
+│   ├── mes=01/
+│   │   ├── vendas.parquet
+│   │
+│   ├── mes=02/
+│   │   ├── vendas.parquet
+│   │
+│   └── mes=03/
+│       └── vendas.parquet
+                </code></pre>
+
+                <p>
+                    Pense por que organizar os dados dessa maneira
+                    pode ajudar no processamento.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           PRÓXIMA AULA
+        ====================================================== -->
+
+        <section class="cta">
+
+            <h2>
+                🚀 Próxima aula: Consultando arquivos Parquet
+            </h2>
+
+            <p>
+                Na próxima aula vamos sair da teoria e começar
+                a consultar arquivos Parquet.
+            </p>
+
+            <p>
+                Vamos conhecer ferramentas como DuckDB e aprender
+                a utilizar SQL para analisar grandes conjuntos
+                de dados armazenados em arquivos Parquet.
+            </p>
+
+
+            <a href="./33.html" class="cta-button">
+                Aula 33 →
+            </a>
+
+        </section>
+
+
+    </main>
+
+
+    <!-- =====================================================
+       FOOTER
+    ====================================================== -->
+
+    <footer>
+
+        <p>
+            Guia de Banco de Dados
+        </p>
+
+        <p>
+            Aula 32 • Apache Parquet e Big Data
+        </p>
+
+    </footer>
+
+
+    <!-- =====================================================
+       JAVASCRIPT — DARK / LIGHT MODE
+    ====================================================== -->
+
+    <script src="./script.js"></script>
+
+</body>
+
+</html>

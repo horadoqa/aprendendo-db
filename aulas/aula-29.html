@@ -1,0 +1,1576 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="./style.css">
+
+    <link rel="icon" type="image/png" href="./assets/images/logo.png">
+
+    <title>Aula 29 — Transações e Consistência no MongoDB</title>
+
+</head>
+
+<body>
+
+
+    <!-- =====================================================
+       HEADER
+    ====================================================== -->
+
+    <header>
+
+        <button class="theme-toggle" id="themeToggle" type="button" aria-label="Alternar tema">
+
+            <span class="theme-icon" id="themeIcon">
+                ☀️
+            </span>
+
+            <span class="theme-label" id="themeLabel">
+                Modo claro
+            </span>
+
+        </button>
+
+
+        <div class="header-content">
+
+            <span class="eyebrow">
+                AULA 29 • MONGODB
+            </span>
+
+            <h1>
+                Transações e Consistência no MongoDB
+            </h1>
+
+            <p>
+                Aprenda como executar várias operações como uma única
+                unidade de trabalho e como utilizar transações para
+                manter os dados consistentes.
+            </p>
+
+        </div>
+
+    </header>
+
+
+    <!-- =====================================================
+       CONTEÚDO
+    ====================================================== -->
+
+    <main>
+
+
+        <!-- =====================================================
+           OBJETIVOS
+        ====================================================== -->
+
+        <section>
+
+            <h2>🎯 Objetivos da aula</h2>
+
+            <p>
+                Em aplicações reais, algumas operações precisam acontecer
+                juntas. Se uma parte da operação falhar, pode ser necessário
+                desfazer as alterações realizadas anteriormente.
+            </p>
+
+            <p>
+                Nesta aula vamos entender como o MongoDB trabalha com
+                <strong>transações</strong>.
+            </p>
+
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <div class="icon">
+                        🔄
+                    </div>
+
+                    <h3>
+                        Transações
+                    </h3>
+
+                    <p>
+                        Entender o conceito de uma transação.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🧩
+                    </div>
+
+                    <h3>
+                        Atomicidade
+                    </h3>
+
+                    <p>
+                        Entender o conceito de tudo ou nada.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        💾
+                    </div>
+
+                    <h3>
+                        Commit
+                    </h3>
+
+                    <p>
+                        Confirmar uma transação.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        ↩️
+                    </div>
+
+                    <h3>
+                        Rollback
+                    </h3>
+
+                    <p>
+                        Cancelar alterações de uma transação.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           O PROBLEMA
+        ====================================================== -->
+
+        <section>
+
+            <h2>💡 Por que precisamos de transações?</h2>
+
+            <p>
+                Imagine uma aplicação bancária.
+            </p>
+
+            <p>
+                O usuário possui:
+            </p>
+
+
+            <pre><code>Conta A
+Saldo: R$ 1.000,00
+
+Conta B
+Saldo: R$ 500,00</code></pre>
+
+
+            <p>
+                Agora imagine uma transferência de:
+            </p>
+
+
+            <pre><code>R$ 200,00</code></pre>
+
+
+            <p>
+                Essa operação envolve pelo menos duas alterações:
+            </p>
+
+
+            <ol>
+
+                <li>
+                    Retirar R$ 200 da Conta A.
+                </li>
+
+                <li>
+                    Adicionar R$ 200 à Conta B.
+                </li>
+
+            </ol>
+
+
+            <div class="highlight">
+
+                <strong>
+                    E se a primeira operação funcionar e a segunda falhar?
+                </strong>
+
+                <p>
+                    A Conta A ficaria com R$ 800, mas a Conta B continuaria
+                    com R$ 500.
+                </p>
+
+                <p>
+                    O dinheiro teria desaparecido do sistema.
+                </p>
+
+            </div>
+
+            <p>
+                É justamente para situações desse tipo que as transações
+                são importantes.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+           O QUE É UMA TRANSAÇÃO
+        ====================================================== -->
+
+        <section>
+
+            <h2>🔄 O que é uma transação?</h2>
+
+            <p>
+                Uma <strong>transação</strong> é um conjunto de operações
+                tratado como uma única unidade de trabalho.
+            </p>
+
+            <p>
+                A ideia principal é:
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>
+                    Todas as operações devem ser confirmadas juntas
+                    ou as alterações da transação devem ser descartadas.
+                </strong>
+
+            </div>
+
+
+            <p>
+                Podemos representar uma transferência assim:
+            </p>
+
+
+            <pre><code>INÍCIO DA TRANSAÇÃO
+
+    ↓
+
+Debitar Conta A
+
+    ↓
+
+Creditar Conta B
+
+    ↓
+
+CONFIRMAR
+
+    ↓
+
+FIM</code></pre>
+
+
+            <p>
+                Se alguma etapa apresentar um erro, podemos cancelar
+                a transação.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+           ATOMICIDADE
+        ====================================================== -->
+
+        <section>
+
+            <h2>⚛️ Atomicidade</h2>
+
+            <p>
+                Um dos conceitos mais importantes relacionados
+                a transações é a <strong>atomicidade</strong>.
+            </p>
+
+            <p>
+                Atomicidade significa que uma transação deve ser
+                tratada como uma unidade indivisível.
+            </p>
+
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <div class="icon">
+                        ✅
+                    </div>
+
+                    <h3>
+                        Sucesso
+                    </h3>
+
+                    <p>
+                        As operações são confirmadas.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        ❌
+                    </div>
+
+                    <h3>
+                        Falha
+                    </h3>
+
+                    <p>
+                        As alterações da transação podem ser descartadas.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <p>
+                Pense em uma transação como um pacote de operações:
+            </p>
+
+
+            <pre><code>┌──────────────────────────┐
+│       TRANSAÇÃO          │
+│                          │
+│  Operação 1              │
+│  Operação 2              │
+│  Operação 3              │
+│                          │
+└──────────────────────────┘
+
+        ↓
+
+   COMMIT ou ABORT</code></pre>
+
+        </section>
+
+
+        <!-- =====================================================
+           ACID
+        ====================================================== -->
+
+        <section>
+
+            <h2>🧠 ACID</h2>
+
+            <p>
+                Transações são frequentemente explicadas através
+                das propriedades conhecidas como <strong>ACID</strong>.
+            </p>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Letra
+                            </th>
+
+                            <th>
+                                Conceito
+                            </th>
+
+                            <th>
+                                Ideia
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>
+                                A
+                            </td>
+
+                            <td>
+                                Atomicidade
+                            </td>
+
+                            <td>
+                                A transação é tratada como uma unidade.
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                C
+                            </td>
+
+                            <td>
+                                Consistência
+                            </td>
+
+                            <td>
+                                A transação deve preservar as regras
+                                de consistência dos dados.
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                I
+                            </td>
+
+                            <td>
+                                Isolamento
+                            </td>
+
+                            <td>
+                                Operações de transações concorrentes
+                                possuem regras de isolamento.
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                D
+                            </td>
+
+                            <td>
+                                Durabilidade
+                            </td>
+
+                            <td>
+                                Após a confirmação, os dados devem
+                                permanecer persistidos conforme as
+                                garantias do sistema.
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           SESSION
+        ====================================================== -->
+
+        <section>
+
+            <h2>🧵 O que é uma sessão?</h2>
+
+            <p>
+                Para trabalhar com uma transação no MongoDB,
+                utilizamos uma <strong>sessão</strong>.
+            </p>
+
+            <p>
+                A sessão representa o contexto no qual as operações
+                relacionadas à transação serão executadas.
+            </p>
+
+
+            <p>
+                Conceitualmente:
+            </p>
+
+
+            <pre><code>Sessão
+
+    ↓
+
+Iniciar transação
+
+    ↓
+
+Executar operações
+
+    ↓
+
+Commit ou Abort
+
+    ↓
+
+Encerrar sessão</code></pre>
+
+        </section>
+
+
+        <!-- =====================================================
+           START TRANSACTION
+        ====================================================== -->
+
+        <section>
+
+            <h2>▶️ Iniciando uma transação</h2>
+
+            <p>
+                Em aplicações que utilizam o driver do MongoDB,
+                uma transação é iniciada através de uma sessão.
+            </p>
+
+
+            <p>
+                Um exemplo conceitual utilizando JavaScript
+                com o driver do MongoDB:
+            </p>
+
+
+            <pre><code>const session = client.startSession();
+
+session.startTransaction();</code></pre>
+
+
+            <p>
+                A partir desse momento, as operações relacionadas
+                à transação podem utilizar essa sessão.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+           EXEMPLO
+        ====================================================== -->
+
+        <section>
+
+            <h2>💳 Exemplo: transferência bancária</h2>
+
+            <p>
+                Imagine duas contas:
+            </p>
+
+
+            <pre><code>Conta A
+
+{
+    numero: 1001,
+    saldo: 1000
+}
+
+
+Conta B
+
+{
+    numero: 1002,
+    saldo: 500
+}</code></pre>
+
+
+            <p>
+                Queremos transferir R$ 200.
+            </p>
+
+
+            <pre><code>Conta A
+1000 → 800
+
+Conta B
+500 → 700</code></pre>
+
+
+            <p>
+                As duas alterações devem fazer parte da mesma transação.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+           TRANSACTION CODE
+        ====================================================== -->
+
+        <section>
+
+            <h2>💻 Exemplo de transação</h2>
+
+            <p>
+                Um exemplo simplificado utilizando o driver oficial
+                do MongoDB para Node.js:
+            </p>
+
+
+            <pre><code>const session = client.startSession();
+
+try {
+
+    session.startTransaction();
+
+    await contas.updateOne(
+        { numero: 1001 },
+        { $inc: { saldo: -200 } },
+        { session }
+    );
+
+    await contas.updateOne(
+        { numero: 1002 },
+        { $inc: { saldo: 200 } },
+        { session }
+    );
+
+    await session.commitTransaction();
+
+} catch (erro) {
+
+    await session.abortTransaction();
+
+    throw erro;
+
+} finally {
+
+    await session.endSession();
+
+}</code></pre>
+
+
+            <p>
+                Observe a sequência:
+            </p>
+
+
+            <ol>
+
+                <li>
+                    Criamos uma sessão.
+                </li>
+
+                <li>
+                    Iniciamos a transação.
+                </li>
+
+                <li>
+                    Executamos as operações utilizando a sessão.
+                </li>
+
+                <li>
+                    Confirmamos com commitTransaction().
+                </li>
+
+                <li>
+                    Em caso de erro, utilizamos abortTransaction().
+                </li>
+
+                <li>
+                    Encerramos a sessão.
+                </li>
+
+            </ol>
+
+        </section>
+
+
+        <!-- =====================================================
+           COMMIT
+        ====================================================== -->
+
+        <section>
+
+            <h2>✅ commitTransaction()</h2>
+
+            <p>
+                O método:
+            </p>
+
+
+            <pre><code>session.commitTransaction();</code></pre>
+
+
+            <p>
+                é utilizado para confirmar a transação.
+            </p>
+
+
+            <p>
+                Depois do commit, as alterações da transação são
+                confirmadas de acordo com as garantias configuradas
+                para a operação.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>
+                    Commit = confirmar a transação.
+                </strong>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           ABORT
+        ====================================================== -->
+
+        <section>
+
+            <h2>↩️ abortTransaction()</h2>
+
+            <p>
+                Quando precisamos cancelar a transação,
+                utilizamos:
+            </p>
+
+
+            <pre><code>session.abortTransaction();</code></pre>
+
+
+            <p>
+                Isso descarta as alterações realizadas dentro
+                da transação que ainda não foram confirmadas.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>
+                    Abort = cancelar a transação.
+                </strong>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           COMMIT VS ABORT
+        ====================================================== -->
+
+        <section>
+
+            <h2>⚖️ Commit x Abort</h2>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Comando
+                            </th>
+
+                            <th>
+                                Função
+                            </th>
+
+                            <th>
+                                Quando usar
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>
+                                commitTransaction()
+                            </td>
+
+                            <td>
+                                Confirma a transação.
+                            </td>
+
+                            <td>
+                                Quando todas as operações foram concluídas
+                                corretamente.
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                abortTransaction()
+                            </td>
+
+                            <td>
+                                Cancela a transação.
+                            </td>
+
+                            <td>
+                                Quando ocorre uma falha ou a operação
+                                precisa ser cancelada.
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           SEM TRANSAÇÃO
+        ====================================================== -->
+
+        <section>
+
+            <h2>⚠️ O que pode acontecer sem uma transação?</h2>
+
+            <p>
+                Imagine:
+            </p>
+
+
+            <pre><code>1. Debitar Conta A
+        ↓
+2. Erro inesperado
+        ↓
+3. Creditar Conta B</code></pre>
+
+
+            <p>
+                Se a segunda operação nunca acontecer, o sistema
+                pode ficar em um estado que não representa a operação
+                desejada.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>
+                    A necessidade de uma transação depende do domínio
+                    e das regras da aplicação.
+                </strong>
+
+                <p>
+                    Nem toda sequência de operações precisa estar
+                    dentro de uma transação.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           DOCUMENTO EMBUTIDO
+        ====================================================== -->
+
+        <section>
+
+            <h2>📄 Uma única operação já pode ser atômica</h2>
+
+            <p>
+                É importante não concluir que toda operação no MongoDB
+                precisa de uma transação.
+            </p>
+
+            <p>
+                Uma operação que modifica um único documento possui
+                garantias de atomicidade nesse nível.
+            </p>
+
+
+            <p>
+                Por exemplo:
+            </p>
+
+
+            <pre><code>db.contas.updateOne(
+
+    { numero: 1001 },
+
+    {
+        $inc: {
+            saldo: -200
+        }
+    }
+
+)</code></pre>
+
+
+            <p>
+                Muitas operações podem ser modeladas para aproveitar
+                a atomicidade de um único documento, evitando uma
+                transação quando ela não é necessária.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+           QUANDO USAR
+        ====================================================== -->
+
+        <section>
+
+            <h2>🤔 Quando utilizar uma transação?</h2>
+
+            <p>
+                Transações são úteis quando várias operações precisam
+                ser tratadas como uma única unidade lógica.
+            </p>
+
+
+            <ul>
+
+                <li>
+                    Transferências entre contas.
+                </li>
+
+                <li>
+                    Operações que alteram múltiplos documentos
+                    relacionados.
+                </li>
+
+                <li>
+                    Processos que precisam confirmar várias alterações
+                    juntas.
+                </li>
+
+                <li>
+                    Operações em que uma falha parcial deixaria os dados
+                    em um estado indesejado.
+                </li>
+
+            </ul>
+
+        </section>
+
+
+        <!-- =====================================================
+           QUANDO EVITAR
+        ====================================================== -->
+
+        <section>
+
+            <h2>⚠️ Transações não devem ser usadas automaticamente</h2>
+
+            <p>
+                Embora transações sejam importantes, elas não devem
+                ser adicionadas a todas as operações sem necessidade.
+            </p>
+
+
+            <p>
+                Antes de utilizar uma transação, vale perguntar:
+            </p>
+
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <h3>
+                        1️⃣ Preciso alterar vários dados?
+                    </h3>
+
+                    <p>
+                        Talvez uma transação seja necessária.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        2️⃣ Existe uma dependência entre operações?
+                    </h3>
+
+                    <p>
+                        Se uma operação depende da outra,
+                        analise a necessidade de transação.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        3️⃣ Um único documento resolve?
+                    </h3>
+
+                    <p>
+                        Talvez seja possível modelar o documento
+                        para evitar uma transação.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           TRANSACTION FLOW
+        ====================================================== -->
+
+        <section>
+
+            <h2>🔄 Ciclo de vida de uma transação</h2>
+
+
+            <pre><code>┌───────────────────────┐
+│       SESSION         │
+└───────────┬───────────┘
+            │
+            ↓
+┌───────────────────────┐
+│ START TRANSACTION     │
+└───────────┬───────────┘
+            │
+            ↓
+┌───────────────────────┐
+│ OPERAÇÃO 1            │
+│ OPERAÇÃO 2            │
+│ OPERAÇÃO 3            │
+└───────────┬───────────┘
+            │
+       ┌────┴────┐
+       ↓         ↓
+   SUCESSO      ERRO
+       ↓         ↓
+    COMMIT      ABORT
+       ↓         ↓
+       └────┬────┘
+            ↓
+      END SESSION</code></pre>
+
+        </section>
+
+
+        <!-- =====================================================
+           CONSISTÊNCIA
+        ====================================================== -->
+
+        <section>
+
+            <h2>🧩 Consistência</h2>
+
+            <p>
+                Consistência significa que uma transação deve respeitar
+                as regras e restrições definidas para os dados.
+            </p>
+
+
+            <p>
+                Imagine que uma aplicação possui a regra:
+            </p>
+
+
+            <pre><code>saldo >= 0</code></pre>
+
+
+            <p>
+                A aplicação precisa garantir que suas operações
+                respeitem essa regra.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>
+                    O banco fornece mecanismos de consistência,
+                    mas as regras de negócio continuam sendo
+                    responsabilidade da aplicação.
+                </strong>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           ISOLAMENTO
+        ====================================================== -->
+
+        <section>
+
+            <h2>🔒 Isolamento</h2>
+
+            <p>
+                Aplicações podem possuir vários usuários realizando
+                operações simultaneamente.
+            </p>
+
+
+            <p>
+                Por exemplo:
+            </p>
+
+
+            <pre><code>Usuário A
+      ↓
+Atualiza pedido
+
+Usuário B
+      ↓
+Atualiza o mesmo pedido
+
+Usuário C
+      ↓
+Consulta o pedido</code></pre>
+
+
+            <p>
+                O banco precisa controlar como essas operações
+                concorrentes interagem.
+            </p>
+
+
+            <p>
+                Esse é um dos motivos pelos quais o conceito
+                de isolamento é importante em transações.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+           DURABILIDADE
+        ====================================================== -->
+
+        <section>
+
+            <h2>💾 Durabilidade</h2>
+
+            <p>
+                Depois que uma transação é confirmada, existe uma
+                expectativa de que as alterações persistam de acordo
+                com as garantias de durabilidade configuradas.
+            </p>
+
+
+            <p>
+                Esse conceito é representado pela letra
+                <strong>D</strong> de ACID.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>
+                    Commit não significa simplesmente "apertei salvar".
+                </strong>
+
+                <p>
+                    A durabilidade depende das configurações e garantias
+                    de escrita e replicação utilizadas pelo ambiente.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           EXEMPLO E-COMMERCE
+        ====================================================== -->
+
+        <section>
+
+            <h2>🛒 Exemplo: pedido em uma loja virtual</h2>
+
+            <p>
+                Imagine que um cliente finalize uma compra.
+            </p>
+
+
+            <p>
+                A aplicação precisa:
+            </p>
+
+
+            <ol>
+
+                <li>
+                    Criar o pedido.
+                </li>
+
+                <li>
+                    Registrar os itens do pedido.
+                </li>
+
+                <li>
+                    Atualizar o estoque.
+                </li>
+
+                <li>
+                    Registrar informações relacionadas ao pagamento.
+                </li>
+
+            </ol>
+
+
+            <p>
+                Dependendo da modelagem e das regras do sistema,
+                algumas dessas operações podem precisar ser tratadas
+                conjuntamente.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>
+                    A modelagem deve ser analisada antes de decidir
+                    que tudo precisa estar em uma única transação.
+                </strong>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           BOAS PRÁTICAS
+        ====================================================== -->
+
+        <section>
+
+            <h2>✅ Boas práticas</h2>
+
+
+            <ul>
+
+                <li>
+                    Mantenha transações tão curtas quanto possível.
+                </li>
+
+                <li>
+                    Evite colocar operações desnecessárias dentro
+                    de uma transação.
+                </li>
+
+                <li>
+                    Planeje a modelagem antes de depender de
+                    transações para tudo.
+                </li>
+
+                <li>
+                    Trate erros corretamente.
+                </li>
+
+                <li>
+                    Garanta que as operações pertencentes à transação
+                    utilizem a sessão correta.
+                </li>
+
+                <li>
+                    Teste cenários de falha.
+                </li>
+
+            </ul>
+
+        </section>
+
+
+        <!-- =====================================================
+           RESUMO
+        ====================================================== -->
+
+        <section>
+
+            <h2>📝 Resumindo</h2>
+
+
+            <div class="highlight">
+
+                <p>
+                    Uma <strong>transação</strong> agrupa operações
+                    que devem ser tratadas como uma unidade lógica.
+                </p>
+
+                <p>
+                    <strong>commitTransaction()</strong> confirma
+                    a transação.
+                </p>
+
+                <p>
+                    <strong>abortTransaction()</strong> cancela
+                    a transação.
+                </p>
+
+                <p>
+                    As propriedades <strong>ACID</strong> ajudam
+                    a compreender as garantias associadas às
+                    transações.
+                </p>
+
+                <p>
+                    Uma operação envolvendo um único documento pode
+                    muitas vezes aproveitar as garantias de atomicidade
+                    do próprio documento, sem exigir uma transação
+                    multi-documento.
+                </p>
+
+                <p>
+                    Transações devem ser utilizadas quando fazem sentido
+                    para as regras e para a modelagem da aplicação.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           CHECKPOINT
+        ====================================================== -->
+
+        <section>
+
+            <h2>🧠 Checkpoint</h2>
+
+            <p>
+                Antes de avançar, tente responder:
+            </p>
+
+
+            <ol>
+
+                <li>
+                    O que é uma transação?
+                </li>
+
+                <li>
+                    O que significa atomicidade?
+                </li>
+
+                <li>
+                    O que significa ACID?
+                </li>
+
+                <li>
+                    Para que serve uma sessão?
+                </li>
+
+                <li>
+                    Qual é a função de commitTransaction()?
+                </li>
+
+                <li>
+                    Qual é a função de abortTransaction()?
+                </li>
+
+                <li>
+                    Por que uma transferência bancária é um bom exemplo
+                    para explicar transações?
+                </li>
+
+                <li>
+                    Toda operação no MongoDB precisa de uma transação?
+                </li>
+
+                <li>
+                    Qual é a relação entre modelagem e transações?
+                </li>
+
+                <li>
+                    Por que transações devem ser mantidas tão curtas
+                    quanto possível?
+                </li>
+
+            </ol>
+
+        </section>
+
+
+        <!-- =====================================================
+           DESAFIO
+        ====================================================== -->
+
+        <section>
+
+            <h2>🧪 Desafio da aula</h2>
+
+            <p>
+                Imagine uma coleção de contas:
+            </p>
+
+
+            <pre><code>contas
+
+{
+    numero: 1001,
+    titular: "Ana",
+    saldo: 1000
+}
+
+{
+    numero: 1002,
+    titular: "João",
+    saldo: 500
+}</code></pre>
+
+
+            <p>
+                Crie uma operação de transferência de
+                <strong>R$ 200</strong> entre as duas contas.
+            </p>
+
+
+            <p>
+                A operação deverá:
+            </p>
+
+
+            <ol>
+
+                <li>
+                    Criar uma sessão.
+                </li>
+
+                <li>
+                    Iniciar uma transação.
+                </li>
+
+                <li>
+                    Retirar R$ 200 da primeira conta.
+                </li>
+
+                <li>
+                    Adicionar R$ 200 à segunda conta.
+                </li>
+
+                <li>
+                    Confirmar a transação com commitTransaction().
+                </li>
+
+                <li>
+                    Em caso de erro, cancelar a transação.
+                </li>
+
+                <li>
+                    Encerrar a sessão.
+                </li>
+
+            </ol>
+
+
+            <div class="highlight">
+
+                <strong>
+                    🚀 Desafio extra
+                </strong>
+
+                <p>
+                    Simule uma falha entre o débito e o crédito.
+                </p>
+
+                <p>
+                    Observe o que acontece quando a transação é abortada.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           CTA
+        ====================================================== -->
+
+        <section class="cta">
+
+            <h2>
+                🚀 Próxima aula: Segurança e Boas Práticas
+            </h2>
+
+            <p>
+                Agora que você já conhece consultas, Aggregation Pipeline,
+                índices e transações, vamos estudar como proteger um banco
+                MongoDB e evitar problemas comuns de segurança.
+            </p>
+
+            <p>
+                Na próxima aula veremos autenticação, autorização,
+                usuários, permissões, conexão segura e boas práticas.
+            </p>
+
+
+            <a href="./30.html" class="cta-button">
+                Aula 30 →
+            </a>
+
+        </section>
+
+
+    </main>
+
+
+    <!-- =====================================================
+       FOOTER
+    ====================================================== -->
+
+    <footer>
+
+        <p>
+            Guia de Banco de Dados
+        </p>
+
+        <p>
+            Aula 29 • Transações e Consistência no MongoDB
+        </p>
+
+    </footer>
+
+
+    <!-- =====================================================
+       JAVASCRIPT — DARK / LIGHT MODE
+    ====================================================== -->
+
+    <script src="./script.js"></script>
+
+</body>
+
+</html>

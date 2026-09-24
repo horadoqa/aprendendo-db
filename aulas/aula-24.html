@@ -1,0 +1,1643 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="./style.css">
+
+    <link rel="icon" type="image/png" href="./assets/images/logo.png">
+
+    <title>Aula 24 — Modelagem de Dados no MongoDB</title>
+
+</head>
+
+<body>
+
+
+    <!-- =====================================================
+         HEADER
+    ====================================================== -->
+
+    <header>
+
+        <button
+            class="theme-toggle"
+            id="themeToggle"
+            type="button"
+            aria-label="Alternar tema">
+
+            <span class="theme-icon" id="themeIcon">
+                ☀️
+            </span>
+
+            <span class="theme-label" id="themeLabel">
+                Modo claro
+            </span>
+
+        </button>
+
+
+        <div class="header-content">
+
+            <span class="eyebrow">
+                AULA 24 • MONGODB
+            </span>
+
+            <h1>
+                Modelagem de Dados no MongoDB
+            </h1>
+
+            <p>
+                Aprenda como pensar na estrutura dos documentos,
+                quando incorporar dados e quando utilizar referências.
+            </p>
+
+        </div>
+
+    </header>
+
+
+    <!-- =====================================================
+         CONTEÚDO
+    ====================================================== -->
+
+    <main>
+
+
+        <!-- =====================================================
+             OBJETIVOS
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🎯 Objetivos da aula
+            </h2>
+
+            <p>
+                Nas aulas anteriores aprendemos como criar, consultar,
+                atualizar e excluir documentos, além de estudar índices
+                e performance.
+            </p>
+
+            <p>
+                Agora vamos aprender uma habilidade fundamental:
+                <strong>modelar os dados antes de construir a aplicação</strong>.
+            </p>
+
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <div class="icon">
+                        🧠
+                    </div>
+
+                    <h3>
+                        Pensar em documentos
+                    </h3>
+
+                    <p>
+                        Entender como representar as informações
+                        dentro de uma coleção.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        📦
+                    </div>
+
+                    <h3>
+                        Incorporar dados
+                    </h3>
+
+                    <p>
+                        Aprender quando colocar informações relacionadas
+                        dentro do mesmo documento.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🔗
+                    </div>
+
+                    <h3>
+                        Usar referências
+                    </h3>
+
+                    <p>
+                        Entender quando separar informações em
+                        diferentes documentos.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        ⚡
+                    </div>
+
+                    <h3>
+                        Pensar nas consultas
+                    </h3>
+
+                    <p>
+                        Projetar os dados considerando como a aplicação
+                        realmente utilizará as informações.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             MODELAGEM
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🧩 O que é modelagem de dados?
+            </h2>
+
+            <p>
+                <strong>Modelagem de dados</strong> é o processo de
+                definir como as informações de uma aplicação serão
+                organizadas e relacionadas.
+            </p>
+
+            <p>
+                Em outras palavras, antes de sair criando coleções
+                e documentos, precisamos decidir:
+            </p>
+
+
+            <ul>
+
+                <li>
+                    Quais informações precisam ser armazenadas?
+                </li>
+
+                <li>
+                    Quais informações pertencem ao mesmo contexto?
+                </li>
+
+                <li>
+                    Quais dados são consultados juntos?
+                </li>
+
+                <li>
+                    Quais dados mudam com frequência?
+                </li>
+
+                <li>
+                    Quais relacionamentos existem entre os dados?
+                </li>
+
+                <li>
+                    Quais consultas a aplicação realizará?
+                </li>
+
+            </ul>
+
+
+            <div class="highlight">
+
+                <strong>
+                    No MongoDB, a modelagem deve ser orientada
+                    principalmente pelo acesso aos dados.
+                </strong>
+
+                <p>
+                    Ou seja, não pensamos apenas em como os dados
+                    são organizados, mas também em como a aplicação
+                    precisa consultá-los.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             EXEMPLO LOJA
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🛒 Exemplo: uma loja virtual
+            </h2>
+
+            <p>
+                Imagine que estamos criando uma loja virtual.
+            </p>
+
+            <p>
+                Precisamos armazenar informações sobre:
+            </p>
+
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <div class="icon">
+                        👤
+                    </div>
+
+                    <h3>
+                        Clientes
+                    </h3>
+
+                    <p>
+                        Nome, e-mail, telefone e endereço.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        📦
+                    </div>
+
+                    <h3>
+                        Produtos
+                    </h3>
+
+                    <p>
+                        Nome, preço, categoria e estoque.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🛍️
+                    </div>
+
+                    <h3>
+                        Pedidos
+                    </h3>
+
+                    <p>
+                        Produtos comprados, quantidade,
+                        valores e data.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        💳
+                    </div>
+
+                    <h3>
+                        Pagamentos
+                    </h3>
+
+                    <p>
+                        Informações relacionadas ao pagamento
+                        e seu status.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             PRIMEIRO PRINCÍPIO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🧠 Primeiro princípio: pense nas consultas
+            </h2>
+
+            <p>
+                Em bancos relacionais, é comum começar pensando
+                bastante na estrutura das entidades e relacionamentos.
+            </p>
+
+            <p>
+                No MongoDB, precisamos também pensar:
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>
+                    "Como minha aplicação vai buscar esses dados?"
+                </strong>
+
+            </div>
+
+
+            <p>
+                Imagine que a aplicação frequentemente exibe:
+            </p>
+
+
+            <pre><code>Pedido
+├── cliente
+├── produtos
+├── endereço de entrega
+└── pagamento</code></pre>
+
+
+            <p>
+                Talvez faça sentido armazenar determinadas informações
+                relacionadas ao pedido dentro do próprio documento
+                do pedido.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             EMBEDDING
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                📦 Documentos incorporados
+            </h2>
+
+            <p>
+                Uma das principais estratégias de modelagem no MongoDB
+                é o uso de <strong>documentos incorporados</strong>,
+                também conhecidos como <strong>embedded documents</strong>.
+            </p>
+
+            <p>
+                Nesse modelo, informações relacionadas ficam dentro
+                do documento principal.
+            </p>
+
+
+            <pre><code>{
+    nome: "Ana",
+    email: "ana@email.com",
+
+    endereco: {
+        rua: "Rua das Flores",
+        numero: 100,
+        cidade: "Rio de Janeiro",
+        estado: "RJ"
+    }
+}</code></pre>
+
+
+            <p>
+                O endereço faz parte do documento do cliente.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             VANTAGENS EMBEDDING
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                ✅ Vantagens dos documentos incorporados
+            </h2>
+
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <h3>
+                        🚀 Menos consultas
+                    </h3>
+
+                    <p>
+                        Informações relacionadas podem ser recuperadas
+                        junto com o documento principal.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        📦 Dados juntos
+                    </h3>
+
+                    <p>
+                        Informações que pertencem ao mesmo contexto
+                        ficam próximas.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        🧠 Modelo natural
+                    </h3>
+
+                    <p>
+                        A estrutura do documento pode representar
+                        diretamente o objeto utilizado pela aplicação.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             QUANDO EMBUTIR
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🤔 Quando devemos incorporar?
+            </h2>
+
+            <p>
+                Incorporar dados costuma fazer sentido quando:
+            </p>
+
+
+            <ul>
+
+                <li>
+                    Os dados possuem uma relação forte com o documento principal.
+                </li>
+
+                <li>
+                    Normalmente são consultados juntos.
+                </li>
+
+                <li>
+                    O conjunto incorporado possui tamanho controlado.
+                </li>
+
+                <li>
+                    Os dados não precisam ser compartilhados
+                    de maneira independente entre muitos documentos.
+                </li>
+
+            </ul>
+
+
+            <div class="highlight">
+
+                <strong>
+                    Exemplo:
+                </strong>
+
+                <p>
+                    Endereço de um cliente pode ser incorporado ao
+                    documento do cliente quando esse endereço pertence
+                    diretamente ao contexto daquele cliente.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             REFERÊNCIAS
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🔗 Referências
+            </h2>
+
+            <p>
+                Outra estratégia é armazenar os dados separadamente
+                e criar uma referência entre os documentos.
+            </p>
+
+
+            <p>
+                Imagine:
+            </p>
+
+
+            <pre><code>clientes
+
+{
+    _id: 101,
+    nome: "Ana"
+}</code></pre>
+
+
+            <p>
+                E:
+            </p>
+
+
+            <pre><code>pedidos
+
+{
+    _id: 5001,
+    clienteId: 101,
+    total: 3500
+}</code></pre>
+
+
+            <p>
+                O campo <strong>clienteId</strong> relaciona o pedido
+                ao cliente.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             EMBED VS REFERENCE
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                ⚖️ Embutir ou referenciar?
+            </h2>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Situação
+                            </th>
+
+                            <th>
+                                Embutir
+                            </th>
+
+                            <th>
+                                Referenciar
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>
+                                Dados sempre usados juntos
+                            </td>
+
+                            <td>
+                                Geralmente adequado
+                            </td>
+
+                            <td>
+                                Pode ser desnecessário
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Relação forte
+                            </td>
+
+                            <td>
+                                Geralmente adequado
+                            </td>
+
+                            <td>
+                                Pode ser utilizado
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Dados compartilhados por muitos documentos
+                            </td>
+
+                            <td>
+                                Pode gerar duplicação
+                            </td>
+
+                            <td>
+                                Frequentemente adequado
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Lista potencialmente muito grande
+                            </td>
+
+                            <td>
+                                Pode ser problemático
+                            </td>
+
+                            <td>
+                                Pode ser mais apropriado
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Dados precisam ser atualizados
+                                independentemente
+                            </td>
+
+                            <td>
+                                Pode exigir várias atualizações
+                            </td>
+
+                            <td>
+                                Pode facilitar a centralização
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             EXEMPLO PEDIDO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🛍️ Exemplo: pedido e itens
+            </h2>
+
+            <p>
+                Imagine um pedido com três produtos.
+            </p>
+
+
+            <p>
+                Podemos representar os itens dentro do próprio pedido:
+            </p>
+
+
+            <pre><code>{
+    _id: 5001,
+
+    clienteId: 101,
+
+    itens: [
+
+        {
+            produtoId: 10,
+            nome: "Notebook",
+            quantidade: 1,
+            preco: 3500
+        },
+
+        {
+            produtoId: 20,
+            nome: "Mouse",
+            quantidade: 2,
+            preco: 100
+        }
+
+    ],
+
+    total: 3700
+}</code></pre>
+
+
+            <p>
+                Observe que o pedido possui uma lista de itens.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>
+                    Uma decisão importante:
+                </strong>
+
+                <p>
+                    O pedido pode armazenar informações do produto
+                    necessárias para representar aquele momento
+                    da compra, mesmo que o produto original continue
+                    existindo em outra coleção.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             DUPLICAÇÃO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                📋 Duplicação de dados
+            </h2>
+
+            <p>
+                Em bancos relacionais, frequentemente aprendemos a
+                evitar duplicação de dados através da normalização.
+            </p>
+
+            <p>
+                No MongoDB, alguma duplicação pode ser uma decisão
+                válida de modelagem.
+            </p>
+
+
+            <p>
+                Por exemplo, um pedido pode armazenar:
+            </p>
+
+
+            <pre><code>{
+    produtoId: 10,
+    nomeProduto: "Notebook",
+    precoUnitario: 3500,
+    quantidade: 1
+}</code></pre>
+
+
+            <p>
+                Mesmo que o produto também exista em uma coleção
+                <strong>produtos</strong>.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>
+                    Por quê?
+                </strong>
+
+                <p>
+                    Porque o pedido pode precisar preservar os dados
+                    relevantes daquela operação, como o preço praticado
+                    no momento da compra.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             CUIDADO COM ARRAYS
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                ⚠️ Cuidado com arrays muito grandes
+            </h2>
+
+            <p>
+                Incorporar dados é útil, mas não significa que
+                devemos colocar tudo dentro de um único documento.
+            </p>
+
+
+            <p>
+                Imagine um usuário com milhões de comentários:
+            </p>
+
+
+            <pre><code>{
+    nome: "Ana",
+
+    comentarios: [
+        "...",
+        "...",
+        "...",
+        "...",
+        "...",
+        "..."
+    ]
+}</code></pre>
+
+
+            <p>
+                Uma estrutura desse tipo pode crescer de forma
+                inadequada.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>
+                    Pense no crescimento dos dados.
+                </strong>
+
+                <p>
+                    Se uma informação relacionada pode crescer
+                    indefinidamente, talvez seja necessário
+                    considerar uma coleção separada e referências.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             RELACIONAMENTO 1:N
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🔢 Relacionamento 1:N
+            </h2>
+
+            <p>
+                Um relacionamento de um para muitos ocorre quando
+                um documento está relacionado a vários outros.
+            </p>
+
+
+            <p>
+                Exemplo:
+            </p>
+
+
+            <pre><code>Um cliente
+    ↓
+Muitos pedidos</code></pre>
+
+
+            <p>
+                Uma possibilidade seria:
+            </p>
+
+
+            <pre><code>{
+    _id: 101,
+    nome: "Ana"
+}</code></pre>
+
+
+            <p>
+                E os pedidos:
+            </p>
+
+
+            <pre><code>{
+    _id: 5001,
+    clienteId: 101
+}
+
+{
+    _id: 5002,
+    clienteId: 101
+}
+
+{
+    _id: 5003,
+    clienteId: 101
+}</code></pre>
+
+        </section>
+
+
+        <!-- =====================================================
+             RELACIONAMENTO N:N
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🔀 Relacionamento N:N
+            </h2>
+
+            <p>
+                Um relacionamento muitos para muitos acontece quando
+                vários documentos podem estar relacionados a vários outros.
+            </p>
+
+
+            <p>
+                Um exemplo clássico é:
+            </p>
+
+
+            <pre><code>Alunos
+   ↕
+Cursos</code></pre>
+
+
+            <p>
+                Um aluno pode participar de vários cursos.
+            </p>
+
+            <p>
+                Um curso pode possuir vários alunos.
+            </p>
+
+
+            <p>
+                Nesse tipo de cenário, referências podem ser uma
+                alternativa importante de modelagem.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             MODELAGEM ORIENTADA A CONSULTAS
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🔎 Modele para as consultas
+            </h2>
+
+            <p>
+                Considere uma aplicação que frequentemente precisa
+                mostrar:
+            </p>
+
+
+            <pre><code>Nome do cliente
++
+Últimos pedidos
++
+Total gasto</code></pre>
+
+
+            <p>
+                A modelagem deve considerar essa necessidade.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>
+                    A pergunta não é apenas:
+                </strong>
+
+                <p>
+                    "Como representar os dados?"
+                </p>
+
+                <strong>
+                    Mas também:
+                </strong>
+
+                <p>
+                    "Como a aplicação precisa acessar esses dados?"
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             EMBEDDING VS REFERENCE EXEMPLO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🧪 Dois modelos possíveis
+            </h2>
+
+
+            <h3>
+                Modelo A — incorporado
+            </h3>
+
+
+            <pre><code>{
+    nome: "Ana",
+
+    endereco: {
+        cidade: "Rio de Janeiro",
+        estado: "RJ"
+    }
+}</code></pre>
+
+
+            <h3>
+                Modelo B — referência
+            </h3>
+
+
+            <pre><code>clientes
+
+{
+    _id: 101,
+    nome: "Ana",
+    enderecoId: 900
+}
+
+
+enderecos
+
+{
+    _id: 900,
+    cidade: "Rio de Janeiro",
+    estado: "RJ"
+}</code></pre>
+
+
+            <p>
+                Os dois modelos podem representar a mesma ideia,
+                mas possuem características diferentes.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             PERGUNTAS
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🧠 Perguntas para escolher o modelo
+            </h2>
+
+
+            <ul>
+
+                <li>
+                    Esses dados são acessados juntos?
+                </li>
+
+                <li>
+                    Eles possuem uma relação forte?
+                </li>
+
+                <li>
+                    O conjunto de dados possui tamanho controlado?
+                </li>
+
+                <li>
+                    Os dados são compartilhados por vários documentos?
+                </li>
+
+                <li>
+                    Eles precisam ser atualizados separadamente?
+                </li>
+
+                <li>
+                    Quanto esses dados podem crescer?
+                </li>
+
+                <li>
+                    Quais consultas a aplicação realizará?
+                </li>
+
+            </ul>
+
+        </section>
+
+
+        <!-- =====================================================
+             ERRO COMUM
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                ❌ Erro comum: copiar regras relacionais diretamente
+            </h2>
+
+            <p>
+                Um erro comum ao começar com MongoDB é tentar
+                transformar automaticamente cada entidade de um
+                modelo relacional em uma coleção independente.
+            </p>
+
+
+            <p>
+                Por exemplo:
+            </p>
+
+
+            <pre><code>clientes
+enderecos
+telefones
+pedidos
+itens_pedido
+pagamentos</code></pre>
+
+
+            <p>
+                Essa estrutura pode ser válida em determinadas situações,
+                mas não devemos assumir que ela é obrigatoriamente a
+                melhor forma de modelar os dados no MongoDB.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>
+                    MongoDB não significa simplesmente
+                    "SQL sem tabelas".
+                </strong>
+
+                <p>
+                    O modelo de documentos permite tomar decisões
+                    diferentes de acordo com as necessidades da aplicação.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             DOCUMENTO COMPLETO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                📄 Exemplo de documento bem estruturado
+            </h2>
+
+
+            <pre><code>{
+    _id: 5001,
+
+    cliente: {
+        id: 101,
+        nome: "Ana"
+    },
+
+    enderecoEntrega: {
+        rua: "Rua das Flores",
+        numero: 100,
+        cidade: "Rio de Janeiro",
+        estado: "RJ"
+    },
+
+    itens: [
+
+        {
+            produtoId: 10,
+            nome: "Notebook",
+            precoUnitario: 3500,
+            quantidade: 1
+        },
+
+        {
+            produtoId: 20,
+            nome: "Mouse",
+            precoUnitario: 100,
+            quantidade: 2
+        }
+
+    ],
+
+    total: 3700,
+
+    status: "pago",
+
+    criadoEm: ISODate("2026-01-10")
+}</code></pre>
+
+
+            <p>
+                Esse documento representa o contexto de um pedido
+                e concentra informações que podem ser necessárias
+                para exibi-lo.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             BOAS PRÁTICAS
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                ✅ Boas práticas de modelagem
+            </h2>
+
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <h3>
+                        🔎 Pense nas consultas
+                    </h3>
+
+                    <p>
+                        Modele considerando como os dados serão acessados.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        📦 Agrupe dados relacionados
+                    </h3>
+
+                    <p>
+                        Informações que normalmente são usadas juntas
+                        podem ser candidatas à incorporação.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        🔗 Use referências quando necessário
+                    </h3>
+
+                    <p>
+                        Dados compartilhados ou de crescimento elevado
+                        podem exigir outra estratégia.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        📈 Pense no crescimento
+                    </h3>
+
+                    <p>
+                        Não analise apenas o estado atual dos dados.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             CHECKPOINT
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🧠 Checkpoint
+            </h2>
+
+            <p>
+                Antes de continuar, tente responder:
+            </p>
+
+
+            <ol>
+
+                <li>
+                    O que é modelagem de dados?
+                </li>
+
+                <li>
+                    Por que devemos pensar nas consultas durante
+                    a modelagem do MongoDB?
+                </li>
+
+                <li>
+                    O que significa incorporar um documento?
+                </li>
+
+                <li>
+                    O que é uma referência?
+                </li>
+
+                <li>
+                    Cite uma situação em que incorporar dados
+                    pode ser interessante.
+                </li>
+
+                <li>
+                    Cite uma situação em que utilizar referências
+                    pode ser interessante.
+                </li>
+
+                <li>
+                    Por que arrays muito grandes podem ser problemáticos?
+                </li>
+
+                <li>
+                    O que é duplicação de dados?
+                </li>
+
+                <li>
+                    Por que alguma duplicação pode ser aceitável
+                    em um banco orientado a documentos?
+                </li>
+
+                <li>
+                    Qual é a diferença entre pensar apenas na estrutura
+                    dos dados e pensar também nas consultas?
+                </li>
+
+            </ol>
+
+        </section>
+
+
+        <!-- =====================================================
+             DESAFIO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🧪 Desafio da aula
+            </h2>
+
+            <p>
+                Vamos modelar uma pequena plataforma de cursos.
+            </p>
+
+
+            <p>
+                A aplicação possui:
+            </p>
+
+
+            <ul>
+
+                <li>
+                    Alunos
+                </li>
+
+                <li>
+                    Cursos
+                </li>
+
+                <li>
+                    Professores
+                </li>
+
+                <li>
+                    Aulas
+                </li>
+
+                <li>
+                    Matrículas
+                </li>
+
+                <li>
+                    Comentários
+                </li>
+
+            </ul>
+
+
+            <p>
+                Antes de criar as coleções, responda:
+            </p>
+
+
+            <ol>
+
+                <li>
+                    Quais informações poderiam ser incorporadas?
+                </li>
+
+                <li>
+                    Quais informações deveriam utilizar referências?
+                </li>
+
+                <li>
+                    Quais dados podem crescer indefinidamente?
+                </li>
+
+                <li>
+                    Quais dados são consultados juntos?
+                </li>
+
+                <li>
+                    Quais consultas seriam mais frequentes?
+                </li>
+
+            </ol>
+
+
+            <div class="highlight">
+
+                <strong>
+                    Desafio extra:
+                </strong>
+
+                <p>
+                    Crie um documento de exemplo para representar
+                    um curso contendo informações sobre o professor
+                    e suas aulas.
+                </p>
+
+                <p>
+                    Depois pense: seria melhor incorporar as aulas
+                    dentro do curso ou armazená-las em uma coleção
+                    separada?
+                </p>
+
+                <p>
+                    Justifique sua decisão considerando consultas,
+                    crescimento dos dados e atualização das informações.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             RESUMO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                📝 Resumindo
+            </h2>
+
+
+            <div class="highlight">
+
+                <p>
+                    <strong>Modelagem de dados</strong> é o processo
+                    de decidir como as informações serão organizadas.
+                </p>
+
+                <p>
+                    No MongoDB, devemos considerar não apenas os dados,
+                    mas também <strong>como a aplicação consulta esses dados</strong>.
+                </p>
+
+                <p>
+                    <strong>Documentos incorporados</strong> permitem
+                    armazenar informações relacionadas dentro do
+                    documento principal.
+                </p>
+
+                <p>
+                    <strong>Referências</strong> permitem relacionar
+                    documentos armazenados separadamente.
+                </p>
+
+                <p>
+                    A incorporação pode ser interessante quando os dados
+                    possuem relação forte e são acessados juntos.
+                </p>
+
+                <p>
+                    Referências podem ser adequadas quando os dados são
+                    compartilhados, independentes ou possuem crescimento
+                    que torna a incorporação inadequada.
+                </p>
+
+                <p>
+                    Não existe uma única estrutura correta para todos
+                    os sistemas. A decisão depende dos requisitos,
+                    consultas, crescimento e comportamento da aplicação.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             PRÓXIMA AULA
+        ====================================================== -->
+
+        <section class="cta">
+
+            <h2>
+                🚀 Próxima aula: Relacionamentos no MongoDB
+            </h2>
+
+            <p>
+                Agora que você conhece documentos incorporados
+                e referências, vamos aprofundar os diferentes
+                tipos de relacionamento entre dados.
+            </p>
+
+            <p>
+                Vamos trabalhar com exemplos de relacionamentos
+                1:1, 1:N e N:N e analisar diferentes formas
+                de representá-los no MongoDB.
+            </p>
+
+
+            <a
+                href="./25.html"
+                class="cta-button">
+
+                Aula 25 — Relacionamentos no MongoDB →
+
+            </a>
+
+        </section>
+
+
+    </main>
+
+
+    <!-- =====================================================
+         FOOTER
+    ====================================================== -->
+
+    <footer>
+
+        <p>
+            Guia de Banco de Dados
+        </p>
+
+        <p>
+            Aula 24 • Modelagem de Dados no MongoDB
+        </p>
+
+    </footer>
+
+
+    <!-- =====================================================
+         JAVASCRIPT — DARK / LIGHT MODE
+    ====================================================== -->
+
+    <script src="./script.js"></script>
+
+</body>
+
+</html>

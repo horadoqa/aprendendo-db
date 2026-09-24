@@ -1,0 +1,1953 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="./style.css">
+
+    <link rel="icon" type="image/png" href="./assets/images/logo.png">
+
+    <title>Aula 9 — Subconsultas e CTEs</title>
+
+</head>
+
+<body>
+
+
+    <!-- =====================================================
+         HEADER
+    ====================================================== -->
+
+    <header>
+
+        <button
+            class="theme-toggle"
+            id="themeToggle"
+            type="button"
+            aria-label="Alternar tema">
+
+            <span class="theme-icon" id="themeIcon">
+                ☀️
+            </span>
+
+            <span class="theme-label" id="themeLabel">
+                Modo claro
+            </span>
+
+        </button>
+
+
+        <div class="header-content">
+
+            <span class="eyebrow">
+                AULA 9 • SUBCONSULTAS E CTEs
+            </span>
+
+            <h1>
+                Subconsultas e CTEs
+            </h1>
+
+            <p>
+                Aprenda a utilizar consultas dentro de outras consultas
+                e a organizar consultas SQL complexas com CTEs.
+            </p>
+
+        </div>
+
+    </header>
+
+
+    <!-- =====================================================
+         CONTEÚDO
+    ====================================================== -->
+
+    <main>
+
+
+        <!-- =====================================================
+             OBJETIVOS
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Objetivos da aula
+            </h2>
+
+            <p>
+                Nas aulas anteriores aprendemos a consultar dados,
+                utilizar filtros, relacionar tabelas com JOIN e
+                agrupar informações com GROUP BY.
+            </p>
+
+            <p>
+                Agora vamos aprender a resolver problemas que exigem
+                mais de uma etapa de consulta.
+            </p>
+
+
+            <div class="cards">
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🔎
+                    </div>
+
+                    <h3>
+                        Subconsultas
+                    </h3>
+
+                    <p>
+                        Utilizar uma consulta dentro de outra consulta.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🧩
+                    </div>
+
+                    <h3>
+                        Dividir problemas
+                    </h3>
+
+                    <p>
+                        Separar uma consulta complexa em etapas.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        📝
+                    </div>
+
+                    <h3>
+                        CTE
+                    </h3>
+
+                    <p>
+                        Criar consultas temporárias utilizando WITH.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🚀
+                    </div>
+
+                    <h3>
+                        SQL mais organizado
+                    </h3>
+
+                    <p>
+                        Escrever consultas maiores de forma mais clara.
+                    </p>
+
+                </div>
+
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             RECAPITULAÇÃO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Antes de começar
+            </h2>
+
+            <p>
+                Vamos utilizar principalmente duas tabelas durante
+                os exemplos.
+            </p>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>clientes</th>
+                            <th></th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>id</td>
+                            <td>Identificador do cliente</td>
+
+                        </tr>
+
+                        <tr>
+
+                            <td>nome</td>
+                            <td>Nome do cliente</td>
+
+                        </tr>
+
+                        <tr>
+
+                            <td>cidade</td>
+                            <td>Cidade do cliente</td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>pedidos</th>
+                            <th></th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>id</td>
+                            <td>Identificador do pedido</td>
+
+                        </tr>
+
+                        <tr>
+
+                            <td>cliente_id</td>
+                            <td>Cliente responsável pelo pedido</td>
+
+                        </tr>
+
+                        <tr>
+
+                            <td>total</td>
+                            <td>Valor do pedido</td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             O QUE É SUBCONSULTA
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                O que é uma subconsulta?
+            </h2>
+
+            <p>
+                Uma <strong>subconsulta</strong>, também chamada de
+                <strong>subquery</strong>, é uma consulta SQL colocada
+                dentro de outra consulta.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>Em termos simples:</strong>
+
+                <p>
+                    É uma consulta que ajuda outra consulta a encontrar
+                    ou calcular os dados necessários.
+                </p>
+
+            </div>
+
+
+            <p>
+                Podemos pensar em duas etapas:
+            </p>
+
+
+            <div class="cards">
+
+
+                <div class="card">
+
+                    <span class="badge">
+                        ETAPA 1
+                    </span>
+
+                    <h3>
+                        Descobrir uma informação
+                    </h3>
+
+                    <p>
+                        Executamos uma consulta para encontrar
+                        determinado valor.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <span class="badge">
+                        ETAPA 2
+                    </span>
+
+                    <h3>
+                        Utilizar essa informação
+                    </h3>
+
+                    <p>
+                        A consulta externa utiliza o resultado
+                        encontrado.
+                    </p>
+
+                </div>
+
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             PRIMEIRA SUBCONSULTA
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Primeiro exemplo
+            </h2>
+
+            <p>
+                Imagine que queremos encontrar os pedidos que possuem
+                valor acima da média.
+            </p>
+
+
+            <p>
+                Primeiro precisamos descobrir qual é a média.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span>
+    <span class="sql-keyword">AVG</span>(total)
+
+<span class="sql-keyword">FROM</span> pedidos;</code></pre>
+
+
+            <p>
+                Depois poderíamos utilizar esse valor em outra consulta.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span>
+    id,
+    cliente_id,
+    total
+
+<span class="sql-keyword">FROM</span> pedidos
+
+<span class="sql-keyword">WHERE</span> total &gt; 323.33;</code></pre>
+
+
+            <p>
+                Mas existe uma maneira de fazer isso diretamente com
+                uma subconsulta.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span>
+    id,
+    cliente_id,
+    total
+
+<span class="sql-keyword">FROM</span> pedidos
+
+<span class="sql-keyword">WHERE</span> total &gt; (
+
+    <span class="sql-keyword">SELECT</span>
+        <span class="sql-keyword">AVG</span>(total)
+
+    <span class="sql-keyword">FROM</span> pedidos
+
+);</code></pre>
+
+
+            <div class="highlight">
+
+                <strong>
+                    O que aconteceu?
+                </strong>
+
+                <p>
+                    A consulta interna calcula a média.
+                </p>
+
+                <p>
+                    A consulta externa utiliza essa média para
+                    filtrar os pedidos.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             SUBCONSULTA NO WHERE
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Subconsulta no WHERE
+            </h2>
+
+            <p>
+                Um dos usos mais comuns de subconsultas é dentro
+                da cláusula <strong>WHERE</strong>.
+            </p>
+
+
+            <p>
+                Imagine que queremos encontrar os clientes que
+                possuem pelo menos um pedido.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span>
+    nome
+
+<span class="sql-keyword">FROM</span> clientes
+
+<span class="sql-keyword">WHERE</span> id <span class="sql-keyword">IN</span> (
+
+    <span class="sql-keyword">SELECT</span>
+        cliente_id
+
+    <span class="sql-keyword">FROM</span> pedidos
+
+);</code></pre>
+
+
+            <p>
+                A consulta interna retorna os IDs dos clientes
+                que aparecem na tabela de pedidos.
+            </p>
+
+
+            <p>
+                A consulta externa procura esses clientes na tabela
+                <strong>clientes</strong>.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             IN
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                IN
+            </h2>
+
+            <p>
+                O operador <strong>IN</strong> verifica se um valor
+                pertence a uma lista de valores.
+            </p>
+
+
+            <p>
+                Podemos utilizar essa lista diretamente:
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span>
+    nome
+
+<span class="sql-keyword">FROM</span> clientes
+
+<span class="sql-keyword">WHERE</span> cidade <span class="sql-keyword">IN</span> (
+    <span class="sql-string">'São Paulo'</span>,
+    <span class="sql-string">'Rio de Janeiro'</span>
+);</code></pre>
+
+
+            <p>
+                Também podemos obter essa lista através de uma
+                subconsulta.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span>
+    nome
+
+<span class="sql-keyword">FROM</span> clientes
+
+<span class="sql-keyword">WHERE</span> id <span class="sql-keyword">IN</span> (
+
+    <span class="sql-keyword">SELECT</span>
+        cliente_id
+
+    <span class="sql-keyword">FROM</span> pedidos
+
+    <span class="sql-keyword">WHERE</span> total &gt; 1000
+
+);</code></pre>
+
+
+            <p>
+                Essa consulta encontra clientes que possuem pelo
+                menos um pedido acima de R$ 1.000.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             NOT IN
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                NOT IN
+            </h2>
+
+            <p>
+                O <strong>NOT IN</strong> faz o contrário:
+                verifica se um valor não está presente na lista.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span>
+    nome
+
+<span class="sql-keyword">FROM</span> clientes
+
+<span class="sql-keyword">WHERE</span> id <span class="sql-keyword">NOT IN</span> (
+
+    <span class="sql-keyword">SELECT</span>
+        cliente_id
+
+    <span class="sql-keyword">FROM</span> pedidos
+
+);</code></pre>
+
+
+            <div class="highlight">
+
+                <strong>Atenção ao NULL:</strong>
+
+                <p>
+                    NOT IN pode produzir resultados inesperados quando
+                    a subconsulta retorna valores NULL. Por isso,
+                    em consultas reais, muitas vezes EXISTS ou
+                    NOT EXISTS é uma alternativa mais segura.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             EXISTS
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                EXISTS
+            </h2>
+
+            <p>
+                O <strong>EXISTS</strong> verifica se a subconsulta
+                retorna pelo menos uma linha.
+            </p>
+
+
+            <p>
+                Podemos encontrar clientes que possuem pedidos:
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span>
+    c.nome
+
+<span class="sql-keyword">FROM</span> clientes c
+
+<span class="sql-keyword">WHERE</span> <span class="sql-keyword">EXISTS</span> (
+
+    <span class="sql-keyword">SELECT</span> 1
+
+    <span class="sql-keyword">FROM</span> pedidos p
+
+    <span class="sql-keyword">WHERE</span> p.cliente_id = c.id
+
+);</code></pre>
+
+
+            <div class="highlight">
+
+                <strong>Ideia principal:</strong>
+
+                <p>
+                    "Existe pelo menos um pedido relacionado
+                    a este cliente?"
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             NOT EXISTS
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                NOT EXISTS
+            </h2>
+
+            <p>
+                O <strong>NOT EXISTS</strong> verifica se a
+                subconsulta não retorna nenhuma linha.
+            </p>
+
+
+            <p>
+                Podemos encontrar clientes que ainda não possuem
+                pedidos:
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span>
+    c.nome
+
+<span class="sql-keyword">FROM</span> clientes c
+
+<span class="sql-keyword">WHERE</span> <span class="sql-keyword">NOT EXISTS</span> (
+
+    <span class="sql-keyword">SELECT</span> 1
+
+    <span class="sql-keyword">FROM</span> pedidos p
+
+    <span class="sql-keyword">WHERE</span> p.cliente_id = c.id
+
+);</code></pre>
+
+        </section>
+
+
+        <!-- =====================================================
+             SUBCONSULTA ESCALAR
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Subconsulta escalar
+            </h2>
+
+            <p>
+                Uma subconsulta escalar retorna um único valor.
+            </p>
+
+
+            <p>
+                Por exemplo:
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span>
+
+    nome,
+
+    (
+        <span class="sql-keyword">SELECT</span>
+            <span class="sql-keyword">COUNT</span>(*)
+
+        <span class="sql-keyword">FROM</span> pedidos p
+
+        <span class="sql-keyword">WHERE</span>
+            p.cliente_id = c.id
+    ) <span class="sql-keyword">AS</span> quantidade_pedidos
+
+<span class="sql-keyword">FROM</span> clientes c;</code></pre>
+
+
+            <p>
+                A subconsulta calcula a quantidade de pedidos
+                de cada cliente.
+            </p>
+
+
+            <div class="highlight">
+
+                <p>
+                    Esse tipo de consulta é útil, mas dependendo
+                    do problema, um JOIN com GROUP BY pode ser
+                    mais apropriado.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             SUBCONSULTA NO FROM
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Subconsulta no FROM
+            </h2>
+
+            <p>
+                Uma subconsulta também pode aparecer no
+                <strong>FROM</strong>.
+            </p>
+
+
+            <p>
+                Nesse caso, o resultado da subconsulta funciona
+                como uma tabela temporária para aquela consulta.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span>
+    cliente_id,
+    total_gasto
+
+<span class="sql-keyword">FROM</span> (
+
+    <span class="sql-keyword">SELECT</span>
+
+        cliente_id,
+
+        <span class="sql-keyword">SUM</span>(total) <span class="sql-keyword">AS</span> total_gasto
+
+    <span class="sql-keyword">FROM</span> pedidos
+
+    <span class="sql-keyword">GROUP BY</span> cliente_id
+
+) <span class="sql-keyword">AS</span> resumo;</code></pre>
+
+
+            <p>
+                Primeiro a consulta interna calcula o total por
+                cliente.
+            </p>
+
+            <p>
+                Depois a consulta externa trabalha com esse
+                resultado como se fosse uma tabela.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             LIMITAÇÃO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                O problema das subconsultas grandes
+            </h2>
+
+            <p>
+                Subconsultas são muito úteis, mas consultas grandes
+                podem ficar difíceis de ler quando possuem várias
+                camadas.
+            </p>
+
+
+            <p>
+                Por exemplo:
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span>
+    ...
+
+<span class="sql-keyword">FROM</span> (
+
+    <span class="sql-keyword">SELECT</span>
+        ...
+
+    <span class="sql-keyword">FROM</span> (
+
+        <span class="sql-keyword">SELECT</span>
+            ...
+
+        <span class="sql-keyword">FROM</span> (
+
+            <span class="sql-keyword">SELECT</span>
+                ...
+
+        ) <span class="sql-keyword">AS</span> etapa1
+
+    ) <span class="sql-keyword">AS</span> etapa2
+
+) <span class="sql-keyword">AS</span> etapa3;</code></pre>
+
+
+            <p>
+                Quanto mais níveis adicionamos, mais difícil pode
+                ser entender e manter a consulta.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>
+                    É aqui que entram as CTEs.
+                </strong>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             O QUE É CTE
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                O que é uma CTE?
+            </h2>
+
+            <p>
+                <strong>CTE</strong> significa
+                <strong>Common Table Expression</strong>.
+            </p>
+
+            <p>
+                Em SQL, uma CTE permite definir um resultado
+                temporário com um nome e depois utilizá-lo
+                dentro da consulta principal.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>Em termos simples:</strong>
+
+                <p>
+                    Uma CTE permite transformar uma consulta complexa
+                    em etapas nomeadas.
+                </p>
+
+            </div>
+
+
+            <p>
+                A estrutura básica utiliza a palavra-chave
+                <strong>WITH</strong>.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">WITH</span> nome_da_cte <span class="sql-keyword">AS</span> (
+
+    <span class="sql-keyword">SELECT</span>
+        ...
+
+)
+
+<span class="sql-keyword">SELECT</span>
+    ...
+
+<span class="sql-keyword">FROM</span> nome_da_cte;</code></pre>
+
+        </section>
+
+
+        <!-- =====================================================
+             PRIMEIRA CTE
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Primeira CTE
+            </h2>
+
+            <p>
+                Vamos transformar o exemplo anterior em uma CTE.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">WITH</span> resumo <span class="sql-keyword">AS</span> (
+
+    <span class="sql-keyword">SELECT</span>
+
+        cliente_id,
+
+        <span class="sql-keyword">SUM</span>(total) <span class="sql-keyword">AS</span> total_gasto
+
+    <span class="sql-keyword">FROM</span> pedidos
+
+    <span class="sql-keyword">GROUP BY</span> cliente_id
+
+)
+
+<span class="sql-keyword">SELECT</span>
+
+    cliente_id,
+
+    total_gasto
+
+<span class="sql-keyword">FROM</span> resumo;</code></pre>
+
+
+            <p>
+                A CTE chamada <strong>resumo</strong> funciona
+                como uma tabela temporária dentro daquela consulta.
+            </p>
+
+
+            <div class="highlight">
+
+                <p>
+                    <strong>WITH</strong> →
+                    cria a CTE.
+                </p>
+
+                <p>
+                    <strong>resumo</strong> →
+                    nome da CTE.
+                </p>
+
+                <p>
+                    <strong>AS</strong> →
+                    define a consulta que produz seus dados.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             CTE + WHERE
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                CTE com filtro
+            </h2>
+
+            <p>
+                Podemos utilizar a CTE e depois aplicar filtros
+                sobre seu resultado.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">WITH</span> resumo <span class="sql-keyword">AS</span> (
+
+    <span class="sql-keyword">SELECT</span>
+
+        cliente_id,
+
+        <span class="sql-keyword">SUM</span>(total) <span class="sql-keyword">AS</span> total_gasto
+
+    <span class="sql-keyword">FROM</span> pedidos
+
+    <span class="sql-keyword">GROUP BY</span> cliente_id
+
+)
+
+<span class="sql-keyword">SELECT</span>
+
+    cliente_id,
+
+    total_gasto
+
+<span class="sql-keyword">FROM</span> resumo
+
+<span class="sql-keyword">WHERE</span> total_gasto &gt; 1000;</code></pre>
+
+        </section>
+
+
+        <!-- =====================================================
+             CTE + JOIN
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                CTE com JOIN
+            </h2>
+
+            <p>
+                Agora podemos relacionar o resultado da CTE com
+                a tabela de clientes.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">WITH</span> resumo <span class="sql-keyword">AS</span> (
+
+    <span class="sql-keyword">SELECT</span>
+
+        cliente_id,
+
+        <span class="sql-keyword">SUM</span>(total) <span class="sql-keyword">AS</span> total_gasto
+
+    <span class="sql-keyword">FROM</span> pedidos
+
+    <span class="sql-keyword">GROUP BY</span> cliente_id
+
+)
+
+<span class="sql-keyword">SELECT</span>
+
+    c.nome,
+
+    r.total_gasto
+
+<span class="sql-keyword">FROM</span> clientes c
+
+<span class="sql-keyword">INNER JOIN</span> resumo r
+    <span class="sql-keyword">ON</span> c.id = r.cliente_id
+
+<span class="sql-keyword">ORDER BY</span>
+    r.total_gasto <span class="sql-keyword">DESC</span>;</code></pre>
+
+
+            <div class="highlight">
+
+                <p>
+                    Primeiro calculamos o total por cliente.
+                </p>
+
+                <p>
+                    Depois relacionamos esse resultado com
+                    a tabela de clientes.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             MÚLTIPLAS CTES
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Utilizando várias CTEs
+            </h2>
+
+            <p>
+                Uma das grandes vantagens das CTEs é poder criar
+                várias etapas nomeadas na mesma consulta.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">WITH</span>
+
+resumo_pedidos <span class="sql-keyword">AS</span> (
+
+    <span class="sql-keyword">SELECT</span>
+
+        cliente_id,
+
+        <span class="sql-keyword">COUNT</span>(*) <span class="sql-keyword">AS</span> quantidade,
+
+        <span class="sql-keyword">SUM</span>(total) <span class="sql-keyword">AS</span> total_gasto
+
+    <span class="sql-keyword">FROM</span> pedidos
+
+    <span class="sql-keyword">GROUP BY</span> cliente_id
+
+),
+
+
+clientes_ativos <span class="sql-keyword">AS</span> (
+
+    <span class="sql-keyword">SELECT</span>
+
+        cliente_id,
+
+        quantidade,
+
+        total_gasto
+
+    <span class="sql-keyword">FROM</span> resumo_pedidos
+
+    <span class="sql-keyword">WHERE</span> quantidade &gt; 2
+
+)
+
+
+<span class="sql-keyword">SELECT</span>
+
+    c.nome,
+
+    ca.quantidade,
+
+    ca.total_gasto
+
+<span class="sql-keyword">FROM</span> clientes c
+
+<span class="sql-keyword">INNER JOIN</span> clientes_ativos ca
+    <span class="sql-keyword">ON</span> c.id = ca.cliente_id
+
+<span class="sql-keyword">ORDER BY</span>
+    ca.total_gasto <span class="sql-keyword">DESC</span>;</code></pre>
+
+
+            <p>
+                Observe que cada etapa possui um nome.
+            </p>
+
+
+            <div class="highlight">
+
+                <p>
+                    <strong>resumo_pedidos</strong>
+                    → calcula as informações dos pedidos.
+                </p>
+
+                <p>
+                    <strong>clientes_ativos</strong>
+                    → filtra o resultado anterior.
+                </p>
+
+                <p>
+                    Consulta final
+                    → apresenta os nomes dos clientes.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             CTE VS SUBCONSULTA
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Subconsulta × CTE
+            </h2>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Característica</th>
+                            <th>Subconsulta</th>
+                            <th>CTE</th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>Sintaxe</td>
+
+                            <td>
+                                SELECT dentro de outra consulta
+                            </td>
+
+                            <td>
+                                WITH
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>Nome</td>
+
+                            <td>
+                                Normalmente utiliza alias
+                            </td>
+
+                            <td>
+                                Possui nome próprio
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>Organização</td>
+
+                            <td>
+                                Pode ficar aninhada
+                            </td>
+
+                            <td>
+                                Pode separar etapas
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>Legibilidade</td>
+
+                            <td>
+                                Pode ficar difícil em consultas grandes
+                            </td>
+
+                            <td>
+                                Geralmente facilita a leitura
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>Uso</td>
+
+                            <td>
+                                Filtros e cálculos específicos
+                            </td>
+
+                            <td>
+                                Consultas divididas em etapas
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             EXEMPLO COMPLETO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Exemplo completo
+            </h2>
+
+            <p>
+                Vamos criar uma consulta que:
+            </p>
+
+
+            <ul>
+
+                <li>
+                    Calcula a quantidade de pedidos por cliente.
+                </li>
+
+                <li>
+                    Calcula o total gasto.
+                </li>
+
+                <li>
+                    Calcula a média dos pedidos.
+                </li>
+
+                <li>
+                    Mostra apenas clientes com mais de 2 pedidos.
+                </li>
+
+                <li>
+                    Ordena pelo maior total gasto.
+                </li>
+
+            </ul>
+
+
+            <pre><code><span class="sql-keyword">WITH</span> resumo <span class="sql-keyword">AS</span> (
+
+    <span class="sql-keyword">SELECT</span>
+
+        cliente_id,
+
+        <span class="sql-keyword">COUNT</span>(*) <span class="sql-keyword">AS</span> quantidade_pedidos,
+
+        <span class="sql-keyword">SUM</span>(total) <span class="sql-keyword">AS</span> total_gasto,
+
+        <span class="sql-keyword">AVG</span>(total) <span class="sql-keyword">AS</span> media_pedidos
+
+    <span class="sql-keyword">FROM</span> pedidos
+
+    <span class="sql-keyword">GROUP BY</span> cliente_id
+
+)
+
+
+<span class="sql-keyword">SELECT</span>
+
+    c.nome,
+
+    r.quantidade_pedidos,
+
+    r.total_gasto,
+
+    r.media_pedidos
+
+<span class="sql-keyword">FROM</span> clientes c
+
+<span class="sql-keyword">INNER JOIN</span> resumo r
+    <span class="sql-keyword">ON</span> c.id = r.cliente_id
+
+<span class="sql-keyword">WHERE</span>
+    r.quantidade_pedidos &gt; 2
+
+<span class="sql-keyword">ORDER BY</span>
+    r.total_gasto <span class="sql-keyword">DESC</span>;</code></pre>
+
+
+            <div class="highlight">
+
+                <strong>
+                    Perceba a divisão:
+                </strong>
+
+                <p>
+                    A CTE resolve a parte de agregação.
+                </p>
+
+                <p>
+                    A consulta principal resolve a apresentação
+                    dos dados.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             QUANDO USAR
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Quando utilizar subconsultas?
+            </h2>
+
+
+            <p>
+                Subconsultas são úteis quando uma consulta depende
+                diretamente do resultado de outra.
+            </p>
+
+
+            <ul>
+
+                <li>
+                    Comparar valores com uma média.
+                </li>
+
+                <li>
+                    Verificar se determinados registros existem.
+                </li>
+
+                <li>
+                    Filtrar utilizando o resultado de outra consulta.
+                </li>
+
+                <li>
+                    Criar uma tabela derivada.
+                </li>
+
+            </ul>
+
+        </section>
+
+
+        <!-- =====================================================
+             QUANDO USAR CTE
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Quando utilizar CTEs?
+            </h2>
+
+
+            <p>
+                CTEs são especialmente úteis quando queremos
+                dividir uma consulta complexa em etapas.
+            </p>
+
+
+            <ul>
+
+                <li>
+                    Melhorar a organização da consulta.
+                </li>
+
+                <li>
+                    Dar nomes para etapas intermediárias.
+                </li>
+
+                <li>
+                    Facilitar a leitura do SQL.
+                </li>
+
+                <li>
+                    Separar cálculos complexos.
+                </li>
+
+                <li>
+                    Trabalhar com várias etapas de transformação.
+                </li>
+
+            </ul>
+
+
+            <div class="highlight">
+
+                <p>
+                    CTE não significa necessariamente que a consulta
+                    será mais rápida.
+                </p>
+
+                <p>
+                    Seu principal benefício aqui é organizar e
+                    estruturar o SQL. O comportamento de execução
+                    depende do SGBD e da própria consulta.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             EXERCÍCIO 1
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🧪 Exercício 1 — Pedidos acima da média
+            </h2>
+
+            <p>
+                Considere a tabela:
+            </p>
+
+
+            <pre><code>pedidos
+
+id
+cliente_id
+total</code></pre>
+
+
+            <p>
+                Crie uma consulta que retorne todos os pedidos
+                cujo valor seja maior que a média de todos os pedidos.
+            </p>
+
+
+            <p>
+                Utilize uma subconsulta.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             EXERCÍCIO 2
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🧪 Exercício 2 — Clientes com pedidos
+            </h2>
+
+            <p>
+                Liste os clientes que possuem pelo menos um pedido.
+            </p>
+
+
+            <p>
+                Resolva o problema utilizando:
+            </p>
+
+
+            <pre><code><span class="sql-keyword">EXISTS</span></code></pre>
+
+
+            <p>
+                Depois tente resolver utilizando
+                <strong>IN</strong>.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             EXERCÍCIO 3
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🧪 Exercício 3 — Total por cliente
+            </h2>
+
+            <p>
+                Crie uma CTE chamada
+                <strong>resumo</strong> que calcule o total gasto
+                por cliente.
+            </p>
+
+
+            <p>
+                Depois utilize essa CTE para mostrar somente
+                clientes que gastaram mais de R$ 1.000.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             EXERCÍCIO 4
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🧪 Exercício 4 — Várias etapas
+            </h2>
+
+            <p>
+                Crie uma consulta utilizando duas CTEs.
+            </p>
+
+
+            <p>
+                A primeira deve calcular:
+            </p>
+
+
+            <ul>
+
+                <li>
+                    Quantidade de pedidos por cliente.
+                </li>
+
+                <li>
+                    Total gasto por cliente.
+                </li>
+
+            </ul>
+
+
+            <p>
+                A segunda deve selecionar somente clientes
+                com pelo menos 3 pedidos.
+            </p>
+
+
+            <p>
+                Depois faça JOIN com a tabela de clientes
+                para mostrar o nome.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             DESAFIO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🎯 Desafio da aula
+            </h2>
+
+            <p>
+                Imagine que você precise criar um relatório
+                de clientes importantes para uma loja.
+            </p>
+
+
+            <p>
+                Um cliente será considerado nesse relatório quando:
+            </p>
+
+
+            <ul>
+
+                <li>
+                    Possuir pelo menos 3 pedidos.
+                </li>
+
+                <li>
+                    Ter gasto mais de R$ 1.000.
+                </li>
+
+            </ul>
+
+
+            <p>
+                O relatório deve mostrar:
+            </p>
+
+
+            <ul>
+
+                <li>
+                    Nome do cliente.
+                </li>
+
+                <li>
+                    Quantidade de pedidos.
+                </li>
+
+                <li>
+                    Total gasto.
+                </li>
+
+                <li>
+                    Média dos pedidos.
+                </li>
+
+            </ul>
+
+
+            <p>
+                Ordene pelo maior total gasto.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>Dica:</strong>
+
+                <p>
+                    Tente resolver primeiro com uma subconsulta.
+                </p>
+
+                <p>
+                    Depois reescreva a solução utilizando uma CTE.
+                </p>
+
+                <p>
+                    Compare qual das duas versões ficou mais fácil
+                    de entender.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             MAPA MENTAL
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🧠 Mapa mental da aula
+            </h2>
+
+
+            <div class="highlight">
+
+                <p>
+                    <strong>Subconsulta</strong>
+                    → consulta dentro de outra consulta.
+                </p>
+
+                <p>
+                    <strong>IN</strong>
+                    → verifica se um valor pertence a um conjunto.
+                </p>
+
+                <p>
+                    <strong>EXISTS</strong>
+                    → verifica se existe pelo menos uma linha.
+                </p>
+
+                <p>
+                    <strong>NOT EXISTS</strong>
+                    → verifica se não existe nenhuma linha.
+                </p>
+
+                <p>
+                    <strong>WITH</strong>
+                    → inicia uma CTE.
+                </p>
+
+                <p>
+                    <strong>CTE</strong>
+                    → cria uma etapa temporária e nomeada da consulta.
+                </p>
+
+                <p>
+                    <strong>JOIN</strong>
+                    → relaciona tabelas ou resultados.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             RESUMO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Resumindo
+            </h2>
+
+
+            <div class="highlight">
+
+                <p>
+                    Uma <strong>subconsulta</strong> é uma consulta
+                    dentro de outra consulta.
+                </p>
+
+                <p>
+                    Ela pode ser utilizada para comparar valores,
+                    filtrar registros, verificar existência ou
+                    produzir uma tabela derivada.
+                </p>
+
+                <p>
+                    <strong>EXISTS</strong> verifica se uma consulta
+                    retorna pelo menos uma linha.
+                </p>
+
+                <p>
+                    Uma <strong>CTE</strong> utiliza
+                    <strong>WITH</strong> para criar um resultado
+                    temporário e nomeado dentro da consulta.
+                </p>
+
+                <p>
+                    CTEs são especialmente úteis para dividir
+                    consultas complexas em etapas mais fáceis
+                    de entender.
+                </p>
+
+                <p>
+                    Subconsultas e CTEs não substituem os conceitos
+                    anteriores. Elas trabalham junto com
+                    SELECT, WHERE, JOIN, GROUP BY, HAVING e
+                    ORDER BY.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             CHECKPOINT
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🧠 Você entendeu?
+            </h2>
+
+            <p>
+                Antes de avançar para a próxima aula, tente
+                responder:
+            </p>
+
+
+            <ul>
+
+                <li>
+                    O que é uma subconsulta?
+                </li>
+
+                <li>
+                    Em quais partes de uma consulta podemos
+                    utilizar subconsultas?
+                </li>
+
+                <li>
+                    Qual a diferença entre IN e EXISTS?
+                </li>
+
+                <li>
+                    O que o NOT EXISTS verifica?
+                </li>
+
+                <li>
+                    O que significa CTE?
+                </li>
+
+                <li>
+                    Para que serve o WITH?
+                </li>
+
+                <li>
+                    Qual é a principal vantagem de uma CTE em
+                    consultas complexas?
+                </li>
+
+                <li>
+                    Quando um JOIN + GROUP BY pode ser uma
+                    alternativa a uma subconsulta?
+                </li>
+
+            </ul>
+
+        </section>
+
+
+        <!-- =====================================================
+             PRÓXIMA AULA
+        ====================================================== -->
+
+        <section class="cta">
+
+            <h2>
+                Aula 9 concluída!
+            </h2>
+
+            <p>
+                Agora você já sabe dividir consultas complexas
+                utilizando subconsultas e CTEs.
+            </p>
+
+            <p>
+                Na próxima aula, podemos avançar para
+                <strong>funções de janela (Window Functions)</strong>,
+                aprendendo conceitos como
+                <strong>ROW_NUMBER, RANK, DENSE_RANK,
+                LAG e LEAD</strong>.
+            </p>
+
+
+            <a
+                href="./10.html"
+                class="cta-button">
+
+                Aula 10 →
+
+            </a>
+
+        </section>
+
+
+    </main>
+
+
+    <!-- =====================================================
+         FOOTER
+    ====================================================== -->
+
+    <footer>
+
+        <p>
+            Guia de Banco de Dados
+        </p>
+
+        <p>
+            Aula 9 • Subconsultas e CTEs
+        </p>
+
+    </footer>
+
+
+    <!-- =====================================================
+         JAVASCRIPT — DARK / LIGHT MODE
+    ====================================================== -->
+
+    <script src="./script.js"></script>
+
+</body>
+
+</html>

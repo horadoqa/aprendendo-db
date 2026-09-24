@@ -1,0 +1,1893 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="./style.css">
+
+    <link rel="icon" type="image/png" href="./assets/images/logo.png">
+
+    <title>Aula 13 — Concorrência, Locks e Deadlocks</title>
+
+</head>
+
+<body>
+
+
+    <!-- =====================================================
+         HEADER
+    ====================================================== -->
+
+    <header>
+
+        <button
+            class="theme-toggle"
+            id="themeToggle"
+            type="button"
+            aria-label="Alternar tema">
+
+            <span class="theme-icon" id="themeIcon">
+                ☀️
+            </span>
+
+            <span class="theme-label" id="themeLabel">
+                Modo claro
+            </span>
+
+        </button>
+
+
+        <div class="header-content">
+
+            <span class="eyebrow">
+                AULA 13 • CONCORRÊNCIA E LOCKS
+            </span>
+
+            <h1>
+                Concorrência, Locks e Deadlocks
+            </h1>
+
+            <p>
+                Entenda como bancos de dados controlam várias transações
+                executadas simultaneamente e como evitam conflitos
+                entre operações concorrentes.
+            </p>
+
+        </div>
+
+    </header>
+
+
+    <!-- =====================================================
+         CONTEÚDO
+    ====================================================== -->
+
+    <main>
+
+
+        <!-- =====================================================
+             OBJETIVOS
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Objetivos da aula
+            </h2>
+
+            <p>
+                Em aplicações reais, milhares de usuários podem
+                acessar e modificar os mesmos dados ao mesmo tempo.
+            </p>
+
+            <p>
+                Nesta aula, vamos entender como o banco de dados
+                controla esse acesso simultâneo.
+            </p>
+
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <div class="icon">
+                        👥
+                    </div>
+
+                    <h3>
+                        Concorrência
+                    </h3>
+
+                    <p>
+                        Várias transações trabalhando
+                        simultaneamente.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🔒
+                    </div>
+
+                    <h3>
+                        Locks
+                    </h3>
+
+                    <p>
+                        Mecanismos utilizados para controlar
+                        o acesso aos dados.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        ⚠️
+                    </div>
+
+                    <h3>
+                        Deadlock
+                    </h3>
+
+                    <p>
+                        Situação em que transações ficam esperando
+                        recursos umas das outras.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🛡️
+                    </div>
+
+                    <h3>
+                        Isolamento
+                    </h3>
+
+                    <p>
+                        Define como transações concorrentes
+                        interagem.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             O QUE É CONCORRÊNCIA
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                O que é concorrência?
+            </h2>
+
+            <p>
+                <strong>Concorrência</strong> acontece quando duas
+                ou mais transações estão sendo executadas em períodos
+                que se sobrepõem.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>Exemplo:</strong>
+
+                <p>
+                    Imagine uma loja com apenas 1 unidade de um
+                    determinado produto.
+                </p>
+
+                <p>
+                    Dois clientes tentam comprar esse produto
+                    praticamente ao mesmo tempo.
+                </p>
+
+            </div>
+
+
+            <p>
+                Se o banco não controlar corretamente essas operações,
+                as duas transações podem tentar modificar o mesmo
+                registro simultaneamente.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             PROBLEMA DE CONCORRÊNCIA
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Um exemplo de problema
+            </h2>
+
+            <p>
+                Imagine o seguinte estoque:
+            </p>
+
+
+            <pre><code>Produto: Notebook
+Estoque: 1 unidade</code></pre>
+
+
+            <p>
+                Agora dois clientes fazem uma compra ao mesmo tempo.
+            </p>
+
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <div class="icon">
+                        👤
+                    </div>
+
+                    <h3>
+                        Cliente A
+                    </h3>
+
+                    <p>
+                        Consulta o estoque e encontra
+                        1 unidade disponível.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        👤
+                    </div>
+
+                    <h3>
+                        Cliente B
+                    </h3>
+
+                    <p>
+                        Também consulta o estoque e encontra
+                        1 unidade disponível.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="highlight">
+
+                <strong>Problema:</strong>
+
+                <p>
+                    Se as duas transações continuarem sem um controle
+                    adequado, o sistema pode permitir uma situação
+                    incorreta de estoque.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             LOST UPDATE
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Lost Update
+            </h2>
+
+            <p>
+                Um problema clássico de concorrência é o
+                <strong>Lost Update</strong>, ou
+                <strong>atualização perdida</strong>.
+            </p>
+
+
+            <p>
+                Imagine que o estoque inicial seja:
+            </p>
+
+
+            <pre><code>Estoque = 10</code></pre>
+
+
+            <p>
+                Duas transações fazem uma leitura praticamente
+                ao mesmo tempo.
+            </p>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Momento</th>
+                            <th>Transação A</th>
+                            <th>Transação B</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>
+                                1
+                            </td>
+
+                            <td>
+                                Lê estoque = 10
+                            </td>
+
+                            <td>
+                                —
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                2
+                            </td>
+
+                            <td>
+                                —
+                            </td>
+
+                            <td>
+                                Lê estoque = 10
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                3
+                            </td>
+
+                            <td>
+                                Calcula 10 - 1 = 9
+                            </td>
+
+                            <td>
+                                —
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                4
+                            </td>
+
+                            <td>
+                                Grava 9
+                            </td>
+
+                            <td>
+                                Calcula 10 - 1 = 9
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                5
+                            </td>
+
+                            <td>
+                                —
+                            </td>
+
+                            <td>
+                                Grava 9
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+            <div class="highlight">
+
+                <strong>Resultado:</strong>
+
+                <p>
+                    O estoque termina em 9 quando, considerando as
+                    duas compras, o valor esperado seria 8.
+                </p>
+
+                <p>
+                    Uma das atualizações acabou sendo perdida.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             LOCK
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                O que é um Lock?
+            </h2>
+
+            <p>
+                Um <strong>lock</strong> é um mecanismo utilizado
+                pelo SGBD para controlar o acesso concorrente
+                a determinados recursos.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>Em termos simples:</strong>
+
+                <p>
+                    É como se o banco dissesse:
+                </p>
+
+                <p>
+                    "Este recurso está sendo utilizado por uma
+                    transação. Outras operações talvez precisem
+                    esperar, dependendo do tipo de acesso."
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             TIPOS DE LOCK
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Tipos de Lock
+            </h2>
+
+            <p>
+                Os detalhes variam conforme o SGBD, mas alguns
+                conceitos são comuns em sistemas de banco de dados.
+            </p>
+
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <div class="icon">
+                        📖
+                    </div>
+
+                    <h3>
+                        Shared Lock
+                    </h3>
+
+                    <p>
+                        Associado a operações que precisam
+                        ler um recurso sob determinadas
+                        regras de concorrência.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        ✏️
+                    </div>
+
+                    <h3>
+                        Exclusive Lock
+                    </h3>
+
+                    <p>
+                        Utilizado quando uma transação precisa
+                        modificar um recurso.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🔒
+                    </div>
+
+                    <h3>
+                        Row Lock
+                    </h3>
+
+                    <p>
+                        Pode bloquear uma linha específica,
+                        reduzindo a interferência sobre
+                        outras linhas.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🗃️
+                    </div>
+
+                    <h3>
+                        Table Lock
+                    </h3>
+
+                    <p>
+                        Pode bloquear uma tabela inteira,
+                        dependendo da operação e do SGBD.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="highlight">
+
+                <strong>Importante:</strong>
+
+                <p>
+                    O comportamento exato dos locks depende do SGBD,
+                    do comando executado, do nível de isolamento e
+                    da estratégia interna de controle de concorrência.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             SELECT FOR UPDATE
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                SELECT ... FOR UPDATE
+            </h2>
+
+            <p>
+                Alguns SGBDs suportam o uso de
+                <strong>SELECT ... FOR UPDATE</strong>
+                para indicar que as linhas selecionadas serão
+                utilizadas para uma atualização dentro da transação.
+            </p>
+
+
+            <p>
+                Um exemplo conceitual:
+            </p>
+
+
+            <pre><code><span class="sql-keyword">BEGIN</span>;
+
+<span class="sql-keyword">SELECT</span> *
+<span class="sql-keyword">FROM</span> produtos
+<span class="sql-keyword">WHERE</span> id = <span class="sql-number">10</span>
+<span class="sql-keyword">FOR UPDATE</span>;
+
+<span class="sql-keyword">UPDATE</span> produtos
+<span class="sql-keyword">SET</span> estoque = estoque - <span class="sql-number">1</span>
+<span class="sql-keyword">WHERE</span> id = <span class="sql-number">10</span>;
+
+<span class="sql-keyword">COMMIT</span>;</code></pre>
+
+
+            <p>
+                Isso pode ser útil em cenários em que a aplicação
+                precisa consultar uma linha e depois modificá-la,
+                mantendo o controle da concorrência durante a operação.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             MVCC
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                O que é MVCC?
+            </h2>
+
+            <p>
+                <strong>MVCC</strong> significa
+                <strong>Multi-Version Concurrency Control</strong>.
+            </p>
+
+            <p>
+                É uma técnica utilizada por diversos SGBDs para
+                controlar concorrência mantendo diferentes versões
+                dos dados.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>Ideia principal:</strong>
+
+                <p>
+                    Em vez de fazer todas as operações de leitura
+                    esperarem por operações de escrita, o banco pode
+                    utilizar versões dos dados para fornecer uma visão
+                    consistente para determinadas transações.
+                </p>
+
+            </div>
+
+
+            <p>
+                PostgreSQL, por exemplo, utiliza MVCC como parte
+                de seu mecanismo de controle de concorrência.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             ISOLAMENTO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Concorrência e níveis de isolamento
+            </h2>
+
+            <p>
+                Na Aula 12 vimos que o nível de isolamento determina
+                como transações concorrentes podem observar os dados.
+            </p>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Nível</th>
+                            <th>Ideia geral</th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>
+                                READ UNCOMMITTED
+                            </td>
+
+                            <td>
+                                Menor nível de isolamento definido
+                                pelo padrão SQL.
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                READ COMMITTED
+                            </td>
+
+                            <td>
+                                Leituras normalmente não observam
+                                dados não confirmados.
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                REPEATABLE READ
+                            </td>
+
+                            <td>
+                                Oferece garantias mais fortes para
+                                leituras repetidas.
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                SERIALIZABLE
+                            </td>
+
+                            <td>
+                                Busca as garantias mais fortes de
+                                isolamento entre os níveis padronizados.
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+            <p>
+                Esses níveis possuem diferentes custos e garantias.
+                Além disso, o comportamento concreto pode variar
+                entre diferentes SGBDs.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             DEADLOCK
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                O que é um Deadlock?
+            </h2>
+
+            <p>
+                Um <strong>deadlock</strong> acontece quando duas
+                ou mais transações ficam esperando recursos que estão
+                sendo mantidos umas pelas outras.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>Exemplo clássico:</strong>
+
+                <p>
+                    A Transação A possui o recurso 1 e espera
+                    pelo recurso 2.
+                </p>
+
+                <p>
+                    A Transação B possui o recurso 2 e espera
+                    pelo recurso 1.
+                </p>
+
+            </div>
+
+
+            <pre><code>Transação A
+    ↓
+possui Recurso 1
+    ↓
+espera Recurso 2
+
+
+Transação B
+    ↓
+possui Recurso 2
+    ↓
+espera Recurso 1</code></pre>
+
+
+            <p>
+                Nenhuma das duas consegue continuar enquanto
+                a situação não for resolvida.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             EXEMPLO DEADLOCK
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Exemplo de Deadlock
+            </h2>
+
+
+            <p>
+                Imagine duas contas:
+            </p>
+
+
+            <pre><code>Conta 1
+Conta 2</code></pre>
+
+
+            <p>
+                Agora temos duas transações.
+            </p>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Momento</th>
+                            <th>Transação A</th>
+                            <th>Transação B</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>
+                                1
+                            </td>
+
+                            <td>
+                                Bloqueia Conta 1
+                            </td>
+
+                            <td>
+                                —
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                2
+                            </td>
+
+                            <td>
+                                —
+                            </td>
+
+                            <td>
+                                Bloqueia Conta 2
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                3
+                            </td>
+
+                            <td>
+                                Espera Conta 2
+                            </td>
+
+                            <td>
+                                —
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                4
+                            </td>
+
+                            <td>
+                                —
+                            </td>
+
+                            <td>
+                                Espera Conta 1
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+            <div class="highlight">
+
+                <strong>Resultado:</strong>
+
+                <p>
+                    As duas transações estão esperando uma pela outra.
+                </p>
+
+                <p>
+                    Isso caracteriza uma situação de deadlock.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             COMO O BANCO RESOLVE
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Como o SGBD lida com Deadlocks?
+            </h2>
+
+            <p>
+                Muitos SGBDs possuem mecanismos para detectar
+                situações de deadlock.
+            </p>
+
+
+            <p>
+                Quando um deadlock é detectado, o banco pode
+                escolher uma das transações para ser interrompida
+                ou revertida, permitindo que a outra continue.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>Importante:</strong>
+
+                <p>
+                    A aplicação normalmente precisa estar preparada
+                    para receber um erro relacionado à concorrência
+                    e, quando apropriado, repetir a operação.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             COMO EVITAR DEADLOCK
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Como reduzir a ocorrência de Deadlocks?
+            </h2>
+
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <div class="icon">
+                        1️⃣
+                    </div>
+
+                    <h3>
+                        Ordem consistente
+                    </h3>
+
+                    <p>
+                        Tente acessar recursos relacionados
+                        em uma ordem consistente.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        2️⃣
+                    </div>
+
+                    <h3>
+                        Transações curtas
+                    </h3>
+
+                    <p>
+                        Evite manter locks por mais tempo
+                        do que o necessário.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        3️⃣
+                    </div>
+
+                    <h3>
+                        Operações eficientes
+                    </h3>
+
+                    <p>
+                        Consultas bem planejadas podem reduzir
+                        tempo de espera e contenção.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        4️⃣
+                    </div>
+
+                    <h3>
+                        Tratamento de erros
+                    </h3>
+
+                    <p>
+                        A aplicação deve tratar falhas de
+                        concorrência adequadamente.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             LOCK ESCALATION
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Lock Escalation
+            </h2>
+
+            <p>
+                Alguns SGBDs possuem mecanismos de
+                <strong>lock escalation</strong>, nos quais
+                determinados locks mais granulares podem ser
+                substituídos ou acompanhados por locks de maior
+                abrangência.
+            </p>
+
+
+            <div class="highlight">
+
+                <p>
+                    Por exemplo, uma operação que inicialmente
+                    trabalha com várias linhas pode, dependendo
+                    do SGBD, resultar em um bloqueio de maior
+                    abrangência.
+                </p>
+
+            </div>
+
+
+            <p>
+                Esse comportamento não é igual em todos os bancos
+                e deve ser estudado de acordo com o SGBD utilizado.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             CONCORRÊNCIA EM APLICAÇÕES
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Concorrência na aplicação
+            </h2>
+
+            <p>
+                O controle de concorrência não é responsabilidade
+                apenas do banco.
+            </p>
+
+
+            <p>
+                A aplicação também precisa ser projetada para
+                trabalhar corretamente com situações simultâneas.
+            </p>
+
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <div class="icon">
+                        🧑‍💻
+                    </div>
+
+                    <h3>
+                        Código
+                    </h3>
+
+                    <p>
+                        Deve tratar erros e transações
+                        corretamente.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🗄️
+                    </div>
+
+                    <h3>
+                        Banco
+                    </h3>
+
+                    <p>
+                        Controla transações, locks e
+                        concorrência.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        ⚡
+                    </div>
+
+                    <h3>
+                        Performance
+                    </h3>
+
+                    <p>
+                        Consultas eficientes reduzem
+                        contenção desnecessária.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🧪
+                    </div>
+
+                    <h3>
+                        Testes
+                    </h3>
+
+                    <p>
+                        Cenários concorrentes precisam
+                        ser testados.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             EXEMPLO PRÁTICO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Exemplo prático: controle de estoque
+            </h2>
+
+            <p>
+                Imagine que temos:
+            </p>
+
+
+            <pre><code>Produto
+ID: 10
+Nome: Notebook
+Estoque: 1</code></pre>
+
+
+            <p>
+                Uma abordagem possível é executar uma atualização
+                condicional:
+            </p>
+
+
+            <pre><code><span class="sql-keyword">UPDATE</span> produtos
+<span class="sql-keyword">SET</span> estoque = estoque - <span class="sql-number">1</span>
+<span class="sql-keyword">WHERE</span> id = <span class="sql-number">10</span>
+  <span class="sql-keyword">AND</span> estoque &gt; <span class="sql-number">0</span>;</code></pre>
+
+
+            <p>
+                Depois, a aplicação pode verificar quantas linhas
+                foram afetadas.
+            </p>
+
+
+            <div class="highlight">
+
+                <p>
+                    Se nenhuma linha foi afetada, isso pode indicar
+                    que o produto não existe ou que não havia
+                    estoque disponível, dependendo das regras
+                    da aplicação.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             FOR UPDATE VS UPDATE
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Duas estratégias diferentes
+            </h2>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Estratégia</th>
+                            <th>Ideia</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>
+                                SELECT ... FOR UPDATE
+                            </td>
+
+                            <td>
+                                Selecionar registros para atualização
+                                dentro de uma transação, utilizando
+                                o mecanismo de bloqueio suportado
+                                pelo SGBD.
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                UPDATE condicional
+                            </td>
+
+                            <td>
+                                Executar a alteração somente se
+                                determinada condição ainda for
+                                verdadeira.
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+            <p>
+                A escolha depende do problema, do SGBD e da forma
+                como a aplicação foi projetada.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             BOAS PRÁTICAS
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Boas práticas
+            </h2>
+
+
+            <ul>
+
+                <li>
+                    🔒 Mantenha transações curtas.
+                </li>
+
+                <li>
+                    🔒 Evite bloquear dados desnecessariamente.
+                </li>
+
+                <li>
+                    🔒 Acesse recursos em uma ordem consistente.
+                </li>
+
+                <li>
+                    🔒 Escolha conscientemente o nível de isolamento.
+                </li>
+
+                <li>
+                    🔒 Crie índices adequados para reduzir o tempo
+                    de execução de consultas relevantes.
+                </li>
+
+                <li>
+                    🔒 Trate erros de deadlock e conflitos
+                    de concorrência na aplicação.
+                </li>
+
+                <li>
+                    🔒 Conheça o comportamento específico do SGBD.
+                </li>
+
+                <li>
+                    🔒 Teste situações com múltiplas transações
+                    simultâneas.
+                </li>
+
+            </ul>
+
+        </section>
+
+
+        <!-- =====================================================
+             EXERCÍCIO 1
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🧪 Exercício 1 — Lost Update
+            </h2>
+
+            <p>
+                Imagine que o estoque de um produto seja:
+            </p>
+
+
+            <pre><code>Estoque = 5</code></pre>
+
+
+            <p>
+                Duas transações executam simultaneamente:
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span> estoque
+<span class="sql-keyword">FROM</span> produtos
+<span class="sql-keyword">WHERE</span> id = <span class="sql-number">1</span>;</code></pre>
+
+
+            <p>
+                Ambas recebem o valor 5.
+            </p>
+
+
+            <p>
+                Explique como uma atualização perdida poderia
+                acontecer se as duas transações calculassem
+                <strong>5 - 1</strong> separadamente e depois
+                gravassem o resultado.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             EXERCÍCIO 2
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🧪 Exercício 2 — Lock
+            </h2>
+
+            <p>
+                Pesquise no SGBD que você está estudando como
+                utilizar:
+            </p>
+
+
+            <pre><code>SELECT ... FOR UPDATE</code></pre>
+
+
+            <p>
+                Depois responda:
+            </p>
+
+
+            <ul>
+
+                <li>
+                    O que esse comando faz?
+                </li>
+
+                <li>
+                    Quando ele deve ser utilizado?
+                </li>
+
+                <li>
+                    O que acontece com outra transação que tenta
+                    acessar a mesma linha para uma operação
+                    incompatível?
+                </li>
+
+            </ul>
+
+        </section>
+
+
+        <!-- =====================================================
+             EXERCÍCIO 3
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🧪 Exercício 3 — Deadlock
+            </h2>
+
+            <p>
+                Considere:
+            </p>
+
+
+            <pre><code>Transação A:
+    bloqueia Produto 1
+    tenta acessar Produto 2
+
+Transação B:
+    bloqueia Produto 2
+    tenta acessar Produto 1</code></pre>
+
+
+            <p>
+                Explique por que essa situação pode gerar um deadlock.
+            </p>
+
+
+            <p>
+                Depois proponha uma estratégia para reduzir
+                a possibilidade desse problema.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             EXERCÍCIO 4
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🧪 Exercício 4 — Estoque
+            </h2>
+
+            <p>
+                Você possui um produto com estoque igual a 1.
+            </p>
+
+
+            <p>
+                Dois usuários tentam comprar o produto simultaneamente.
+            </p>
+
+
+            <p>
+                Crie uma estratégia SQL que impeça a aplicação
+                de reduzir o estoque abaixo de zero.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>Dica:</strong>
+
+                <p>
+                    Pense em uma atualização condicional:
+                </p>
+
+
+                <pre><code><span class="sql-keyword">UPDATE</span> produtos
+<span class="sql-keyword">SET</span> estoque = estoque - <span class="sql-number">1</span>
+<span class="sql-keyword">WHERE</span> id = <span class="sql-number">1</span>
+<span class="sql-keyword">AND</span> estoque &gt; <span class="sql-number">0</span>;</code></pre>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             DESAFIO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🎯 Desafio da aula
+            </h2>
+
+            <p>
+                Imagine um sistema de venda de ingressos.
+            </p>
+
+
+            <p>
+                Existem apenas <strong>2 ingressos</strong> disponíveis.
+            </p>
+
+
+            <p>
+                Cinco usuários tentam comprar ingressos
+                praticamente ao mesmo tempo.
+            </p>
+
+
+            <p>
+                Pense em uma solução que utilize:
+            </p>
+
+
+            <ul>
+
+                <li>
+                    Transação.
+                </li>
+
+                <li>
+                    Controle de concorrência.
+                </li>
+
+                <li>
+                    Uma atualização segura do estoque.
+                </li>
+
+                <li>
+                    Tratamento de possíveis conflitos.
+                </li>
+
+            </ul>
+
+
+            <div class="highlight">
+
+                <strong>Pergunta principal:</strong>
+
+                <p>
+                    Como garantir que nunca sejam vendidos mais
+                    ingressos do que realmente existem?
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             MAPA MENTAL
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🧠 Mapa mental da aula
+            </h2>
+
+
+            <div class="highlight">
+
+                <p>
+                    <strong>CONCORRÊNCIA</strong>
+                    → várias transações executadas de forma sobreposta.
+                </p>
+
+                <p>
+                    <strong>LOCK</strong>
+                    → mecanismo de controle de acesso concorrente.
+                </p>
+
+                <p>
+                    <strong>SHARED LOCK</strong>
+                    → associado a determinados acessos de leitura.
+                </p>
+
+                <p>
+                    <strong>EXCLUSIVE LOCK</strong>
+                    → associado a operações que modificam dados.
+                </p>
+
+                <p>
+                    <strong>MVCC</strong>
+                    → controle de concorrência baseado em múltiplas
+                    versões dos dados.
+                </p>
+
+                <p>
+                    <strong>DEADLOCK</strong>
+                    → transações esperando recursos umas das outras.
+                </p>
+
+                <p>
+                    <strong>ISOLAMENTO</strong>
+                    → define garantias para transações concorrentes.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             RESUMO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Resumindo
+            </h2>
+
+
+            <div class="highlight">
+
+                <p>
+                    <strong>Concorrência</strong> acontece quando
+                    múltiplas transações possuem execução sobreposta.
+                </p>
+
+                <p>
+                    <strong>Locks</strong> ajudam o SGBD a controlar
+                    o acesso concorrente aos recursos.
+                </p>
+
+                <p>
+                    <strong>Lost Update</strong> ocorre quando uma
+                    atualização concorrente acaba sobrescrevendo
+                    outra alteração.
+                </p>
+
+                <p>
+                    <strong>MVCC</strong> é uma técnica utilizada
+                    por diversos SGBDs para lidar com concorrência
+                    utilizando versões dos dados.
+                </p>
+
+                <p>
+                    <strong>Deadlock</strong> ocorre quando transações
+                    ficam esperando recursos mantidos umas pelas outras.
+                </p>
+
+                <p>
+                    O projeto da aplicação, as transações, os índices,
+                    os níveis de isolamento e o comportamento específico
+                    do SGBD influenciam o controle de concorrência.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             CHECKPOINT
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🧠 Você entendeu?
+            </h2>
+
+            <p>
+                Antes de avançar, tente responder:
+            </p>
+
+
+            <ul>
+
+                <li>
+                    O que é concorrência em um banco de dados?
+                </li>
+
+                <li>
+                    O que é um lock?
+                </li>
+
+                <li>
+                    Qual a diferença entre um lock compartilhado
+                    e um lock exclusivo?
+                </li>
+
+                <li>
+                    O que é Lost Update?
+                </li>
+
+                <li>
+                    O que significa MVCC?
+                </li>
+
+                <li>
+                    O que é um deadlock?
+                </li>
+
+                <li>
+                    Como duas transações podem entrar em deadlock?
+                </li>
+
+                <li>
+                    Como podemos reduzir a possibilidade de deadlocks?
+                </li>
+
+                <li>
+                    Para que serve SELECT ... FOR UPDATE?
+                </li>
+
+                <li>
+                    Por que uma aplicação precisa tratar erros
+                    relacionados à concorrência?
+                </li>
+
+            </ul>
+
+        </section>
+
+
+        <!-- =====================================================
+             PRÓXIMA AULA
+        ====================================================== -->
+
+        <section class="cta">
+
+            <h2>
+                Aula 13 concluída!
+            </h2>
+
+            <p>
+                Agora você já conhece os principais conceitos
+                relacionados à execução simultânea de transações:
+                concorrência, locks, MVCC e deadlocks.
+            </p>
+
+            <p>
+                Na próxima aula, vamos entrar em um dos assuntos
+                mais importantes para performance:
+                <strong>índices e otimização de consultas SQL</strong>.
+            </p>
+
+
+            <a
+                href="./14.html"
+                class="cta-button">
+
+                Aula 14 →
+
+            </a>
+
+        </section>
+
+
+    </main>
+
+
+    <!-- =====================================================
+         FOOTER
+    ====================================================== -->
+
+    <footer>
+
+        <p>
+            Guia de Banco de Dados
+        </p>
+
+        <p>
+            Aula 13 • Concorrência, Locks e Deadlocks
+        </p>
+
+    </footer>
+
+
+    <!-- =====================================================
+         JAVASCRIPT — DARK / LIGHT MODE
+    ====================================================== -->
+
+    <script src="./script.js"></script>
+
+</body>
+
+</html>

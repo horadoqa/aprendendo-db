@@ -1,0 +1,1854 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="./style.css">
+
+    <link rel="icon" type="image/png" href="./assets/images/logo.png">
+
+    <title>Aula 12 — Transações e ACID</title>
+
+</head>
+
+<body>
+
+
+    <!-- =====================================================
+         HEADER
+    ====================================================== -->
+
+    <header>
+
+        <button
+            class="theme-toggle"
+            id="themeToggle"
+            type="button"
+            aria-label="Alternar tema">
+
+            <span class="theme-icon" id="themeIcon">
+                ☀️
+            </span>
+
+            <span class="theme-label" id="themeLabel">
+                Modo claro
+            </span>
+
+        </button>
+
+
+        <div class="header-content">
+
+            <span class="eyebrow">
+                AULA 12 • TRANSAÇÕES E ACID
+            </span>
+
+            <h1>
+                Transações e ACID
+            </h1>
+
+            <p>
+                Entenda como o banco de dados garante que operações
+                sejam executadas de forma segura, consistente e confiável.
+            </p>
+
+        </div>
+
+    </header>
+
+
+    <!-- =====================================================
+         CONTEÚDO
+    ====================================================== -->
+
+    <main>
+
+
+        <!-- =====================================================
+             OBJETIVOS
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Objetivos da aula
+            </h2>
+
+            <p>
+                Em aplicações reais, uma operação geralmente envolve
+                mais de uma alteração no banco de dados.
+            </p>
+
+            <p>
+                Imagine uma transferência bancária: precisamos retirar
+                dinheiro de uma conta e adicionar esse dinheiro em outra.
+                Essas duas operações precisam ser tratadas como uma unidade.
+            </p>
+
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <div class="icon">
+                        🔄
+                    </div>
+
+                    <h3>
+                        Transações
+                    </h3>
+
+                    <p>
+                        Agrupar operações que devem ser tratadas
+                        como uma unidade.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        💾
+                    </div>
+
+                    <h3>
+                        COMMIT
+                    </h3>
+
+                    <p>
+                        Confirmar definitivamente as alterações.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        ↩️
+                    </div>
+
+                    <h3>
+                        ROLLBACK
+                    </h3>
+
+                    <p>
+                        Desfazer alterações da transação.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🛡️
+                    </div>
+
+                    <h3>
+                        ACID
+                    </h3>
+
+                    <p>
+                        Propriedades que ajudam a garantir
+                        transações confiáveis.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             O PROBLEMA
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                O problema de várias operações
+            </h2>
+
+            <p>
+                Imagine uma transferência de R$ 500 entre duas contas.
+            </p>
+
+
+            <div class="highlight">
+
+                <p>
+                    <strong>Conta A:</strong> R$ 2.000
+                </p>
+
+                <p>
+                    <strong>Conta B:</strong> R$ 1.000
+                </p>
+
+            </div>
+
+
+            <p>
+                A transferência precisa realizar pelo menos duas operações:
+            </p>
+
+
+            <pre><code><span class="sql-keyword">UPDATE</span> contas
+<span class="sql-keyword">SET</span> saldo = saldo - <span class="sql-number">500</span>
+<span class="sql-keyword">WHERE</span> id = <span class="sql-number">1</span>;
+
+
+<span class="sql-keyword">UPDATE</span> contas
+<span class="sql-keyword">SET</span> saldo = saldo + <span class="sql-number">500</span>
+<span class="sql-keyword">WHERE</span> id = <span class="sql-number">2</span>;</code></pre>
+
+
+            <p>
+                Mas imagine que a primeira operação funcione e a segunda
+                falhe.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>Problema:</strong>
+
+                <p>
+                    O dinheiro seria retirado da primeira conta,
+                    mas não seria adicionado à segunda.
+                </p>
+
+                <p>
+                    É exatamente esse tipo de situação que as
+                    <strong>transações</strong> ajudam a evitar.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             O QUE É TRANSAÇÃO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                O que é uma transação?
+            </h2>
+
+            <p>
+                Uma <strong>transação</strong> é um conjunto de operações
+                que o banco de dados trata como uma unidade lógica de trabalho.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>Em termos simples:</strong>
+
+                <p>
+                    Ou todas as operações necessárias são confirmadas,
+                    ou as alterações da transação podem ser desfeitas,
+                    conforme as regras e capacidades do SGBD.
+                </p>
+
+            </div>
+
+
+            <p>
+                Uma transação normalmente possui três momentos importantes:
+            </p>
+
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <div class="icon">
+                        ▶️
+                    </div>
+
+                    <h3>
+                        BEGIN
+                    </h3>
+
+                    <p>
+                        Inicia a transação.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        ✅
+                    </div>
+
+                    <h3>
+                        COMMIT
+                    </h3>
+
+                    <p>
+                        Confirma as alterações.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        ↩️
+                    </div>
+
+                    <h3>
+                        ROLLBACK
+                    </h3>
+
+                    <p>
+                        Desfaz as alterações da transação.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             BEGIN
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                BEGIN
+            </h2>
+
+            <p>
+                O comando utilizado para iniciar uma transação
+                depende do SGBD.
+            </p>
+
+            <p>
+                Em muitos bancos podemos utilizar:
+            </p>
+
+
+            <pre><code><span class="sql-keyword">BEGIN</span>;</code></pre>
+
+
+            <p>
+                A partir desse momento, as operações realizadas
+                fazem parte da transação atual.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             COMMIT
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                COMMIT
+            </h2>
+
+            <p>
+                O <strong>COMMIT</strong> confirma as alterações
+                realizadas pela transação.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">BEGIN</span>;
+
+<span class="sql-keyword">UPDATE</span> contas
+<span class="sql-keyword">SET</span> saldo = saldo - <span class="sql-number">500</span>
+<span class="sql-keyword">WHERE</span> id = <span class="sql-number">1</span>;
+
+<span class="sql-keyword">UPDATE</span> contas
+<span class="sql-keyword">SET</span> saldo = saldo + <span class="sql-number">500</span>
+<span class="sql-keyword">WHERE</span> id = <span class="sql-number">2</span>;
+
+<span class="sql-keyword">COMMIT</span>;</code></pre>
+
+
+            <div class="highlight">
+
+                <p>
+                    Depois do <strong>COMMIT</strong>, as alterações
+                    da transação são confirmadas de acordo com o
+                    comportamento do SGBD e da configuração utilizada.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             ROLLBACK
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                ROLLBACK
+            </h2>
+
+            <p>
+                O <strong>ROLLBACK</strong> é utilizado para desfazer
+                as alterações realizadas na transação que ainda
+                não foram confirmadas.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">BEGIN</span>;
+
+<span class="sql-keyword">UPDATE</span> contas
+<span class="sql-keyword">SET</span> saldo = saldo - <span class="sql-number">500</span>
+<span class="sql-keyword">WHERE</span> id = <span class="sql-number">1</span>;
+
+<span class="sql-keyword">UPDATE</span> contas
+<span class="sql-keyword">SET</span> saldo = saldo + <span class="sql-number">500</span>
+<span class="sql-keyword">WHERE</span> id = <span class="sql-number">2</span>;
+
+<span class="sql-keyword">ROLLBACK</span>;</code></pre>
+
+
+            <div class="highlight">
+
+                <p>
+                    Nesse exemplo, as alterações realizadas dentro
+                    da transação são desfeitas.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             COMMIT VS ROLLBACK
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                COMMIT × ROLLBACK
+            </h2>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Comando</th>
+                            <th>Função</th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>
+                                BEGIN
+                            </td>
+
+                            <td>
+                                Inicia uma transação.
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                COMMIT
+                            </td>
+
+                            <td>
+                                Confirma as alterações da transação.
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                ROLLBACK
+                            </td>
+
+                            <td>
+                                Desfaz alterações não confirmadas
+                                da transação.
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             ACID
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                O que significa ACID?
+            </h2>
+
+            <p>
+                <strong>ACID</strong> é um acrônimo utilizado para
+                representar quatro propriedades associadas à
+                confiabilidade das transações em bancos de dados.
+            </p>
+
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <div class="icon">
+                        🧱
+                    </div>
+
+                    <h3>
+                        A — Atomicidade
+                    </h3>
+
+                    <p>
+                        A transação é tratada como uma unidade:
+                        suas operações não devem produzir um estado
+                        parcialmente aplicado quando ocorre uma falha,
+                        dentro das garantias do SGBD.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        ✔️
+                    </div>
+
+                    <h3>
+                        C — Consistência
+                    </h3>
+
+                    <p>
+                        A transação deve levar o banco de um estado
+                        válido para outro estado válido, respeitando
+                        as regras e restrições definidas.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        👥
+                    </div>
+
+                    <h3>
+                        I — Isolamento
+                    </h3>
+
+                    <p>
+                        Transações concorrentes possuem mecanismos
+                        para controlar como suas operações podem
+                        observar umas às outras.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        💾
+                    </div>
+
+                    <h3>
+                        D — Durabilidade
+                    </h3>
+
+                    <p>
+                        Depois da confirmação da transação,
+                        suas alterações devem permanecer disponíveis
+                        mesmo após determinadas falhas.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             ATOMICIDADE
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                A — Atomicidade
+            </h2>
+
+            <p>
+                A ideia de atomicidade é que uma transação seja
+                tratada como uma unidade de trabalho.
+            </p>
+
+
+            <div class="highlight">
+
+                <p>
+                    <strong>
+                        Tudo ou nada.
+                    </strong>
+                </p>
+
+                <p>
+                    Se uma operação crítica da transação falhar,
+                    o objetivo é evitar que a transação fique
+                    parcialmente aplicada.
+                </p>
+
+            </div>
+
+
+            <p>
+                Exemplo:
+            </p>
+
+
+            <pre><code>Transferência
+
+Conta A
+    - R$ 500
+
+Conta B
+    + R$ 500</code></pre>
+
+
+            <p>
+                As duas alterações fazem parte da mesma operação lógica.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             CONSISTÊNCIA
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                C — Consistência
+            </h2>
+
+            <p>
+                Consistência significa que as regras definidas para
+                o banco devem continuar sendo respeitadas.
+            </p>
+
+
+            <p>
+                Por exemplo, imagine uma tabela:
+            </p>
+
+
+            <pre><code>usuarios
+
+id
+nome
+email</code></pre>
+
+
+            <p>
+                Se <strong>email</strong> possuir uma restrição
+                <strong>UNIQUE</strong>, não devemos terminar uma
+                transação com dois usuários utilizando o mesmo valor
+                de e-mail.
+            </p>
+
+
+            <div class="highlight">
+
+                <p>
+                    Constraints como
+                    <strong>PRIMARY KEY</strong>,
+                    <strong>FOREIGN KEY</strong>,
+                    <strong>UNIQUE</strong> e
+                    <strong>CHECK</strong>
+                    ajudam o banco a preservar regras de integridade.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             ISOLAMENTO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                I — Isolamento
+            </h2>
+
+            <p>
+                Em um sistema real, várias pessoas podem utilizar
+                a aplicação ao mesmo tempo.
+            </p>
+
+
+            <p>
+                Isso significa que várias transações podem estar
+                acontecendo simultaneamente.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>Exemplo:</strong>
+
+                <p>
+                    Dois usuários tentam comprar o último produto
+                    disponível no estoque ao mesmo tempo.
+                </p>
+
+            </div>
+
+
+            <p>
+                O banco precisa controlar a concorrência para evitar
+                situações inconsistentes, de acordo com o nível
+                de isolamento configurado.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             NÍVEIS DE ISOLAMENTO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Níveis de isolamento
+            </h2>
+
+            <p>
+                Os padrões SQL definem diferentes níveis de isolamento.
+                Os nomes mais conhecidos são:
+            </p>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Nível</th>
+                            <th>Ideia geral</th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>
+                                READ UNCOMMITTED
+                            </td>
+
+                            <td>
+                                Permite o menor isolamento entre os
+                                níveis padronizados.
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                READ COMMITTED
+                            </td>
+
+                            <td>
+                                Uma transação normalmente não lê
+                                dados não confirmados de outra.
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                REPEATABLE READ
+                            </td>
+
+                            <td>
+                                Fornece garantias mais fortes para
+                                leituras repetidas.
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                SERIALIZABLE
+                            </td>
+
+                            <td>
+                                Busca o nível mais forte de isolamento,
+                                aproximando o comportamento de execução
+                                serializada.
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+            <div class="highlight">
+
+                <p>
+                    <strong>Importante:</strong>
+                </p>
+
+                <p>
+                    O comportamento exato pode variar entre SGBDs,
+                    especialmente em relação a locks, MVCC e detalhes
+                    de implementação.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             DURABILIDADE
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                D — Durabilidade
+            </h2>
+
+            <p>
+                Depois que uma transação é confirmada, o banco deve
+                fornecer mecanismos para preservar suas alterações
+                mesmo diante de determinadas falhas.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>Exemplo:</strong>
+
+                <p>
+                    Uma aplicação registra um pagamento e recebe
+                    confirmação de que a transação foi concluída.
+                </p>
+
+                <p>
+                    Um problema posterior no servidor não deve
+                    simplesmente apagar a transação já confirmada.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             ACID RESUMO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                ACID em uma tabela
+            </h2>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Letra</th>
+                            <th>Conceito</th>
+                            <th>Ideia principal</th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>
+                                A
+                            </td>
+
+                            <td>
+                                Atomicidade
+                            </td>
+
+                            <td>
+                                Unidade de trabalho.
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                C
+                            </td>
+
+                            <td>
+                                Consistência
+                            </td>
+
+                            <td>
+                                Preservar regras e integridade.
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                I
+                            </td>
+
+                            <td>
+                                Isolamento
+                            </td>
+
+                            <td>
+                                Controlar a interação entre
+                                transações concorrentes.
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                D
+                            </td>
+
+                            <td>
+                                Durabilidade
+                            </td>
+
+                            <td>
+                                Preservar alterações confirmadas.
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             SAVEPOINT
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                SAVEPOINT
+            </h2>
+
+            <p>
+                Alguns SGBDs permitem criar pontos intermediários
+                dentro de uma transação utilizando
+                <strong>SAVEPOINT</strong>.
+            </p>
+
+
+            <p>
+                Isso permite desfazer parte do trabalho sem
+                necessariamente cancelar toda a transação.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">BEGIN</span>;
+
+<span class="sql-keyword">UPDATE</span> produtos
+<span class="sql-keyword">SET</span> estoque = estoque - <span class="sql-number">1</span>
+<span class="sql-keyword">WHERE</span> id = <span class="sql-number">10</span>;
+
+<span class="sql-keyword">SAVEPOINT</span> estoque_atualizado;
+
+<span class="sql-keyword">UPDATE</span> pedidos
+<span class="sql-keyword">SET</span> status = <span class="sql-string">'processando'</span>
+<span class="sql-keyword">WHERE</span> id = <span class="sql-number">100</span>;
+
+<span class="sql-keyword">ROLLBACK TO SAVEPOINT</span> estoque_atualizado;
+
+<span class="sql-keyword">COMMIT</span>;</code></pre>
+
+
+            <p>
+                O suporte e a sintaxe podem variar conforme o SGBD.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             AUTOCOMMIT
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                O que é Auto Commit?
+            </h2>
+
+            <p>
+                Muitos ambientes trabalham com
+                <strong>autocommit</strong>, no qual determinadas
+                instruções são confirmadas automaticamente.
+            </p>
+
+
+            <div class="highlight">
+
+                <p>
+                    Por isso, é importante entender como o cliente,
+                    driver e SGBD utilizados estão configurados
+                    antes de executar operações críticas.
+                </p>
+
+            </div>
+
+
+            <p>
+                Em exercícios de transações, normalmente é mais
+                didático controlar explicitamente:
+            </p>
+
+
+            <pre><code><span class="sql-keyword">BEGIN</span>;
+
+<span class="sql-comment">-- operações</span>
+
+<span class="sql-keyword">COMMIT</span>;
+
+<span class="sql-comment">-- ou</span>
+
+<span class="sql-keyword">ROLLBACK</span>;</code></pre>
+
+        </section>
+
+
+        <!-- =====================================================
+             EXEMPLO COMPLETO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Exemplo completo: transferência
+            </h2>
+
+            <p>
+                Vamos montar uma transação de transferência
+                entre duas contas.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">BEGIN</span>;
+
+<span class="sql-keyword">UPDATE</span> contas
+<span class="sql-keyword">SET</span> saldo = saldo - <span class="sql-number">500</span>
+<span class="sql-keyword">WHERE</span> id = <span class="sql-number">1</span>
+  <span class="sql-keyword">AND</span> saldo &gt;= <span class="sql-number">500</span>;
+
+
+<span class="sql-keyword">UPDATE</span> contas
+<span class="sql-keyword">SET</span> saldo = saldo + <span class="sql-number">500</span>
+<span class="sql-keyword">WHERE</span> id = <span class="sql-number">2</span>;
+
+
+<span class="sql-keyword">COMMIT</span>;</code></pre>
+
+
+            <div class="highlight">
+
+                <strong>Atenção:</strong>
+
+                <p>
+                    Em uma aplicação real, ainda precisamos validar
+                    situações como conta inexistente, saldo insuficiente,
+                    concorrência e falhas entre operações.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             TRANSAÇÕES NA APLICAÇÃO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Transações e aplicações
+            </h2>
+
+            <p>
+                Normalmente, a aplicação inicia uma transação,
+                executa operações e decide se deve confirmar ou
+                desfazer o trabalho.
+            </p>
+
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <div class="icon">
+                        📱
+                    </div>
+
+                    <h3>
+                        Aplicação
+                    </h3>
+
+                    <p>
+                        Solicita as operações ao banco.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🗄️
+                    </div>
+
+                    <h3>
+                        Banco de dados
+                    </h3>
+
+                    <p>
+                        Executa as operações dentro da transação.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        ✅
+                    </div>
+
+                    <h3>
+                        Sucesso
+                    </h3>
+
+                    <p>
+                        A aplicação confirma com COMMIT.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        ↩️
+                    </div>
+
+                    <h3>
+                        Falha
+                    </h3>
+
+                    <p>
+                        A aplicação pode utilizar ROLLBACK,
+                        quando apropriado.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             QUANDO USAR
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Quando devemos utilizar transações?
+            </h2>
+
+
+            <ul>
+
+                <li>
+                    💳 Processamento de pagamentos.
+                </li>
+
+                <li>
+                    🏦 Transferências financeiras.
+                </li>
+
+                <li>
+                    🛒 Criação de pedidos e atualização de estoque.
+                </li>
+
+                <li>
+                    🎫 Reserva de ingressos ou vagas.
+                </li>
+
+                <li>
+                    📦 Movimentação de estoque.
+                </li>
+
+                <li>
+                    👤 Operações que alteram várias tabelas
+                    de forma relacionada.
+                </li>
+
+            </ul>
+
+        </section>
+
+
+        <!-- =====================================================
+             EXERCÍCIO 1
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🧪 Exercício 1 — COMMIT
+            </h2>
+
+            <p>
+                Imagine uma tabela chamada
+                <strong>produtos</strong>:
+            </p>
+
+
+            <pre><code>id
+nome
+preco
+estoque</code></pre>
+
+
+            <p>
+                Crie uma transação que aumente o preço do produto
+                de ID 10 para R$ 150,00 e confirme a alteração.
+            </p>
+
+
+            <p>
+                Utilize:
+            </p>
+
+
+            <pre><code>BEGIN
+
+UPDATE
+
+COMMIT</code></pre>
+
+        </section>
+
+
+        <!-- =====================================================
+             EXERCÍCIO 2
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🧪 Exercício 2 — ROLLBACK
+            </h2>
+
+            <p>
+                Faça a mesma alteração do exercício anterior,
+                mas utilize <strong>ROLLBACK</strong> no final.
+            </p>
+
+
+            <p>
+                Depois consulte o produto.
+            </p>
+
+
+            <p>
+                O preço deve ter sido alterado?
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             EXERCÍCIO 3
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🧪 Exercício 3 — Transferência
+            </h2>
+
+            <p>
+                Considere:
+            </p>
+
+
+            <pre><code>Conta 1 → R$ 1.000
+
+Conta 2 → R$ 500</code></pre>
+
+
+            <p>
+                Crie uma transação que transfira R$ 200 da Conta 1
+                para a Conta 2.
+            </p>
+
+
+            <p>
+                A transação deverá executar duas operações:
+            </p>
+
+
+            <ul>
+
+                <li>
+                    Retirar R$ 200 da Conta 1.
+                </li>
+
+                <li>
+                    Adicionar R$ 200 à Conta 2.
+                </li>
+
+            </ul>
+
+
+            <p>
+                Finalize utilizando <strong>COMMIT</strong>.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             EXERCÍCIO 4
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🧪 Exercício 4 — Pensando em ACID
+            </h2>
+
+            <p>
+                Relacione cada situação ao conceito ACID:
+            </p>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Situação</th>
+                            <th>Conceito</th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>
+                                Uma transação não deve ficar
+                                parcialmente aplicada.
+                            </td>
+
+                            <td>
+                                ?
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Regras e restrições devem continuar
+                                sendo respeitadas.
+                            </td>
+
+                            <td>
+                                ?
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Transações concorrentes precisam
+                                ser controladas.
+                            </td>
+
+                            <td>
+                                ?
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Alterações confirmadas devem
+                                permanecer após determinadas falhas.
+                            </td>
+
+                            <td>
+                                ?
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             DESAFIO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🎯 Desafio da aula
+            </h2>
+
+            <p>
+                Imagine um pequeno sistema de vendas.
+            </p>
+
+
+            <p>
+                Quando um cliente realiza uma compra, o sistema precisa:
+            </p>
+
+
+            <ul>
+
+                <li>
+                    Criar o pedido.
+                </li>
+
+                <li>
+                    Registrar os itens do pedido.
+                </li>
+
+                <li>
+                    Diminuir o estoque dos produtos.
+                </li>
+
+                <li>
+                    Registrar o pagamento.
+                </li>
+
+            </ul>
+
+
+            <p>
+                Pense em quais dessas operações deveriam fazer parte
+                da mesma transação.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>Pergunta:</strong>
+
+                <p>
+                    O que deveria acontecer se o pagamento fosse
+                    registrado, mas a atualização do estoque falhasse?
+                </p>
+
+                <p>
+                    Como uma transação poderia ajudar nesse cenário?
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             BOAS PRÁTICAS
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Boas práticas com transações
+            </h2>
+
+
+            <ul>
+
+                <li>
+                    Mantenha transações tão curtas quanto possível.
+                </li>
+
+                <li>
+                    Não mantenha uma transação aberta sem necessidade.
+                </li>
+
+                <li>
+                    Defina claramente quais operações fazem parte
+                    da mesma unidade de trabalho.
+                </li>
+
+                <li>
+                    Trate erros corretamente na aplicação.
+                </li>
+
+                <li>
+                    Conheça o nível de isolamento utilizado.
+                </li>
+
+                <li>
+                    Entenda o comportamento específico do SGBD.
+                </li>
+
+                <li>
+                    Teste cenários de concorrência e falha.
+                </li>
+
+            </ul>
+
+        </section>
+
+
+        <!-- =====================================================
+             MAPA MENTAL
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🧠 Mapa mental da aula
+            </h2>
+
+
+            <div class="highlight">
+
+                <p>
+                    <strong>TRANSAÇÃO</strong>
+                    → unidade lógica de trabalho.
+                </p>
+
+                <p>
+                    <strong>BEGIN</strong>
+                    → inicia a transação.
+                </p>
+
+                <p>
+                    <strong>COMMIT</strong>
+                    → confirma as alterações.
+                </p>
+
+                <p>
+                    <strong>ROLLBACK</strong>
+                    → desfaz alterações não confirmadas.
+                </p>
+
+                <p>
+                    <strong>ACID</strong>
+                    → Atomicidade, Consistência, Isolamento
+                    e Durabilidade.
+                </p>
+
+                <p>
+                    <strong>SAVEPOINT</strong>
+                    → cria um ponto intermediário de recuperação
+                    dentro de uma transação, quando suportado.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             RESUMO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Resumindo
+            </h2>
+
+
+            <div class="highlight">
+
+                <p>
+                    Uma <strong>transação</strong> agrupa operações
+                    relacionadas em uma unidade lógica de trabalho.
+                </p>
+
+                <p>
+                    <strong>COMMIT</strong> confirma as alterações
+                    da transação.
+                </p>
+
+                <p>
+                    <strong>ROLLBACK</strong> desfaz alterações
+                    não confirmadas.
+                </p>
+
+                <p>
+                    <strong>ACID</strong> representa quatro propriedades
+                    importantes associadas à confiabilidade das
+                    transações: Atomicidade, Consistência, Isolamento
+                    e Durabilidade.
+                </p>
+
+                <p>
+                    Transações são fundamentais em operações como
+                    pagamentos, transferências, pedidos e movimentações
+                    de estoque.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             CHECKPOINT
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🧠 Você entendeu?
+            </h2>
+
+            <p>
+                Antes de avançar, tente responder:
+            </p>
+
+
+            <ul>
+
+                <li>
+                    O que é uma transação?
+                </li>
+
+                <li>
+                    Qual a função do COMMIT?
+                </li>
+
+                <li>
+                    Qual a função do ROLLBACK?
+                </li>
+
+                <li>
+                    O que significa ACID?
+                </li>
+
+                <li>
+                    O que significa Atomicidade?
+                </li>
+
+                <li>
+                    O que significa Consistência?
+                </li>
+
+                <li>
+                    O que significa Isolamento?
+                </li>
+
+                <li>
+                    O que significa Durabilidade?
+                </li>
+
+                <li>
+                    Por que transações são importantes em uma
+                    transferência bancária?
+                </li>
+
+                <li>
+                    O que é um SAVEPOINT?
+                </li>
+
+            </ul>
+
+        </section>
+
+
+        <!-- =====================================================
+             PRÓXIMA AULA
+        ====================================================== -->
+
+        <section class="cta">
+
+            <h2>
+                Aula 12 concluída!
+            </h2>
+
+            <p>
+                Agora você já entende como agrupar operações,
+                confirmar alterações e desfazer operações dentro
+                de uma transação.
+            </p>
+
+            <p>
+                Na próxima aula, vamos aprofundar um problema
+                fundamental em sistemas reais:
+                <strong>concorrência, locks, deadlocks e controle
+                de acesso simultâneo aos dados</strong>.
+            </p>
+
+
+            <a
+                href="./13.html"
+                class="cta-button">
+
+                Aula 13 →
+
+            </a>
+
+        </section>
+
+
+    </main>
+
+
+    <!-- =====================================================
+         FOOTER
+    ====================================================== -->
+
+    <footer>
+
+        <p>
+            Guia de Banco de Dados
+        </p>
+
+        <p>
+            Aula 12 • Transações e ACID
+        </p>
+
+    </footer>
+
+
+    <!-- =====================================================
+         JAVASCRIPT — DARK / LIGHT MODE
+    ====================================================== -->
+
+    <script src="./script.js"></script>
+
+</body>
+
+</html>

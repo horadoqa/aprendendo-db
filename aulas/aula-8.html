@@ -1,0 +1,2089 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="./style.css">
+
+    <link rel="icon" type="image/png" href="./assets/images/logo.png">
+
+    <title>Aula 8 — Funções de agregação, GROUP BY e HAVING</title>
+
+</head>
+
+<body>
+
+
+    <!-- =====================================================
+         HEADER
+    ====================================================== -->
+
+    <header>
+
+        <button
+            class="theme-toggle"
+            id="themeToggle"
+            type="button"
+            aria-label="Alternar tema">
+
+            <span class="theme-icon" id="themeIcon">
+                ☀️
+            </span>
+
+            <span class="theme-label" id="themeLabel">
+                Modo claro
+            </span>
+
+        </button>
+
+
+        <div class="header-content">
+
+            <span class="eyebrow">
+                AULA 8 • AGREGAÇÃO E AGRUPAMENTO
+            </span>
+
+            <h1>
+                Funções de agregação, GROUP BY e HAVING
+            </h1>
+
+            <p>
+                Aprenda a transformar vários registros em
+                informações resumidas utilizando COUNT, SUM,
+                AVG, MIN, MAX, GROUP BY e HAVING.
+            </p>
+
+        </div>
+
+    </header>
+
+
+    <!-- =====================================================
+         CONTEÚDO
+    ====================================================== -->
+
+    <main>
+
+
+        <!-- =====================================================
+             OBJETIVOS
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Objetivos da aula
+            </h2>
+
+            <p>
+                Até agora aprendemos a consultar registros e
+                relacionar tabelas utilizando JOIN.
+            </p>
+
+            <p>
+                Mas imagine que uma empresa queira responder
+                perguntas como:
+            </p>
+
+
+            <div class="cards">
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🔢
+                    </div>
+
+                    <h3>
+                        Quantos?
+                    </h3>
+
+                    <p>
+                        Quantos clientes existem?
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        💰
+                    </div>
+
+                    <h3>
+                        Quanto?
+                    </h3>
+
+                    <p>
+                        Qual foi o total vendido?
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        📊
+                    </div>
+
+                    <h3>
+                        Média
+                    </h3>
+
+                    <p>
+                        Qual foi o valor médio dos pedidos?
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🏆
+                    </div>
+
+                    <h3>
+                        Maior e menor
+                    </h3>
+
+                    <p>
+                        Qual foi o maior pedido?
+                    </p>
+
+                </div>
+
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             O QUE É AGREGAÇÃO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                O que são funções de agregação?
+            </h2>
+
+            <p>
+                Funções de agregação são funções SQL utilizadas
+                para realizar cálculos sobre um conjunto de
+                registros e produzir um resultado resumido.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>Exemplo:</strong>
+
+                <p>
+                    Em vez de retornar os 1.000 pedidos de uma
+                    loja, podemos calcular o valor total desses
+                    pedidos.
+                </p>
+
+            </div>
+
+
+            <p>
+                As principais funções que vamos estudar são:
+            </p>
+
+
+            <div class="cards">
+
+
+                <div class="card">
+
+                    <span class="badge">
+                        COUNT
+                    </span>
+
+                    <h3>
+                        Contar
+                    </h3>
+
+                    <p>
+                        Conta registros ou valores.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <span class="badge">
+                        SUM
+                    </span>
+
+                    <h3>
+                        Somar
+                    </h3>
+
+                    <p>
+                        Calcula a soma dos valores.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <span class="badge">
+                        AVG
+                    </span>
+
+                    <h3>
+                        Média
+                    </h3>
+
+                    <p>
+                        Calcula a média.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <span class="badge">
+                        MIN / MAX
+                    </span>
+
+                    <h3>
+                        Limites
+                    </h3>
+
+                    <p>
+                        Encontram o menor e o maior valor.
+                    </p>
+
+                </div>
+
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             COUNT
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                COUNT — contando registros
+            </h2>
+
+            <p>
+                A função <strong>COUNT</strong> é utilizada para
+                contar registros ou valores.
+            </p>
+
+
+            <p>
+                Imagine a tabela:
+            </p>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>ID</th>
+                            <th>Nome</th>
+                            <th>Cidade</th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>1</td>
+                            <td>Ana</td>
+                            <td>Rio de Janeiro</td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>2</td>
+                            <td>João</td>
+                            <td>São Paulo</td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>3</td>
+                            <td>Maria</td>
+                            <td>Belo Horizonte</td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+            <p>
+                Podemos contar quantos clientes existem:
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span>
+    <span class="sql-keyword">COUNT</span>(*) <span class="sql-keyword">AS</span> total_clientes
+
+<span class="sql-keyword">FROM</span> clientes;</code></pre>
+
+
+            <p>
+                Resultado:
+            </p>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>total_clientes</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>3</td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+            <div class="highlight">
+
+                <strong>COUNT(*)</strong>
+
+                <p>
+                    Conta as linhas retornadas pelo conjunto
+                    de dados.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             COUNT COLUNA
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                COUNT(coluna)
+            </h2>
+
+            <p>
+                Também podemos utilizar COUNT passando uma coluna.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span>
+    <span class="sql-keyword">COUNT</span>(email) <span class="sql-keyword">AS</span> total_emails
+
+<span class="sql-keyword">FROM</span> clientes;</code></pre>
+
+
+            <p>
+                Nesse caso, o banco considera os valores
+                não nulos daquela coluna.
+            </p>
+
+
+            <div class="highlight">
+
+                <p>
+                    <strong>COUNT(*)</strong> conta linhas.
+                </p>
+
+                <p>
+                    <strong>COUNT(coluna)</strong> conta valores
+                    não nulos da coluna.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             SUM
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                SUM — somando valores
+            </h2>
+
+            <p>
+                A função <strong>SUM</strong> calcula a soma
+                dos valores de uma coluna numérica.
+            </p>
+
+
+            <p>
+                Imagine a tabela de pedidos:
+            </p>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>ID</th>
+                            <th>Total</th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>101</td>
+                            <td>350.00</td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>102</td>
+                            <td>120.00</td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>103</td>
+                            <td>500.00</td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+            <p>
+                Podemos descobrir quanto foi vendido:
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span>
+    <span class="sql-keyword">SUM</span>(total) <span class="sql-keyword">AS</span> vendas_totais
+
+<span class="sql-keyword">FROM</span> pedidos;</code></pre>
+
+
+            <p>
+                Resultado:
+            </p>
+
+
+            <pre><code>vendas_totais
+-------------
+970.00</code></pre>
+
+        </section>
+
+
+        <!-- =====================================================
+             AVG
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                AVG — calculando médias
+            </h2>
+
+            <p>
+                A função <strong>AVG</strong> calcula a média
+                dos valores de uma coluna numérica.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span>
+    <span class="sql-keyword">AVG</span>(total) <span class="sql-keyword">AS</span> pedido_medio
+
+<span class="sql-keyword">FROM</span> pedidos;</code></pre>
+
+
+            <p>
+                No nosso exemplo:
+            </p>
+
+
+            <pre><code>(350 + 120 + 500) / 3
+
+= 323.33</code></pre>
+
+
+            <p>
+                Portanto, o valor médio dos pedidos seria
+                aproximadamente R$ 323,33.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             MIN MAX
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                MIN e MAX
+            </h2>
+
+            <p>
+                Podemos descobrir o menor e o maior valor
+                utilizando <strong>MIN</strong> e
+                <strong>MAX</strong>.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span>
+
+    <span class="sql-keyword">MIN</span>(total) <span class="sql-keyword">AS</span> menor_pedido,
+
+    <span class="sql-keyword">MAX</span>(total) <span class="sql-keyword">AS</span> maior_pedido
+
+<span class="sql-keyword">FROM</span> pedidos;</code></pre>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>menor_pedido</th>
+                            <th>maior_pedido</th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>120.00</td>
+                            <td>500.00</td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             RESUMO FUNÇÕES
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                As principais funções
+            </h2>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Função</th>
+                            <th>Objetivo</th>
+                            <th>Exemplo</th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>COUNT</td>
+                            <td>Contar</td>
+                            <td>COUNT(*)</td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>SUM</td>
+                            <td>Somar</td>
+                            <td>SUM(total)</td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>AVG</td>
+                            <td>Calcular média</td>
+                            <td>AVG(total)</td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>MIN</td>
+                            <td>Menor valor</td>
+                            <td>MIN(total)</td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>MAX</td>
+                            <td>Maior valor</td>
+                            <td>MAX(total)</td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             GROUP BY
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                GROUP BY
+            </h2>
+
+            <p>
+                Até agora calculamos informações considerando
+                todos os registros.
+            </p>
+
+            <p>
+                Mas e se quisermos calcular algo
+                <strong>por grupo</strong>?
+            </p>
+
+
+            <p>
+                Por exemplo:
+            </p>
+
+
+            <div class="highlight">
+
+                <p>
+                    Quantos clientes existem em cada cidade?
+                </p>
+
+            </div>
+
+
+            <p>
+                Podemos utilizar <strong>GROUP BY</strong>.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span>
+    cidade,
+    <span class="sql-keyword">COUNT</span>(*) <span class="sql-keyword">AS</span> quantidade
+
+<span class="sql-keyword">FROM</span> clientes
+
+<span class="sql-keyword">GROUP BY</span> cidade;</code></pre>
+
+
+            <p>
+                O resultado poderia ser:
+            </p>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>cidade</th>
+                            <th>quantidade</th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>Rio de Janeiro</td>
+                            <td>5</td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>São Paulo</td>
+                            <td>8</td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>Belo Horizonte</td>
+                            <td>3</td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+            <div class="highlight">
+
+                <strong>Ideia principal:</strong>
+
+                <p>
+                    O GROUP BY divide os registros em grupos
+                    de acordo com uma ou mais colunas.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             GROUP BY COM SUM
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                GROUP BY com SUM
+            </h2>
+
+            <p>
+                Também podemos calcular o total de vendas
+                por cliente.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span>
+
+    cliente_id,
+
+    <span class="sql-keyword">SUM</span>(total) <span class="sql-keyword">AS</span> total_gasto
+
+<span class="sql-keyword">FROM</span> pedidos
+
+<span class="sql-keyword">GROUP BY</span> cliente_id;</code></pre>
+
+
+            <p>
+                Agora cada cliente aparece uma vez e seu
+                total é calculado separadamente.
+            </p>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>cliente_id</th>
+                            <th>total_gasto</th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>1</td>
+                            <td>470.00</td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>2</td>
+                            <td>500.00</td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             GROUP BY + JOIN
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                GROUP BY com JOIN
+            </h2>
+
+            <p>
+                Agora podemos combinar o conhecimento da Aula 7
+                com o conteúdo desta aula.
+            </p>
+
+
+            <p>
+                Queremos descobrir quanto cada cliente gastou.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span>
+
+    c.nome,
+
+    <span class="sql-keyword">SUM</span>(p.total) <span class="sql-keyword">AS</span> total_gasto
+
+<span class="sql-keyword">FROM</span> clientes c
+
+<span class="sql-keyword">INNER JOIN</span> pedidos p
+    <span class="sql-keyword">ON</span> c.id = p.cliente_id
+
+<span class="sql-keyword">GROUP BY</span> c.id, c.nome;</code></pre>
+
+
+            <p>
+                Resultado:
+            </p>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Cliente</th>
+                            <th>Total gasto</th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>Ana</td>
+                            <td>470.00</td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>João</td>
+                            <td>500.00</td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+            <div class="highlight">
+
+                <strong>Observe:</strong>
+
+                <p>
+                    O JOIN conecta as tabelas.
+                </p>
+
+                <p>
+                    O GROUP BY cria os grupos.
+                </p>
+
+                <p>
+                    O SUM calcula o total dentro de cada grupo.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             GROUP BY MAIS DE UMA COLUNA
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                GROUP BY com mais de uma coluna
+            </h2>
+
+            <p>
+                Podemos agrupar utilizando mais de uma coluna.
+            </p>
+
+
+            <p>
+                Por exemplo, podemos calcular vendas por cidade
+                e por cliente.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span>
+
+    cidade,
+
+    cliente_id,
+
+    <span class="sql-keyword">SUM</span>(total) <span class="sql-keyword">AS</span> total
+
+<span class="sql-keyword">FROM</span> pedidos
+
+<span class="sql-keyword">GROUP BY</span>
+    cidade,
+    cliente_id;</code></pre>
+
+
+            <p>
+                Nesse caso, os registros são agrupados pela
+                combinação das duas colunas.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             HAVING
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                HAVING
+            </h2>
+
+            <p>
+                O <strong>HAVING</strong> é utilizado para
+                filtrar grupos depois que eles foram agrupados.
+            </p>
+
+
+            <p>
+                Imagine que queremos encontrar clientes que
+                gastaram mais de R$ 500.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span>
+
+    cliente_id,
+
+    <span class="sql-keyword">SUM</span>(total) <span class="sql-keyword">AS</span> total_gasto
+
+<span class="sql-keyword">FROM</span> pedidos
+
+<span class="sql-keyword">GROUP BY</span> cliente_id
+
+<span class="sql-keyword">HAVING</span> <span class="sql-keyword">SUM</span>(total) &gt; 500;</code></pre>
+
+
+            <div class="highlight">
+
+                <strong>WHERE × HAVING</strong>
+
+                <p>
+                    <strong>WHERE</strong> filtra registros
+                    antes do agrupamento.
+                </p>
+
+                <p>
+                    <strong>HAVING</strong> filtra grupos
+                    depois do agrupamento.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             WHERE VS HAVING
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                WHERE × GROUP BY × HAVING
+            </h2>
+
+
+            <p>
+                Podemos utilizar os três juntos.
+            </p>
+
+
+            <p>
+                Imagine que queremos:
+            </p>
+
+
+            <ul>
+
+                <li>
+                    Considerar apenas pedidos acima de R$ 100.
+                </li>
+
+                <li>
+                    Agrupar por cliente.
+                </li>
+
+                <li>
+                    Mostrar apenas clientes cujo total ultrapasse
+                    R$ 500.
+                </li>
+
+            </ul>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span>
+
+    cliente_id,
+
+    <span class="sql-keyword">SUM</span>(total) <span class="sql-keyword">AS</span> total_gasto
+
+<span class="sql-keyword">FROM</span> pedidos
+
+<span class="sql-keyword">WHERE</span> total &gt; 100
+
+<span class="sql-keyword">GROUP BY</span> cliente_id
+
+<span class="sql-keyword">HAVING</span> <span class="sql-keyword">SUM</span>(total) &gt; 500;</code></pre>
+
+
+            <div class="highlight">
+
+                <p>
+                    <strong>WHERE</strong> →
+                    filtra registros.
+                </p>
+
+                <p>
+                    <strong>GROUP BY</strong> →
+                    agrupa registros.
+                </p>
+
+                <p>
+                    <strong>HAVING</strong> →
+                    filtra os grupos.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             ORDER BY
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                ORDER BY com agregações
+            </h2>
+
+            <p>
+                Podemos ordenar o resultado de uma agregação.
+            </p>
+
+
+            <p>
+                Por exemplo, queremos listar os clientes
+                que mais gastaram primeiro.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span>
+
+    cliente_id,
+
+    <span class="sql-keyword">SUM</span>(total) <span class="sql-keyword">AS</span> total_gasto
+
+<span class="sql-keyword">FROM</span> pedidos
+
+<span class="sql-keyword">GROUP BY</span> cliente_id
+
+<span class="sql-keyword">ORDER BY</span> total_gasto <span class="sql-keyword">DESC</span>;</code></pre>
+
+
+            <p>
+                <strong>DESC</strong> coloca os maiores valores
+                primeiro.
+            </p>
+
+
+            <p>
+                <strong>ASC</strong> coloca os menores valores
+                primeiro.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             EXEMPLO COMPLETO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Exemplo completo
+            </h2>
+
+            <p>
+                Vamos juntar os conceitos.
+            </p>
+
+
+            <p>
+                Pergunta:
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>
+                    Quais clientes gastaram mais de R$ 500,
+                    considerando apenas pedidos acima de R$ 50?
+                </strong>
+
+            </div>
+
+
+            <p>
+                Podemos escrever:
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span>
+
+    c.nome,
+
+    <span class="sql-keyword">COUNT</span>(p.id) <span class="sql-keyword">AS</span> quantidade_pedidos,
+
+    <span class="sql-keyword">SUM</span>(p.total) <span class="sql-keyword">AS</span> total_gasto,
+
+    <span class="sql-keyword">AVG</span>(p.total) <span class="sql-keyword">AS</span> media_pedidos
+
+<span class="sql-keyword">FROM</span> clientes c
+
+<span class="sql-keyword">INNER JOIN</span> pedidos p
+    <span class="sql-keyword">ON</span> c.id = p.cliente_id
+
+<span class="sql-keyword">WHERE</span> p.total &gt; 50
+
+<span class="sql-keyword">GROUP BY</span> c.id, c.nome
+
+<span class="sql-keyword">HAVING</span> <span class="sql-keyword">SUM</span>(p.total) &gt; 500
+
+<span class="sql-keyword">ORDER BY</span> total_gasto <span class="sql-keyword">DESC</span>;</code></pre>
+
+
+            <p>
+                Essa consulta consegue mostrar, para cada cliente:
+            </p>
+
+
+            <ul>
+
+                <li>
+                    Quantidade de pedidos.
+                </li>
+
+                <li>
+                    Total gasto.
+                </li>
+
+                <li>
+                    Valor médio dos pedidos.
+                </li>
+
+            </ul>
+
+        </section>
+
+
+        <!-- =====================================================
+             ORDEM CONCEITUAL
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Como pensar em uma consulta desse tipo?
+            </h2>
+
+
+            <p>
+                Uma boa maneira de entender consultas complexas
+                é construí-las aos poucos.
+            </p>
+
+
+            <ol>
+
+                <li>
+                    <strong>FROM</strong> →
+                    escolha a tabela principal.
+                </li>
+
+                <li>
+                    <strong>JOIN</strong> →
+                    conecte outras tabelas.
+                </li>
+
+                <li>
+                    <strong>WHERE</strong> →
+                    filtre registros.
+                </li>
+
+                <li>
+                    <strong>GROUP BY</strong> →
+                    crie os grupos.
+                </li>
+
+                <li>
+                    <strong>HAVING</strong> →
+                    filtre os grupos.
+                </li>
+
+                <li>
+                    <strong>SELECT</strong> →
+                    escolha as informações que serão exibidas.
+                </li>
+
+                <li>
+                    <strong>ORDER BY</strong> →
+                    organize o resultado.
+                </li>
+
+            </ol>
+
+
+            <div class="highlight">
+
+                <p>
+                    Não é necessário memorizar tudo de uma vez.
+                </p>
+
+                <p>
+                    O mais importante é entender o papel de
+                    cada cláusula.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             COUNT DISTINCT
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                COUNT DISTINCT
+            </h2>
+
+            <p>
+                O <strong>DISTINCT</strong> permite considerar
+                apenas valores diferentes.
+            </p>
+
+
+            <p>
+                Por exemplo, podemos descobrir quantas cidades
+                diferentes existem:
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span>
+
+    <span class="sql-keyword">COUNT</span>(<span class="sql-keyword">DISTINCT</span> cidade)
+    <span class="sql-keyword">AS</span> cidades_diferentes
+
+<span class="sql-keyword">FROM</span> clientes;</code></pre>
+
+
+            <p>
+                Se houver 100 clientes distribuídos em 10 cidades,
+                o resultado será:
+            </p>
+
+
+            <pre><code>cidades_diferentes
+------------------
+10</code></pre>
+
+        </section>
+
+
+        <!-- =====================================================
+             NULL E AGREGAÇÕES
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                E os valores NULL?
+            </h2>
+
+            <p>
+                As funções de agregação possuem comportamentos
+                importantes quando existem valores
+                <strong>NULL</strong>.
+            </p>
+
+
+            <p>
+                Por exemplo:
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span>
+    <span class="sql-keyword">AVG</span>(total)
+
+<span class="sql-keyword">FROM</span> pedidos;</code></pre>
+
+
+            <p>
+                Valores NULL não são considerados no cálculo
+                da média.
+            </p>
+
+
+            <div class="highlight">
+
+                <p>
+                    Por isso, é importante conhecer a qualidade
+                    dos dados antes de interpretar uma agregação.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             TABELA RESUMO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Resumo das cláusulas
+            </h2>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Recurso</th>
+                            <th>Função</th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>WHERE</td>
+
+                            <td>
+                                Filtra registros.
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>GROUP BY</td>
+
+                            <td>
+                                Agrupa registros.
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>HAVING</td>
+
+                            <td>
+                                Filtra grupos.
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>ORDER BY</td>
+
+                            <td>
+                                Ordena o resultado.
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>COUNT</td>
+
+                            <td>
+                                Conta registros ou valores.
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>SUM</td>
+
+                            <td>
+                                Soma valores.
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>AVG</td>
+
+                            <td>
+                                Calcula médias.
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>MIN</td>
+
+                            <td>
+                                Encontra o menor valor.
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>MAX</td>
+
+                            <td>
+                                Encontra o maior valor.
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             EXERCÍCIO 1
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🧪 Exercício 1 — Contando clientes
+            </h2>
+
+            <p>
+                Considere a tabela:
+            </p>
+
+
+            <pre><code>clientes
+
+id
+nome
+email
+cidade</code></pre>
+
+
+            <p>
+                Escreva uma consulta para descobrir quantos
+                clientes existem.
+            </p>
+
+
+            <p>
+                Utilize:
+            </p>
+
+
+            <pre><code><span class="sql-keyword">COUNT</span></code></pre>
+
+        </section>
+
+
+        <!-- =====================================================
+             EXERCÍCIO 2
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🧪 Exercício 2 — Total de vendas
+            </h2>
+
+            <p>
+                Considere a tabela:
+            </p>
+
+
+            <pre><code>pedidos
+
+id
+cliente_id
+total</code></pre>
+
+
+            <p>
+                Escreva uma consulta para calcular o valor total
+                de todos os pedidos.
+            </p>
+
+
+            <p>
+                Utilize:
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SUM</span></code></pre>
+
+        </section>
+
+
+        <!-- =====================================================
+             EXERCÍCIO 3
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🧪 Exercício 3 — Agrupando por cliente
+            </h2>
+
+            <p>
+                Calcule quanto cada cliente gastou.
+            </p>
+
+
+            <p>
+                A resposta deve apresentar:
+            </p>
+
+
+            <ul>
+
+                <li>
+                    ID do cliente.
+                </li>
+
+                <li>
+                    Total gasto.
+                </li>
+
+            </ul>
+
+
+            <p>
+                Utilize:
+            </p>
+
+
+            <pre><code><span class="sql-keyword">GROUP BY</span>
+
+<span class="sql-keyword">SUM</span></code></pre>
+
+        </section>
+
+
+        <!-- =====================================================
+             EXERCÍCIO 4
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🧪 Exercício 4 — Filtrando grupos
+            </h2>
+
+            <p>
+                Agora mostre somente os clientes que gastaram
+                mais de R$ 1.000.
+            </p>
+
+
+            <p>
+                Você deverá utilizar:
+            </p>
+
+
+            <pre><code><span class="sql-keyword">GROUP BY</span>
+
+<span class="sql-keyword">HAVING</span></code></pre>
+
+        </section>
+
+
+        <!-- =====================================================
+             DESAFIO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🎯 Desafio da aula
+            </h2>
+
+            <p>
+                Uma loja possui:
+            </p>
+
+
+            <pre><code>clientes
+    id
+    nome
+
+
+pedidos
+    id
+    cliente_id
+    total</code></pre>
+
+
+            <p>
+                Crie uma consulta que mostre:
+            </p>
+
+
+            <ul>
+
+                <li>
+                    Nome do cliente.
+                </li>
+
+                <li>
+                    Quantidade de pedidos.
+                </li>
+
+                <li>
+                    Total gasto.
+                </li>
+
+                <li>
+                    Média dos pedidos.
+                </li>
+
+            </ul>
+
+
+            <p>
+                Mostre apenas clientes cujo total gasto seja
+                superior a R$ 1.000.
+            </p>
+
+
+            <p>
+                Ordene o resultado do maior para o menor
+                total gasto.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>Dica:</strong>
+
+                <p>
+                    Você precisará combinar:
+                </p>
+
+                <p>
+                    JOIN + COUNT + SUM + AVG + GROUP BY +
+                    HAVING + ORDER BY
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             MAPA MENTAL
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🧠 Mapa mental da aula
+            </h2>
+
+
+            <div class="highlight">
+
+                <p>
+                    <strong>COUNT</strong>
+                    → conta.
+                </p>
+
+                <p>
+                    <strong>SUM</strong>
+                    → soma.
+                </p>
+
+                <p>
+                    <strong>AVG</strong>
+                    → calcula média.
+                </p>
+
+                <p>
+                    <strong>MIN</strong>
+                    → menor valor.
+                </p>
+
+                <p>
+                    <strong>MAX</strong>
+                    → maior valor.
+                </p>
+
+                <p>
+                    <strong>GROUP BY</strong>
+                    → cria grupos.
+                </p>
+
+                <p>
+                    <strong>HAVING</strong>
+                    → filtra grupos.
+                </p>
+
+                <p>
+                    <strong>WHERE</strong>
+                    → filtra registros.
+                </p>
+
+                <p>
+                    <strong>ORDER BY</strong>
+                    → ordena resultados.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             RESUMO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Resumindo
+            </h2>
+
+
+            <div class="highlight">
+
+                <p>
+                    Funções de agregação permitem realizar cálculos
+                    sobre conjuntos de registros.
+                </p>
+
+                <p>
+                    <strong>COUNT</strong> conta,
+                    <strong>SUM</strong> soma,
+                    <strong>AVG</strong> calcula médias,
+                    <strong>MIN</strong> encontra o menor valor e
+                    <strong>MAX</strong> encontra o maior.
+                </p>
+
+                <p>
+                    <strong>GROUP BY</strong> permite dividir os
+                    registros em grupos.
+                </p>
+
+                <p>
+                    <strong>HAVING</strong> permite filtrar esses
+                    grupos depois da agregação.
+                </p>
+
+                <p>
+                    <strong>WHERE</strong> filtra registros antes
+                    do agrupamento.
+                </p>
+
+                <p>
+                    JOIN + GROUP BY + funções de agregação permitem
+                    construir consultas muito mais poderosas.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             CHECKPOINT
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🧠 Você entendeu?
+            </h2>
+
+            <p>
+                Antes de avançar, tente responder:
+            </p>
+
+
+            <ul>
+
+                <li>
+                    Para que serve COUNT?
+                </li>
+
+                <li>
+                    Qual a diferença entre COUNT(*) e
+                    COUNT(coluna)?
+                </li>
+
+                <li>
+                    Para que serve SUM?
+                </li>
+
+                <li>
+                    O que AVG calcula?
+                </li>
+
+                <li>
+                    Para que servem MIN e MAX?
+                </li>
+
+                <li>
+                    Para que serve GROUP BY?
+                </li>
+
+                <li>
+                    Qual a diferença entre WHERE e HAVING?
+                </li>
+
+                <li>
+                    Como combinar GROUP BY com JOIN?
+                </li>
+
+            </ul>
+
+        </section>
+
+
+        <!-- =====================================================
+             PRÓXIMA AULA
+        ====================================================== -->
+
+        <section class="cta">
+
+            <h2>
+                Aula 8 concluída!
+            </h2>
+
+            <p>
+                Agora você já consegue consultar dados,
+                relacionar tabelas e transformar conjuntos
+                de registros em informações resumidas.
+            </p>
+
+            <p>
+                Na próxima aula, podemos avançar para
+                <strong>subconsultas, CTEs e consultas SQL
+                mais complexas</strong>, aprendendo a dividir
+                problemas maiores em consultas menores.
+            </p>
+
+
+            <a
+                href="./9.html"
+                class="cta-button">
+
+                Aula 9 →
+
+            </a>
+
+        </section>
+
+
+    </main>
+
+
+    <!-- =====================================================
+         FOOTER
+    ====================================================== -->
+
+    <footer>
+
+        <p>
+            Guia de Banco de Dados
+        </p>
+
+        <p>
+            Aula 8 • Funções de agregação, GROUP BY e HAVING
+        </p>
+
+    </footer>
+
+
+    <!-- =====================================================
+         JAVASCRIPT — DARK / LIGHT MODE
+    ====================================================== -->
+
+    <script src="./script.js"></script>
+
+</body>
+
+</html>

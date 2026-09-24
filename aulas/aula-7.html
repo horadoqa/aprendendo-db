@@ -1,0 +1,1999 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="./style.css">
+
+    <link rel="icon" type="image/png" href="./assets/images/logo.png">
+
+    <title>Aula 7 — Relacionamentos entre tabelas e JOIN</title>
+
+</head>
+
+<body>
+
+
+    <!-- =====================================================
+         HEADER
+    ====================================================== -->
+
+    <header>
+
+        <button
+            class="theme-toggle"
+            id="themeToggle"
+            type="button"
+            aria-label="Alternar tema">
+
+            <span class="theme-icon" id="themeIcon">
+                ☀️
+            </span>
+
+            <span class="theme-label" id="themeLabel">
+                Modo claro
+            </span>
+
+        </button>
+
+
+        <div class="header-content">
+
+            <span class="eyebrow">
+                AULA 7 • RELACIONAMENTOS E JOIN
+            </span>
+
+            <h1>
+                Relacionamentos entre tabelas e JOIN
+            </h1>
+
+            <p>
+                Aprenda como tabelas se relacionam por meio de
+                chaves e como utilizar JOIN para consultar
+                informações relacionadas.
+            </p>
+
+        </div>
+
+    </header>
+
+
+    <!-- =====================================================
+         CONTEÚDO
+    ====================================================== -->
+
+    <main>
+
+
+        <!-- =====================================================
+             OBJETIVOS
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Objetivos da aula
+            </h2>
+
+            <p>
+                Em um banco de dados relacional, as informações
+                normalmente são distribuídas entre diferentes
+                tabelas.
+            </p>
+
+            <p>
+                Nesta aula vamos aprender como essas tabelas
+                podem se relacionar e como recuperar informações
+                de várias tabelas utilizando <strong>JOIN</strong>.
+            </p>
+
+
+            <div class="cards">
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🔑
+                    </div>
+
+                    <h3>
+                        Chave primária
+                    </h3>
+
+                    <p>
+                        Identifica um registro de forma única.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🔗
+                    </div>
+
+                    <h3>
+                        Chave estrangeira
+                    </h3>
+
+                    <p>
+                        Cria uma referência entre tabelas.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🧩
+                    </div>
+
+                    <h3>
+                        Relacionamentos
+                    </h3>
+
+                    <p>
+                        Conectam informações relacionadas.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🔎
+                    </div>
+
+                    <h3>
+                        JOIN
+                    </h3>
+
+                    <p>
+                        Combina dados de tabelas relacionadas.
+                    </p>
+
+                </div>
+
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             PROBLEMA
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Por que precisamos relacionar tabelas?
+            </h2>
+
+            <p>
+                Imagine uma loja virtual.
+            </p>
+
+            <p>
+                Podemos ter uma tabela para armazenar clientes
+                e outra para armazenar pedidos.
+            </p>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>ID</th>
+                            <th>Nome</th>
+                            <th>E-mail</th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>1</td>
+                            <td>Ana</td>
+                            <td>ana@email.com</td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>2</td>
+                            <td>João</td>
+                            <td>joao@email.com</td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>3</td>
+                            <td>Maria</td>
+                            <td>maria@email.com</td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+            <p>
+                Essa poderia ser a tabela
+                <strong>clientes</strong>.
+            </p>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>ID</th>
+                            <th>Cliente ID</th>
+                            <th>Data</th>
+                            <th>Total</th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>101</td>
+                            <td>1</td>
+                            <td>2026-01-10</td>
+                            <td>350.00</td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>102</td>
+                            <td>1</td>
+                            <td>2026-01-15</td>
+                            <td>120.00</td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>103</td>
+                            <td>2</td>
+                            <td>2026-01-20</td>
+                            <td>500.00</td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+            <p>
+                Essa poderia ser a tabela
+                <strong>pedidos</strong>.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>Observe:</strong>
+
+                <p>
+                    O campo <strong>cliente_id</strong> da tabela
+                    pedidos indica a qual cliente aquele pedido
+                    pertence.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             CHAVE PRIMÁRIA
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                O que é uma chave primária?
+            </h2>
+
+            <p>
+                Uma <strong>chave primária</strong>, ou
+                <strong>Primary Key (PK)</strong>, é uma coluna
+                ou conjunto de colunas utilizada para identificar
+                unicamente cada registro de uma tabela.
+            </p>
+
+
+            <p>
+                Por exemplo:
+            </p>
+
+
+            <pre><code><span class="sql-keyword">CREATE TABLE</span> clientes (
+
+    id <span class="sql-keyword">INT PRIMARY KEY</span>,
+
+    nome <span class="sql-keyword">VARCHAR</span>(100),
+
+    email <span class="sql-keyword">VARCHAR</span>(150)
+
+);</code></pre>
+
+
+            <p>
+                Nesse exemplo, o campo <strong>id</strong> é a
+                chave primária.
+            </p>
+
+
+            <div class="cards">
+
+
+                <div class="card">
+
+                    <h3>
+                        Identificação
+                    </h3>
+
+                    <p>
+                        Cada registro possui uma identificação
+                        única.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        Não deve se repetir
+                    </h3>
+
+                    <p>
+                        Dois registros não podem possuir a mesma
+                        chave primária.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        Não deve ser NULL
+                    </h3>
+
+                    <p>
+                        Uma chave primária precisa identificar
+                        o registro.
+                    </p>
+
+                </div>
+
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             CHAVE ESTRANGEIRA
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                O que é uma chave estrangeira?
+            </h2>
+
+            <p>
+                Uma <strong>chave estrangeira</strong>, ou
+                <strong>Foreign Key (FK)</strong>, é uma coluna
+                utilizada para fazer referência a uma chave
+                de outra tabela.
+            </p>
+
+
+            <p>
+                Por exemplo, podemos criar a tabela
+                <strong>pedidos</strong>:
+            </p>
+
+
+            <pre><code><span class="sql-keyword">CREATE TABLE</span> pedidos (
+
+    id <span class="sql-keyword">INT PRIMARY KEY</span>,
+
+    cliente_id <span class="sql-keyword">INT</span>,
+
+    data_pedido <span class="sql-keyword">DATE</span>,
+
+    total <span class="sql-keyword">DECIMAL</span>(10,2),
+
+    <span class="sql-keyword">FOREIGN KEY</span> (cliente_id)
+        <span class="sql-keyword">REFERENCES</span> clientes(id)
+
+);</code></pre>
+
+
+            <p>
+                Aqui temos:
+            </p>
+
+
+            <ul>
+
+                <li>
+                    <strong>clientes.id</strong> → chave primária.
+                </li>
+
+                <li>
+                    <strong>pedidos.cliente_id</strong> →
+                    chave estrangeira.
+                </li>
+
+                <li>
+                    <strong>pedidos.cliente_id</strong> referencia
+                    <strong>clientes.id</strong>.
+                </li>
+
+            </ul>
+
+
+            <div class="highlight">
+
+                <strong>Em termos simples:</strong>
+
+                <p>
+                    A chave estrangeira permite dizer:
+                    "este registro está relacionado àquele
+                    registro da outra tabela".
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             RELACIONAMENTO 1:N
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Relacionamento 1:N
+            </h2>
+
+            <p>
+                Um dos relacionamentos mais comuns em bancos
+                relacionais é o relacionamento
+                <strong>um para muitos (1:N)</strong>.
+            </p>
+
+
+            <p>
+                No nosso exemplo:
+            </p>
+
+
+            <div class="highlight">
+
+                <p>
+                    <strong>1 cliente</strong>
+                    → pode possuir
+                    <strong>muitos pedidos</strong>.
+                </p>
+
+                <p>
+                    <strong>1 pedido</strong>
+                    → pertence a
+                    <strong>1 cliente</strong>.
+                </p>
+
+            </div>
+
+
+            <pre><code>CLIENTES
+   │
+   │ 1
+   │
+   │
+   │ N
+   ▼
+PEDIDOS</code></pre>
+
+
+            <p>
+                A chave estrangeira normalmente fica no lado
+                "muitos".
+            </p>
+
+
+            <p>
+                Portanto:
+            </p>
+
+
+            <pre><code>clientes
+    id
+     │
+     │
+     ▼
+pedidos
+    cliente_id</code></pre>
+
+        </section>
+
+
+        <!-- =====================================================
+             INNER JOIN
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                O que é JOIN?
+            </h2>
+
+            <p>
+                O <strong>JOIN</strong> permite combinar registros
+                de duas ou mais tabelas com base em uma condição
+                de relacionamento.
+            </p>
+
+
+            <p>
+                Por exemplo, queremos descobrir o nome do cliente
+                de cada pedido.
+            </p>
+
+
+            <p>
+                Temos:
+            </p>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>clientes</th>
+                            <th>pedidos</th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>
+                                id = 1<br>
+                                Ana
+                            </td>
+
+                            <td>
+                                cliente_id = 1<br>
+                                total = 350
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                id = 2<br>
+                                João
+                            </td>
+
+                            <td>
+                                cliente_id = 2<br>
+                                total = 500
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+            <p>
+                Podemos relacionar:
+            </p>
+
+
+            <pre><code>clientes.id = pedidos.cliente_id</code></pre>
+
+
+            <p>
+                Utilizando <strong>INNER JOIN</strong>:
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span>
+    clientes.nome,
+    pedidos.id,
+    pedidos.total
+
+<span class="sql-keyword">FROM</span> clientes
+
+<span class="sql-keyword">INNER JOIN</span> pedidos
+    <span class="sql-keyword">ON</span> clientes.id = pedidos.cliente_id;</code></pre>
+
+
+            <p>
+                O resultado poderá ser:
+            </p>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Nome</th>
+                            <th>Pedido</th>
+                            <th>Total</th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>Ana</td>
+                            <td>101</td>
+                            <td>350.00</td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>Ana</td>
+                            <td>102</td>
+                            <td>120.00</td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>João</td>
+                            <td>103</td>
+                            <td>500.00</td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             COMO LER UM JOIN
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Como ler um JOIN?
+            </h2>
+
+            <p>
+                Observe novamente:
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span>
+    clientes.nome,
+    pedidos.total
+
+<span class="sql-keyword">FROM</span> clientes
+
+<span class="sql-keyword">INNER JOIN</span> pedidos
+    <span class="sql-keyword">ON</span> clientes.id = pedidos.cliente_id;</code></pre>
+
+
+            <p>
+                Podemos interpretar a consulta da seguinte maneira:
+            </p>
+
+
+            <ol>
+
+                <li>
+                    Comece pela tabela <strong>clientes</strong>.
+                </li>
+
+                <li>
+                    Relacione-a com a tabela
+                    <strong>pedidos</strong>.
+                </li>
+
+                <li>
+                    Utilize a condição
+                    <strong>clientes.id = pedidos.cliente_id</strong>.
+                </li>
+
+                <li>
+                    Retorne o nome do cliente e o valor do pedido.
+                </li>
+
+            </ol>
+
+        </section>
+
+
+        <!-- =====================================================
+             ALIAS
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Utilizando aliases
+            </h2>
+
+            <p>
+                Quando as consultas ficam maiores, podemos utilizar
+                apelidos para as tabelas.
+            </p>
+
+
+            <p>
+                Por exemplo:
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span>
+    c.nome,
+    p.total
+
+<span class="sql-keyword">FROM</span> clientes <span class="sql-keyword">AS</span> c
+
+<span class="sql-keyword">INNER JOIN</span> pedidos <span class="sql-keyword">AS</span> p
+    <span class="sql-keyword">ON</span> c.id = p.cliente_id;</code></pre>
+
+
+            <p>
+                Agora:
+            </p>
+
+
+            <ul>
+
+                <li>
+                    <strong>c</strong> representa clientes.
+                </li>
+
+                <li>
+                    <strong>p</strong> representa pedidos.
+                </li>
+
+            </ul>
+
+
+            <p>
+                O mesmo pode ser escrito de forma ainda mais
+                curta:
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span>
+    c.nome,
+    p.total
+
+<span class="sql-keyword">FROM</span> clientes c
+
+<span class="sql-keyword">JOIN</span> pedidos p
+    <span class="sql-keyword">ON</span> c.id = p.cliente_id;</code></pre>
+
+
+            <div class="highlight">
+
+                <strong>JOIN sem especificar o tipo</strong>
+
+                <p>
+                    Em muitos SGBDs, escrever apenas
+                    <strong>JOIN</strong> equivale a
+                    <strong>INNER JOIN</strong>.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             INNER JOIN VS LEFT JOIN
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                INNER JOIN e LEFT JOIN
+            </h2>
+
+            <p>
+                Existem diferentes tipos de JOIN.
+                Dois dos mais importantes para começar são
+                <strong>INNER JOIN</strong> e
+                <strong>LEFT JOIN</strong>.
+            </p>
+
+
+            <h3>
+                INNER JOIN
+            </h3>
+
+            <p>
+                Retorna os registros que possuem correspondência
+                nas duas tabelas.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span>
+    c.nome,
+    p.total
+
+<span class="sql-keyword">FROM</span> clientes c
+
+<span class="sql-keyword">INNER JOIN</span> pedidos p
+    <span class="sql-keyword">ON</span> c.id = p.cliente_id;</code></pre>
+
+
+            <h3>
+                LEFT JOIN
+            </h3>
+
+            <p>
+                Retorna todos os registros da tabela que está
+                à esquerda e os dados correspondentes da tabela
+                da direita.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span>
+    c.nome,
+    p.total
+
+<span class="sql-keyword">FROM</span> clientes c
+
+<span class="sql-keyword">LEFT JOIN</span> pedidos p
+    <span class="sql-keyword">ON</span> c.id = p.cliente_id;</code></pre>
+
+
+            <div class="highlight">
+
+                <p>
+                    Se um cliente não possuir nenhum pedido,
+                    o <strong>LEFT JOIN</strong> ainda pode
+                    retornar esse cliente.
+                </p>
+
+                <p>
+                    Nesse caso, as colunas provenientes de
+                    <strong>pedidos</strong> poderão aparecer
+                    como <strong>NULL</strong>.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             EXEMPLO LEFT JOIN
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Exemplo de LEFT JOIN
+            </h2>
+
+            <p>
+                Imagine três clientes:
+            </p>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>ID</th>
+                            <th>Nome</th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>1</td>
+                            <td>Ana</td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>2</td>
+                            <td>João</td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>3</td>
+                            <td>Maria</td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+            <p>
+                E somente Ana e João possuem pedidos.
+            </p>
+
+
+            <p>
+                Um INNER JOIN poderá retornar:
+            </p>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Cliente</th>
+                            <th>Pedido</th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>Ana</td>
+                            <td>101</td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>João</td>
+                            <td>102</td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+            <p>
+                Já um LEFT JOIN poderá retornar:
+            </p>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Cliente</th>
+                            <th>Pedido</th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>Ana</td>
+                            <td>101</td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>João</td>
+                            <td>102</td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>Maria</td>
+                            <td>NULL</td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             RELACIONAMENTO 1:1
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Relacionamento 1:1
+            </h2>
+
+            <p>
+                No relacionamento <strong>um para um (1:1)</strong>,
+                um registro de uma tabela está relacionado a no
+                máximo um registro de outra tabela.
+            </p>
+
+
+            <p>
+                Um exemplo conceitual seria:
+            </p>
+
+
+            <pre><code>USUARIO
+   │
+   │ 1
+   │
+   ▼
+PERFIL</code></pre>
+
+
+            <p>
+                Dependendo das regras do sistema, um usuário pode
+                possuir um único perfil complementar.
+            </p>
+
+
+            <p>
+                Em bancos relacionais, esse tipo de relacionamento
+                pode ser implementado utilizando uma chave estrangeira
+                com uma restrição de unicidade.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             RELACIONAMENTO N:N
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Relacionamento N:N
+            </h2>
+
+            <p>
+                No relacionamento <strong>muitos para muitos
+                (N:N)</strong>, vários registros de uma tabela
+                podem estar relacionados a vários registros
+                de outra.
+            </p>
+
+
+            <p>
+                Um exemplo clássico é:
+            </p>
+
+
+            <div class="highlight">
+
+                <p>
+                    Um aluno pode participar de várias disciplinas.
+                </p>
+
+                <p>
+                    Uma disciplina pode possuir vários alunos.
+                </p>
+
+            </div>
+
+
+            <p>
+                Não costumamos representar esse relacionamento
+                diretamente com uma única chave estrangeira.
+            </p>
+
+
+            <p>
+                Normalmente criamos uma tabela intermediária:
+            </p>
+
+
+            <pre><code>ALUNOS
+   │
+   │ 1
+   │
+   ▼
+MATRICULAS
+   ▲
+   │ 1
+   │
+   │
+DISCIPLINAS</code></pre>
+
+
+            <p>
+                A tabela <strong>matriculas</strong> poderia possuir:
+            </p>
+
+
+            <pre><code><span class="sql-keyword">CREATE TABLE</span> matriculas (
+
+    aluno_id <span class="sql-keyword">INT</span>,
+
+    disciplina_id <span class="sql-keyword">INT</span>,
+
+    <span class="sql-keyword">PRIMARY KEY</span> (aluno_id, disciplina_id),
+
+    <span class="sql-keyword">FOREIGN KEY</span> (aluno_id)
+        <span class="sql-keyword">REFERENCES</span> alunos(id),
+
+    <span class="sql-keyword">FOREIGN KEY</span> (disciplina_id)
+        <span class="sql-keyword">REFERENCES</span> disciplinas(id)
+
+);</code></pre>
+
+
+            <div class="highlight">
+
+                <strong>Ideia principal:</strong>
+
+                <p>
+                    A tabela intermediária transforma um
+                    relacionamento N:N em dois relacionamentos 1:N.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             JOIN COM WHERE
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                JOIN com WHERE
+            </h2>
+
+            <p>
+                Podemos combinar JOIN com os recursos aprendidos
+                na Aula 6.
+            </p>
+
+
+            <p>
+                Por exemplo, queremos encontrar pedidos acima
+                de R$ 300:
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span>
+    c.nome,
+    p.id,
+    p.total
+
+<span class="sql-keyword">FROM</span> clientes c
+
+<span class="sql-keyword">INNER JOIN</span> pedidos p
+    <span class="sql-keyword">ON</span> c.id = p.cliente_id
+
+<span class="sql-keyword">WHERE</span> p.total &gt; 300;</code></pre>
+
+
+            <p>
+                Também podemos ordenar:
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span>
+    c.nome,
+    p.id,
+    p.total
+
+<span class="sql-keyword">FROM</span> clientes c
+
+<span class="sql-keyword">INNER JOIN</span> pedidos p
+    <span class="sql-keyword">ON</span> c.id = p.cliente_id
+
+<span class="sql-keyword">WHERE</span> p.total &gt; 300
+
+<span class="sql-keyword">ORDER BY</span> p.total <span class="sql-keyword">DESC</span>;</code></pre>
+
+        </section>
+
+
+        <!-- =====================================================
+             JOIN COM TRÊS TABELAS
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                JOIN com três tabelas
+            </h2>
+
+            <p>
+                Uma consulta também pode relacionar mais de duas
+                tabelas.
+            </p>
+
+
+            <p>
+                Imagine:
+            </p>
+
+
+            <pre><code>clientes
+    │
+    ▼
+pedidos
+    │
+    ▼
+itens_pedido
+    │
+    ▼
+produtos</code></pre>
+
+
+            <p>
+                Podemos consultar informações passando por
+                várias relações:
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span>
+    c.nome,
+    p.id,
+    pr.nome,
+    ip.quantidade
+
+<span class="sql-keyword">FROM</span> clientes c
+
+<span class="sql-keyword">INNER JOIN</span> pedidos p
+    <span class="sql-keyword">ON</span> c.id = p.cliente_id
+
+<span class="sql-keyword">INNER JOIN</span> itens_pedido ip
+    <span class="sql-keyword">ON</span> p.id = ip.pedido_id
+
+<span class="sql-keyword">INNER JOIN</span> produtos pr
+    <span class="sql-keyword">ON</span> pr.id = ip.produto_id;</code></pre>
+
+
+            <div class="highlight">
+
+                <strong>Não se assuste!</strong>
+
+                <p>
+                    Consultas com vários JOINs podem parecer
+                    complexas inicialmente. O importante é entender
+                    cada relacionamento individualmente.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             PK E FK
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                PK × FK
+            </h2>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>PK</th>
+                            <th>FK</th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>
+                                Primary Key
+                            </td>
+
+                            <td>
+                                Foreign Key
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Identifica um registro.
+                            </td>
+
+                            <td>
+                                Referencia um registro de outra tabela.
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                É única dentro da tabela.
+                            </td>
+
+                            <td>
+                                Pode aparecer várias vezes.
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Exemplo: clientes.id
+                            </td>
+
+                            <td>
+                                Exemplo: pedidos.cliente_id
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             INNER X LEFT
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                INNER JOIN × LEFT JOIN
+            </h2>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>JOIN</th>
+                            <th>O que retorna?</th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>
+                                INNER JOIN
+                            </td>
+
+                            <td>
+                                Registros que possuem correspondência
+                                nas duas tabelas.
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                LEFT JOIN
+                            </td>
+
+                            <td>
+                                Todos os registros da tabela da
+                                esquerda e os correspondentes
+                                da direita.
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+            <div class="highlight">
+
+                <p>
+                    Uma forma simples de memorizar:
+                </p>
+
+                <p>
+                    <strong>INNER JOIN</strong> →
+                    somente correspondências.
+                </p>
+
+                <p>
+                    <strong>LEFT JOIN</strong> →
+                    tudo da esquerda + correspondências.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             EXERCÍCIO 1
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🧪 Exercício 1 — Clientes e pedidos
+            </h2>
+
+            <p>
+                Considere as tabelas:
+            </p>
+
+
+            <pre><code>clientes
+
+id
+nome
+email
+
+
+pedidos
+
+id
+cliente_id
+data_pedido
+total</code></pre>
+
+
+            <p>
+                Escreva uma consulta que mostre:
+            </p>
+
+
+            <ul>
+
+                <li>
+                    Nome do cliente.
+                </li>
+
+                <li>
+                    ID do pedido.
+                </li>
+
+                <li>
+                    Valor do pedido.
+                </li>
+
+            </ul>
+
+
+            <p>
+                Utilize <strong>INNER JOIN</strong>.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             EXERCÍCIO 2
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🧪 Exercício 2 — Filtrando JOIN
+            </h2>
+
+            <p>
+                Utilizando as mesmas tabelas, mostre apenas os
+                pedidos cujo valor seja superior a R$ 500.
+            </p>
+
+
+            <p>
+                O resultado deve apresentar:
+            </p>
+
+
+            <ul>
+
+                <li>
+                    Nome do cliente.
+                </li>
+
+                <li>
+                    ID do pedido.
+                </li>
+
+                <li>
+                    Valor.
+                </li>
+
+            </ul>
+
+        </section>
+
+
+        <!-- =====================================================
+             EXERCÍCIO 3
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🧪 Exercício 3 — LEFT JOIN
+            </h2>
+
+            <p>
+                Escreva uma consulta que mostre todos os clientes,
+                mesmo aqueles que ainda não possuem pedidos.
+            </p>
+
+
+            <p>
+                Utilize:
+            </p>
+
+
+            <pre><code><span class="sql-keyword">LEFT JOIN</span></code></pre>
+
+
+            <p>
+                Observe quais clientes aparecem com
+                <strong>NULL</strong> nas informações de pedido.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             DESAFIO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🎯 Desafio da aula
+            </h2>
+
+            <p>
+                Imagine que uma loja possui estas tabelas:
+            </p>
+
+
+            <pre><code>clientes
+    id
+    nome
+
+
+pedidos
+    id
+    cliente_id
+    total
+
+
+produtos
+    id
+    nome
+    preco
+
+
+itens_pedido
+    pedido_id
+    produto_id
+    quantidade</code></pre>
+
+
+            <p>
+                O desafio é criar uma consulta que mostre:
+            </p>
+
+
+            <ul>
+
+                <li>
+                    Nome do cliente.
+                </li>
+
+                <li>
+                    ID do pedido.
+                </li>
+
+                <li>
+                    Nome do produto.
+                </li>
+
+                <li>
+                    Quantidade comprada.
+                </li>
+
+            </ul>
+
+
+            <p>
+                Você precisará utilizar três relacionamentos.
+            </p>
+
+
+            <div class="highlight">
+
+                <p>
+                    clientes
+                    → pedidos
+                    → itens_pedido
+                    → produtos
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             MAPA MENTAL
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🧠 Mapa mental da aula
+            </h2>
+
+
+            <div class="highlight">
+
+                <p>
+                    🔑 <strong>PK</strong>
+                    → identifica um registro.
+                </p>
+
+                <p>
+                    🔗 <strong>FK</strong>
+                    → referencia outra tabela.
+                </p>
+
+                <p>
+                    1:1
+                    → um para um.
+                </p>
+
+                <p>
+                    1:N
+                    → um para muitos.
+                </p>
+
+                <p>
+                    N:N
+                    → muitos para muitos.
+                </p>
+
+                <p>
+                    🔎 <strong>JOIN</strong>
+                    → combina dados relacionados.
+                </p>
+
+                <p>
+                    <strong>INNER JOIN</strong>
+                    → somente correspondências.
+                </p>
+
+                <p>
+                    <strong>LEFT JOIN</strong>
+                    → todos da esquerda + correspondências.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             RESUMO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Resumindo
+            </h2>
+
+
+            <div class="highlight">
+
+                <p>
+                    Uma <strong>chave primária</strong> identifica
+                    exclusivamente um registro.
+                </p>
+
+                <p>
+                    Uma <strong>chave estrangeira</strong> permite
+                    representar um relacionamento entre tabelas.
+                </p>
+
+                <p>
+                    O relacionamento <strong>1:N</strong> é muito
+                    comum em bancos relacionais.
+                </p>
+
+                <p>
+                    Relacionamentos <strong>N:N</strong> normalmente
+                    utilizam uma tabela intermediária.
+                </p>
+
+                <p>
+                    <strong>JOIN</strong> permite consultar dados
+                    de tabelas relacionadas.
+                </p>
+
+                <p>
+                    <strong>INNER JOIN</strong> retorna somente
+                    registros correspondentes.
+                </p>
+
+                <p>
+                    <strong>LEFT JOIN</strong> mantém todos os
+                    registros da tabela da esquerda.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             CHECKPOINT
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🧠 Você entendeu?
+            </h2>
+
+            <p>
+                Antes de avançar, tente responder:
+            </p>
+
+
+            <ul>
+
+                <li>
+                    O que é uma chave primária?
+                </li>
+
+                <li>
+                    O que é uma chave estrangeira?
+                </li>
+
+                <li>
+                    Qual é a diferença entre PK e FK?
+                </li>
+
+                <li>
+                    O que significa um relacionamento 1:N?
+                </li>
+
+                <li>
+                    Como representar um relacionamento N:N?
+                </li>
+
+                <li>
+                    Para que serve o JOIN?
+                </li>
+
+                <li>
+                    Qual é a diferença entre INNER JOIN e LEFT JOIN?
+                </li>
+
+                <li>
+                    O que significa a condição
+                    <code>clientes.id = pedidos.cliente_id</code>?
+                </li>
+
+            </ul>
+
+        </section>
+
+
+        <!-- =====================================================
+             PRÓXIMA AULA
+        ====================================================== -->
+
+        <section class="cta">
+
+            <h2>
+                Aula 7 concluída!
+            </h2>
+
+            <p>
+                Agora você já sabe como tabelas podem se relacionar
+                e como utilizar JOIN para consultar informações
+                distribuídas entre elas.
+            </p>
+
+            <p>
+                Na próxima aula, vamos avançar para
+                <strong>funções de agregação, GROUP BY e HAVING</strong>,
+                aprendendo a transformar vários registros em
+                informações e métricas úteis.
+            </p>
+
+
+            <a
+                href="./8.html"
+                class="cta-button">
+
+                Aula 8 →
+
+            </a>
+
+        </section>
+
+
+    </main>
+
+
+    <!-- =====================================================
+         FOOTER
+    ====================================================== -->
+
+    <footer>
+
+        <p>
+            Guia de Banco de Dados
+        </p>
+
+        <p>
+            Aula 7 • Relacionamentos entre tabelas e JOIN
+        </p>
+
+    </footer>
+
+
+    <!-- =====================================================
+         JAVASCRIPT — DARK / LIGHT MODE
+    ====================================================== -->
+
+    <script src="./script.js"></script>
+
+</body>
+
+</html>

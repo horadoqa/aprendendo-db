@@ -1,0 +1,1924 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="./style.css">
+
+    <link rel="icon" type="image/png" href="./assets/images/logo.png">
+
+    <title>Aula 16 — Introdução ao NoSQL</title>
+
+</head>
+
+<body>
+
+
+    <!-- =====================================================
+         HEADER
+    ====================================================== -->
+
+    <header>
+
+        <button
+            class="theme-toggle"
+            id="themeToggle"
+            type="button"
+            aria-label="Alternar tema">
+
+            <span class="theme-icon" id="themeIcon">
+                ☀️
+            </span>
+
+            <span class="theme-label" id="themeLabel">
+                Modo claro
+            </span>
+
+        </button>
+
+
+        <div class="header-content">
+
+            <span class="eyebrow">
+                AULA 16 • INTRODUÇÃO AO NOSQL
+            </span>
+
+            <h1>
+                O que é NoSQL?
+            </h1>
+
+            <p>
+                Entenda o conceito de NoSQL, por que esse modelo ganhou
+                espaço e quais são os principais tipos de bancos de dados
+                não relacionais.
+            </p>
+
+        </div>
+
+    </header>
+
+
+    <!-- =====================================================
+         CONTEÚDO
+    ====================================================== -->
+
+    <main>
+
+
+        <!-- =====================================================
+             OBJETIVOS
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🎯 Objetivos da aula
+            </h2>
+
+            <p>
+                Nesta aula vamos construir a base conceitual necessária
+                para começar a trabalhar com bancos de dados NoSQL.
+            </p>
+
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <div class="icon">
+                        🧠
+                    </div>
+
+                    <h3>
+                        Entender NoSQL
+                    </h3>
+
+                    <p>
+                        Compreender o que significa NoSQL e qual é
+                        a sua proposta.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🔄
+                    </div>
+
+                    <h3>
+                        Comparar modelos
+                    </h3>
+
+                    <p>
+                        Diferenciar o modelo relacional dos modelos
+                        NoSQL.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🗂️
+                    </div>
+
+                    <h3>
+                        Conhecer modelos
+                    </h3>
+
+                    <p>
+                        Conhecer documentos, chave-valor, colunas largas
+                        e grafos.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🚀
+                    </div>
+
+                    <h3>
+                        Preparar o próximo passo
+                    </h3>
+
+                    <p>
+                        Preparar o terreno para estudar bancos como
+                        MongoDB.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             O QUE É NOSQL
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                O que significa NoSQL?
+            </h2>
+
+            <p>
+                <strong>NoSQL</strong> é um termo utilizado para descrever
+                uma variedade de sistemas de gerenciamento de bancos de
+                dados que não seguem necessariamente o modelo relacional
+                tradicional.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>NoSQL não significa simplesmente "sem SQL".</strong>
+
+                <p>
+                    O termo é frequentemente associado à ideia de
+                    <em>Not Only SQL</em>, destacando que existem outras
+                    formas de modelar e consultar dados além do modelo
+                    relacional tradicional.
+                </p>
+
+            </div>
+
+
+            <p>
+                Portanto, NoSQL não representa um único banco de dados.
+                É uma categoria que reúne diferentes modelos de
+                armazenamento.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             SQL
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🗄️ Relembrando o modelo relacional
+            </h2>
+
+            <p>
+                Antes de entender NoSQL, precisamos lembrar como funciona
+                o modelo que estudamos no módulo anterior.
+            </p>
+
+
+            <pre><code>clientes
+
+┌────┬──────────────┬──────────────────────┐
+│ id │ nome         │ email                │
+├────┼──────────────┼──────────────────────┤
+│ 1  │ Ana Silva    │ ana@email.com        │
+│ 2  │ João Santos  │ joao@email.com       │
+└────┴──────────────┴──────────────────────┘</code></pre>
+
+
+            <p>
+                No modelo relacional, os dados são organizados
+                principalmente em <strong>tabelas</strong>.
+            </p>
+
+
+            <p>
+                Essas tabelas podem possuir relacionamentos por meio
+                de chaves primárias e estrangeiras.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>Modelo mental:</strong>
+
+                <p>
+                    Tabelas → linhas → colunas → relacionamentos
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             DOCUMENTO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                📄 E se os dados fossem armazenados como documentos?
+            </h2>
+
+            <p>
+                Em alguns bancos NoSQL, podemos representar os dados
+                utilizando documentos.
+            </p>
+
+
+            <pre><code>{
+    <span class="json-key">"id"</span>: <span class="json-number">1</span>,
+    <span class="json-key">"nome"</span>: <span class="json-string">"Ana Silva"</span>,
+    <span class="json-key">"email"</span>: <span class="json-string">"ana@email.com"</span>,
+    <span class="json-key">"cidade"</span>: <span class="json-string">"Rio de Janeiro"</span>
+}</code></pre>
+
+
+            <p>
+                Perceba que agora não estamos olhando para uma tabela
+                com linhas e colunas.
+            </p>
+
+
+            <p>
+                Estamos trabalhando com uma estrutura semelhante
+                a um documento.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>Novo modelo mental:</strong>
+
+                <p>
+                    Documento → campos → valores
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             POR QUE NOSQL
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Por que NoSQL ganhou espaço?
+            </h2>
+
+            <p>
+                Com a evolução das aplicações, surgiram sistemas que
+                precisavam lidar com grandes volumes de dados,
+                diferentes formatos de informação e cargas de acesso
+                distribuídas.
+            </p>
+
+
+            <p>
+                Em determinados cenários, modelos não relacionais
+                podem oferecer características interessantes para
+                a arquitetura da aplicação.
+            </p>
+
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <div class="icon">
+                        📈
+                    </div>
+
+                    <h3>
+                        Grande volume
+                    </h3>
+
+                    <p>
+                        Aplicações podem trabalhar com grandes
+                        quantidades de dados.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🌎
+                    </div>
+
+                    <h3>
+                        Distribuição
+                    </h3>
+
+                    <p>
+                        Sistemas podem ser distribuídos entre
+                        diferentes servidores e regiões.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🧩
+                    </div>
+
+                    <h3>
+                        Dados variados
+                    </h3>
+
+                    <p>
+                        Nem todas as informações precisam seguir
+                        exatamente a mesma estrutura.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        ⚡
+                    </div>
+
+                    <h3>
+                        Padrões de acesso
+                    </h3>
+
+                    <p>
+                        Alguns sistemas são projetados para
+                        determinados padrões de leitura e escrita.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="highlight">
+
+                <strong>Importante:</strong>
+
+                <p>
+                    Isso não significa que NoSQL seja automaticamente
+                    mais rápido ou melhor que SQL.
+                </p>
+
+                <p>
+                    A escolha depende do problema, dos dados,
+                    dos requisitos da aplicação e da tecnologia utilizada.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             NOSQL NÃO SUBSTITUI SQL
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                NoSQL substitui SQL?
+            </h2>
+
+            <p>
+                Não existe uma regra dizendo que uma aplicação deve
+                utilizar necessariamente SQL ou NoSQL.
+            </p>
+
+
+            <p>
+                Cada modelo possui características diferentes.
+            </p>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Modelo relacional
+                            </th>
+
+                            <th>
+                                Modelos NoSQL
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>
+                                Dados organizados principalmente
+                                em tabelas.
+                            </td>
+
+                            <td>
+                                Dados podem ser organizados em
+                                documentos, chave-valor, grafos
+                                ou colunas largas.
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Relacionamentos são parte importante
+                                do modelo.
+                            </td>
+
+                            <td>
+                                Alguns modelos priorizam estruturas
+                                e padrões de acesso diferentes.
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                SQL é utilizado para consultas
+                                relacionais.
+                            </td>
+
+                            <td>
+                                A forma de consulta depende do SGBD
+                                e do modelo utilizado.
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Schema geralmente definido de forma
+                                estruturada.
+                            </td>
+
+                            <td>
+                                Alguns modelos permitem estruturas
+                                mais flexíveis.
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             QUATRO MODELOS
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Os principais modelos NoSQL
+            </h2>
+
+            <p>
+                NoSQL não é um único modelo. Existem diferentes formas
+                de organizar os dados.
+            </p>
+
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <span class="badge">
+                        DOCUMENTOS
+                    </span>
+
+                    <h3>
+                        📄 Document Store
+                    </h3>
+
+                    <p>
+                        Armazena dados em documentos.
+                        É o modelo utilizado pelo MongoDB.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <span class="badge">
+                        CHAVE-VALOR
+                    </span>
+
+                    <h3>
+                        🔑 Key-Value
+                    </h3>
+
+                    <p>
+                        Os dados são armazenados como pares
+                        de chave e valor.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <span class="badge">
+                        COLUNAS LARGAS
+                    </span>
+
+                    <h3>
+                        🧱 Wide-Column
+                    </h3>
+
+                    <p>
+                        Organiza dados em estruturas orientadas
+                        a famílias de colunas.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <span class="badge">
+                        GRAFOS
+                    </span>
+
+                    <h3>
+                        🕸️ Graph
+                    </h3>
+
+                    <p>
+                        Representa entidades e seus relacionamentos
+                        como nós e arestas.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             DOCUMENTOS
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                1. Banco orientado a documentos
+            </h2>
+
+            <p>
+                Bancos orientados a documentos armazenam informações
+                em documentos estruturados.
+            </p>
+
+
+            <pre><code>{
+    <span class="json-key">"nome"</span>: <span class="json-string">"Ana"</span>,
+    <span class="json-key">"email"</span>: <span class="json-string">"ana@email.com"</span>,
+    <span class="json-key">"idade"</span>: <span class="json-number">25</span>,
+    <span class="json-key">"enderecos"</span>: [
+        {
+            <span class="json-key">"cidade"</span>: <span class="json-string">"Rio de Janeiro"</span>,
+            <span class="json-key">"cep"</span>: <span class="json-string">"20000-000"</span>
+        }
+    ]
+}</code></pre>
+
+
+            <p>
+                Observe que podemos representar informações relacionadas
+                dentro do próprio documento.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>Exemplo:</strong>
+
+                <p>
+                    MongoDB é um banco de dados orientado a documentos.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             CHAVE VALOR
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                2. Banco chave-valor
+            </h2>
+
+            <p>
+                Nesse modelo, cada informação é associada a uma chave.
+            </p>
+
+
+            <pre><code>usuario:1001 → "Ana"
+
+usuario:1002 → "João"
+
+usuario:1003 → "Maria"</code></pre>
+
+
+            <p>
+                Também podemos armazenar estruturas mais complexas
+                como valores.
+            </p>
+
+
+            <pre><code>sessao:abc123 → {
+    usuario: 1001,
+    login: "2026-01-15",
+    ativo: true
+}</code></pre>
+
+
+            <div class="highlight">
+
+                <strong>Exemplo:</strong>
+
+                <p>
+                    Redis é amplamente conhecido por seu modelo
+                    baseado em estruturas chave-valor, embora também
+                    ofereça outras estruturas de dados.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             WIDE COLUMN
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                3. Banco orientado a colunas largas
+            </h2>
+
+            <p>
+                Bancos wide-column organizam dados utilizando
+                estruturas orientadas a famílias de colunas.
+            </p>
+
+
+            <p>
+                Esse modelo é utilizado em determinados sistemas
+                distribuídos que precisam trabalhar com grandes
+                volumes de dados.
+            </p>
+
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <h3>
+                        Apache Cassandra
+                    </h3>
+
+                    <p>
+                        Banco distribuído orientado a colunas largas.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        HBase
+                    </h3>
+
+                    <p>
+                        Banco distribuído inspirado no modelo
+                        Bigtable.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             GRAFOS
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                4. Banco de grafos
+            </h2>
+
+            <p>
+                Bancos de grafos são projetados para representar
+                entidades e seus relacionamentos.
+            </p>
+
+
+            <pre><code>        ┌───────────┐
+        │   Ana     │
+        └─────┬─────┘
+              │
+           segue
+              │
+              ▼
+        ┌───────────┐
+        │   João    │
+        └─────┬─────┘
+              │
+           segue
+              │
+              ▼
+        ┌───────────┐
+        │   Maria   │
+        └───────────┘</code></pre>
+
+
+            <p>
+                Nesse exemplo, as pessoas podem ser representadas
+                como nós e os relacionamentos "segue" como arestas.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>Exemplo:</strong>
+
+                <p>
+                    Neo4j é um banco de dados orientado a grafos.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             COMPARAÇÃO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🧩 Comparando os modelos
+            </h2>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Modelo
+                            </th>
+
+                            <th>
+                                Estrutura
+                            </th>
+
+                            <th>
+                                Exemplo
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>
+                                Relacional
+                            </td>
+
+                            <td>
+                                Tabelas
+                            </td>
+
+                            <td>
+                                PostgreSQL
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Documento
+                            </td>
+
+                            <td>
+                                Documentos
+                            </td>
+
+                            <td>
+                                MongoDB
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Chave-valor
+                            </td>
+
+                            <td>
+                                Chave → valor
+                            </td>
+
+                            <td>
+                                Redis
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Wide-column
+                            </td>
+
+                            <td>
+                                Famílias de colunas
+                            </td>
+
+                            <td>
+                                Cassandra
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Grafo
+                            </td>
+
+                            <td>
+                                Nós + relacionamentos
+                            </td>
+
+                            <td>
+                                Neo4j
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             SCHEMA
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                O que acontece com o schema?
+            </h2>
+
+            <p>
+                Uma diferença frequentemente associada aos bancos NoSQL
+                é a possibilidade de trabalhar com estruturas de dados
+                mais flexíveis em determinados modelos.
+            </p>
+
+
+            <p>
+                Por exemplo, podemos imaginar dois documentos:
+            </p>
+
+
+            <pre><code>{
+    <span class="json-key">"nome"</span>: <span class="json-string">"Ana"</span>,
+    <span class="json-key">"email"</span>: <span class="json-string">"ana@email.com"</span>
+}
+
+
+{
+    <span class="json-key">"nome"</span>: <span class="json-string">"João"</span>,
+    <span class="json-key">"email"</span>: <span class="json-string">"joao@email.com"</span>,
+    <span class="json-key">"telefone"</span>: <span class="json-string">"99999-9999"</span>
+}</code></pre>
+
+
+            <p>
+                Dependendo do banco e da configuração utilizada,
+                estruturas diferentes podem ser armazenadas.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>Mas cuidado:</strong>
+
+                <p>
+                    "Schema flexível" não significa "sem estrutura".
+                </p>
+
+                <p>
+                    A aplicação ainda precisa definir regras,
+                    validações e expectativas sobre os dados.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             ESCALABILIDADE
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                📈 Escalabilidade
+            </h2>
+
+            <p>
+                Um dos conceitos importantes quando estudamos
+                sistemas distribuídos é a escalabilidade.
+            </p>
+
+
+            <h3>
+                Escalabilidade vertical
+            </h3>
+
+            <p>
+                Aumentar os recursos de uma máquina existente,
+                como CPU, memória ou armazenamento.
+            </p>
+
+
+            <pre><code>Servidor
+
+CPU      ██████████
+Memória  ██████████
+Disco    ██████████</code></pre>
+
+
+            <h3>
+                Escalabilidade horizontal
+            </h3>
+
+            <p>
+                Adicionar mais máquinas ao sistema.
+            </p>
+
+
+            <pre><code>        ┌─────────────┐
+        │   Servidor  │
+        │      1      │
+        └─────────────┘
+              │
+        ┌─────┴─────┐
+        │           │
+┌─────────────┐ ┌─────────────┐
+│   Servidor  │ │   Servidor  │
+│      2      │ │      3      │
+└─────────────┘ └─────────────┘</code></pre>
+
+
+            <div class="highlight">
+
+                <p>
+                    Muitos sistemas NoSQL foram projetados pensando
+                    em ambientes distribuídos e escalabilidade horizontal.
+                </p>
+
+                <p>
+                    Isso não significa que todo banco NoSQL necessariamente
+                    será distribuído ou que bancos relacionais não possam
+                    ser escalados horizontalmente.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             CONSISTÊNCIA
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Consistência, disponibilidade e distribuição
+            </h2>
+
+            <p>
+                Ao estudar sistemas distribuídos, começamos a encontrar
+                conceitos diferentes daqueles mais comuns no início
+                do estudo de SQL.
+            </p>
+
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <h3>
+                        Consistência
+                    </h3>
+
+                    <p>
+                        Diferentes componentes do sistema observam
+                        os dados de acordo com as garantias definidas
+                        pelo sistema.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        Disponibilidade
+                    </h3>
+
+                    <p>
+                        O sistema continua capaz de responder
+                        às operações dentro das condições previstas.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        Particionamento
+                    </h3>
+
+                    <p>
+                        O sistema precisa lidar com falhas ou
+                        interrupções de comunicação entre partes
+                        distribuídas.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <p>
+                Esses conceitos serão aprofundados posteriormente,
+                especialmente quando estudarmos bancos distribuídos.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             NOSQL NA PRÁTICA
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Onde podemos encontrar NoSQL?
+            </h2>
+
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <div class="icon">
+                        🌐
+                    </div>
+
+                    <h3>
+                        Aplicações web
+                    </h3>
+
+                    <p>
+                        Sistemas que precisam lidar com grandes
+                        volumes de dados e diferentes padrões de acesso.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        📱
+                    </div>
+
+                    <h3>
+                        Aplicativos
+                    </h3>
+
+                    <p>
+                        Aplicações que trabalham com diferentes
+                        estruturas de dados.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        ⚡
+                    </div>
+
+                    <h3>
+                        Cache
+                    </h3>
+
+                    <p>
+                        Sistemas que precisam de acesso rápido
+                        a determinadas informações.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🕸️
+                    </div>
+
+                    <h3>
+                        Redes e relacionamentos
+                    </h3>
+
+                    <p>
+                        Sistemas em que os relacionamentos entre
+                        entidades são especialmente importantes.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             BANCO X SGBD
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🧠 Não confunda banco de dados com SGBD
+            </h2>
+
+            <p>
+                Assim como fizemos no módulo SQL, precisamos manter
+                a distinção entre os conceitos.
+            </p>
+
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <h3>
+                        Banco de dados
+                    </h3>
+
+                    <p>
+                        É o conjunto de dados armazenados e organizados
+                        de acordo com o modelo utilizado.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        SGBD
+                    </h3>
+
+                    <p>
+                        É o software responsável por gerenciar
+                        o banco de dados.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        Aplicação
+                    </h3>
+
+                    <p>
+                        É o software que utiliza o SGBD para realizar
+                        operações sobre os dados.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="highlight">
+
+                <strong>Exemplo:</strong>
+
+                <p>
+                    MongoDB é um <strong>SGBD</strong> orientado
+                    a documentos.
+                </p>
+
+                <p>
+                    Dentro dele podem existir bancos de dados,
+                    coleções e documentos.
+                </p>
+
+                <p>
+                    Uma aplicação pode utilizar o MongoDB para
+                    armazenar e consultar essas informações.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             SQL X NOSQL
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                SQL × NoSQL
+            </h2>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Conceito
+                            </th>
+
+                            <th>
+                                SQL
+                            </th>
+
+                            <th>
+                                NoSQL
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>
+                                Modelo
+                            </td>
+
+                            <td>
+                                Relacional
+                            </td>
+
+                            <td>
+                                Pode ser documento,
+                                chave-valor, grafo,
+                                wide-column etc.
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Estrutura
+                            </td>
+
+                            <td>
+                                Tabelas
+                            </td>
+
+                            <td>
+                                Depende do modelo
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Relacionamentos
+                            </td>
+
+                            <td>
+                                Parte fundamental do modelo
+                            </td>
+
+                            <td>
+                                Depende do modelo e do banco
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Linguagem
+                            </td>
+
+                            <td>
+                                SQL
+                            </td>
+
+                            <td>
+                                Depende do SGBD
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Schema
+                            </td>
+
+                            <td>
+                                Geralmente estruturado
+                            </td>
+
+                            <td>
+                                Pode ser mais flexível,
+                                dependendo do banco
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             ERROS COMUNS
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                ⚠️ Erros comuns sobre NoSQL
+            </h2>
+
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <h3>
+                        ❌ "NoSQL não usa estrutura"
+                    </h3>
+
+                    <p>
+                        Todo banco precisa possuir alguma forma
+                        de organização dos dados.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        ❌ "NoSQL é sempre mais rápido"
+                    </h3>
+
+                    <p>
+                        Performance depende do modelo, da consulta,
+                        dos dados e da arquitetura.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        ❌ "NoSQL substitui SQL"
+                    </h3>
+
+                    <p>
+                        São abordagens diferentes para diferentes
+                        necessidades.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        ❌ "NoSQL significa MongoDB"
+                    </h3>
+
+                    <p>
+                        MongoDB é apenas um dos SGBDs
+                        que pertence ao universo NoSQL.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             NOVO VOCABULÁRIO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                📚 Novo vocabulário
+            </h2>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Termo
+                            </th>
+
+                            <th>
+                                Significado
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>
+                                NoSQL
+                            </td>
+
+                            <td>
+                                Categoria de sistemas de banco de dados
+                                que não seguem necessariamente o modelo
+                                relacional tradicional.
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Documento
+                            </td>
+
+                            <td>
+                                Estrutura que armazena campos e valores,
+                                comum em bancos documentais.
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Coleção
+                            </td>
+
+                            <td>
+                                Conjunto de documentos em determinados
+                                bancos orientados a documentos.
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Key-Value
+                            </td>
+
+                            <td>
+                                Modelo baseado na associação entre
+                                chaves e valores.
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Grafo
+                            </td>
+
+                            <td>
+                                Modelo baseado em nós e relacionamentos.
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Escalabilidade horizontal
+                            </td>
+
+                            <td>
+                                Estratégia de adicionar mais máquinas
+                                ou nós ao sistema.
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             CHECKPOINT
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🧠 Checkpoint
+            </h2>
+
+            <p>
+                Antes de avançar para a próxima aula, tente responder
+                às perguntas abaixo com suas próprias palavras.
+            </p>
+
+
+            <ol>
+
+                <li>
+                    O que significa NoSQL?
+                </li>
+
+                <li>
+                    NoSQL é um banco de dados específico?
+                </li>
+
+                <li>
+                    Qual é a diferença entre SQL e NoSQL?
+                </li>
+
+                <li>
+                    Quais são os quatro principais modelos NoSQL
+                    estudados nesta aula?
+                </li>
+
+                <li>
+                    O que é um banco orientado a documentos?
+                </li>
+
+                <li>
+                    O que é um banco chave-valor?
+                </li>
+
+                <li>
+                    O que é um banco de grafos?
+                </li>
+
+                <li>
+                    O que significa escalabilidade horizontal?
+                </li>
+
+                <li>
+                    MongoDB é um banco de dados ou um SGBD?
+                </li>
+
+                <li>
+                    Por que não podemos afirmar que NoSQL é
+                    automaticamente melhor que SQL?
+                </li>
+
+            </ol>
+
+        </section>
+
+
+        <!-- =====================================================
+             DESAFIO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🧪 Desafio
+            </h2>
+
+            <p>
+                Imagine que você precisa desenvolver uma rede social.
+            </p>
+
+
+            <p>
+                Existem usuários, publicações, comentários, curtidas
+                e relacionamentos entre usuários.
+            </p>
+
+
+            <p>
+                Pense nas seguintes perguntas:
+            </p>
+
+
+            <ol>
+
+                <li>
+                    Quais informações poderiam ser representadas
+                    como documentos?
+                </li>
+
+                <li>
+                    Quais informações possuem muitos relacionamentos?
+                </li>
+
+                <li>
+                    Quais dados poderiam ser armazenados utilizando
+                    chave-valor?
+                </li>
+
+                <li>
+                    Em quais situações o modelo relacional ainda
+                    poderia ser interessante?
+                </li>
+
+            </ol>
+
+
+            <div class="highlight">
+
+                <strong>Objetivo do desafio:</strong>
+
+                <p>
+                    Não existe uma única resposta correta.
+                    O objetivo é começar a pensar sobre dados a partir
+                    dos requisitos e dos padrões de acesso da aplicação.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             RESUMO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                📝 Resumindo
+            </h2>
+
+
+            <div class="highlight">
+
+                <p>
+                    <strong>NoSQL</strong> é uma categoria de sistemas
+                    de banco de dados que inclui diferentes modelos
+                    além do relacional tradicional.
+                </p>
+
+                <p>
+                    Os principais modelos estudados foram
+                    <strong>documentos, chave-valor, wide-column
+                    e grafos</strong>.
+                </p>
+
+                <p>
+                    Bancos NoSQL podem ser utilizados em diferentes
+                    cenários, especialmente quando suas características
+                    combinam com os requisitos da aplicação.
+                </p>
+
+                <p>
+                    NoSQL não significa necessariamente "sem estrutura",
+                    "sem SQL" ou "mais rápido".
+                </p>
+
+                <p>
+                    A escolha entre SQL e NoSQL depende do problema,
+                    do modelo de dados, dos padrões de acesso e dos
+                    requisitos do sistema.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             PRÓXIMA AULA
+        ====================================================== -->
+
+        <section class="cta">
+
+            <h2>
+                🚀 Próxima aula: Banco de dados orientado a documentos
+            </h2>
+
+            <p>
+                Agora que você conhece os principais modelos NoSQL,
+                vamos começar pelo modelo de documentos.
+            </p>
+
+            <p>
+                Na próxima aula entraremos no
+                <strong>MongoDB</strong> e veremos conceitos como
+                documentos, coleções, BSON e operações básicas.
+            </p>
+
+
+            <a
+                href="./17.html"
+                class="cta-button">
+
+                Aula 17 — Introdução ao MongoDB →
+
+            </a>
+
+        </section>
+
+
+    </main>
+
+
+    <!-- =====================================================
+         FOOTER
+    ====================================================== -->
+
+    <footer>
+
+        <p>
+            Guia de Banco de Dados
+        </p>
+
+        <p>
+            Aula 16 • Introdução ao NoSQL
+        </p>
+
+    </footer>
+
+
+    <!-- =====================================================
+         JAVASCRIPT — DARK / LIGHT MODE
+    ====================================================== -->
+
+    <script src="./script.js"></script>
+
+</body>
+
+</html>

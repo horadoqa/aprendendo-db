@@ -1,0 +1,1837 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="./style.css">
+
+    <link rel="icon" type="image/png" href="./assets/images/logo.png">
+
+    <title>Aula 6 — Consultando dados com SELECT</title>
+
+</head>
+
+<body>
+
+
+    <!-- =====================================================
+         HEADER
+    ====================================================== -->
+
+    <header>
+
+        <button
+            class="theme-toggle"
+            id="themeToggle"
+            type="button"
+            aria-label="Alternar tema">
+
+            <span class="theme-icon" id="themeIcon">
+                ☀️
+            </span>
+
+            <span class="theme-label" id="themeLabel">
+                Modo claro
+            </span>
+
+        </button>
+
+
+        <div class="header-content">
+
+            <span class="eyebrow">
+                AULA 6 • CONSULTAS SQL
+            </span>
+
+            <h1>
+                Consultando dados com SELECT
+            </h1>
+
+            <p>
+                Aprenda a consultar, filtrar, ordenar e limitar
+                resultados utilizando SQL.
+            </p>
+
+        </div>
+
+    </header>
+
+
+    <!-- =====================================================
+         CONTEÚDO
+    ====================================================== -->
+
+    <main>
+
+
+        <!-- =====================================================
+             OBJETIVOS
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Objetivos da aula
+            </h2>
+
+            <p>
+                Na Aula 5, aprendemos os primeiros comandos SQL
+                e fizemos nossas primeiras consultas.
+            </p>
+
+            <p>
+                Agora vamos aprofundar o comando
+                <strong>SELECT</strong> e aprender a controlar
+                quais dados queremos visualizar.
+            </p>
+
+
+            <div class="cards">
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🔎
+                    </div>
+
+                    <h3>
+                        SELECT
+                    </h3>
+
+                    <p>
+                        Consultar informações armazenadas.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🎯
+                    </div>
+
+                    <h3>
+                        WHERE
+                    </h3>
+
+                    <p>
+                        Filtrar registros.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        ↕️
+                    </div>
+
+                    <h3>
+                        ORDER BY
+                    </h3>
+
+                    <p>
+                        Ordenar os resultados.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🔢
+                    </div>
+
+                    <h3>
+                        LIMIT
+                    </h3>
+
+                    <p>
+                        Limitar a quantidade de resultados.
+                    </p>
+
+                </div>
+
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             REVISÃO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Relembrando a Aula 5
+            </h2>
+
+            <p>
+                Na aula anterior, aprendemos que o
+                <strong>SELECT</strong> é utilizado para consultar
+                dados.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span> *
+<span class="sql-keyword">FROM</span> clientes;</code></pre>
+
+
+            <p>
+                O símbolo <strong>*</strong> representa todas
+                as colunas.
+            </p>
+
+
+            <p>
+                Também podemos escolher as colunas:
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span> nome, email
+<span class="sql-keyword">FROM</span> clientes;</code></pre>
+
+
+            <div class="highlight">
+
+                <strong>Agora vamos além:</strong>
+
+                <p>
+                    Como consultar apenas determinados registros?
+                </p>
+
+                <p>
+                    Como ordenar os resultados?
+                </p>
+
+                <p>
+                    Como procurar textos?
+                </p>
+
+                <p>
+                    Como limitar a quantidade de registros?
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             SELECT
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                O comando SELECT
+            </h2>
+
+            <p>
+                O <strong>SELECT</strong> é utilizado para
+                consultar dados.
+            </p>
+
+
+            <p>
+                Sua estrutura básica é:
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span> coluna
+<span class="sql-keyword">FROM</span> tabela;</code></pre>
+
+
+            <p>
+                Podemos consultar uma única coluna:
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span> nome
+<span class="sql-keyword">FROM</span> clientes;</code></pre>
+
+
+            <p>
+                Ou várias:
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span> nome, email
+<span class="sql-keyword">FROM</span> clientes;</code></pre>
+
+
+            <p>
+                Também podemos consultar todas:
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span> *
+<span class="sql-keyword">FROM</span> clientes;</code></pre>
+
+        </section>
+
+
+        <!-- =====================================================
+             WHERE
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Filtrando dados com WHERE
+            </h2>
+
+            <p>
+                O <strong>WHERE</strong> permite definir uma
+                condição para determinar quais registros serão
+                retornados.
+            </p>
+
+
+            <p>
+                Imagine a seguinte tabela:
+            </p>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>ID</th>
+                            <th>Nome</th>
+                            <th>Idade</th>
+                            <th>Cidade</th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>1</td>
+                            <td>Ana</td>
+                            <td>20</td>
+                            <td>Rio de Janeiro</td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>2</td>
+                            <td>João</td>
+                            <td>25</td>
+                            <td>São Paulo</td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>3</td>
+                            <td>Maria</td>
+                            <td>19</td>
+                            <td>Rio de Janeiro</td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>4</td>
+                            <td>Pedro</td>
+                            <td>30</td>
+                            <td>Belo Horizonte</td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+            <p>
+                Podemos buscar somente os clientes do Rio de Janeiro:
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span> *
+<span class="sql-keyword">FROM</span> clientes
+<span class="sql-keyword">WHERE</span> cidade = <span class="sql-string">'Rio de Janeiro'</span>;</code></pre>
+
+
+            <p>
+                O resultado será composto somente pelos registros
+                que atendem à condição.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             OPERADORES DE COMPARAÇÃO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Operadores de comparação
+            </h2>
+
+            <p>
+                O WHERE pode utilizar diferentes operadores.
+            </p>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Operador</th>
+                            <th>Significado</th>
+                            <th>Exemplo</th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>=</td>
+                            <td>Igual</td>
+                            <td>idade = 20</td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>&lt;&gt;</td>
+                            <td>Diferente</td>
+                            <td>idade &lt;&gt; 20</td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>&gt;</td>
+                            <td>Maior que</td>
+                            <td>idade &gt; 20</td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>&lt;</td>
+                            <td>Menor que</td>
+                            <td>idade &lt; 20</td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>&gt;=</td>
+                            <td>Maior ou igual</td>
+                            <td>idade &gt;= 20</td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>&lt;=</td>
+                            <td>Menor ou igual</td>
+                            <td>idade &lt;= 20</td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+            <p>
+                Exemplo:
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span> *
+<span class="sql-keyword">FROM</span> clientes
+<span class="sql-keyword">WHERE</span> idade &gt; 20;</code></pre>
+
+
+            <p>
+                Essa consulta retorna somente clientes com idade
+                superior a 20 anos.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             AND
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Utilizando AND
+            </h2>
+
+            <p>
+                O operador <strong>AND</strong> permite combinar
+                duas ou mais condições.
+            </p>
+
+
+            <p>
+                Por exemplo, podemos procurar clientes do
+                Rio de Janeiro com idade maior que 20:
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span> *
+<span class="sql-keyword">FROM</span> clientes
+<span class="sql-keyword">WHERE</span> cidade = <span class="sql-string">'Rio de Janeiro'</span>
+<span class="sql-keyword">AND</span> idade &gt; 20;</code></pre>
+
+
+            <div class="highlight">
+
+                <strong>AND significa "E".</strong>
+
+                <p>
+                    As duas condições precisam ser verdadeiras
+                    para que o registro seja retornado.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             OR
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Utilizando OR
+            </h2>
+
+            <p>
+                O operador <strong>OR</strong> permite trabalhar
+                com alternativas.
+            </p>
+
+
+            <p>
+                Podemos procurar clientes que estejam no
+                Rio de Janeiro ou em São Paulo:
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span> *
+<span class="sql-keyword">FROM</span> clientes
+<span class="sql-keyword">WHERE</span> cidade = <span class="sql-string">'Rio de Janeiro'</span>
+<span class="sql-keyword">OR</span> cidade = <span class="sql-string">'São Paulo'</span>;</code></pre>
+
+
+            <div class="highlight">
+
+                <strong>OR significa "OU".</strong>
+
+                <p>
+                    Basta uma das condições ser verdadeira
+                    para que o registro possa ser retornado.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             NOT
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Utilizando NOT
+            </h2>
+
+            <p>
+                O operador <strong>NOT</strong> é utilizado para
+                negar uma condição.
+            </p>
+
+
+            <p>
+                Por exemplo:
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span> *
+<span class="sql-keyword">FROM</span> clientes
+<span class="sql-keyword">WHERE NOT</span> cidade = <span class="sql-string">'Rio de Janeiro'</span>;</code></pre>
+
+
+            <p>
+                Nesse caso, serão considerados os registros que
+                não possuem a cidade informada.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             IN
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Utilizando IN
+            </h2>
+
+            <p>
+                Quando precisamos verificar se um valor pertence
+                a uma lista de possibilidades, podemos utilizar
+                <strong>IN</strong>.
+            </p>
+
+
+            <p>
+                Em vez de escrever:
+            </p>
+
+
+            <pre><code><span class="sql-keyword">WHERE</span> cidade = <span class="sql-string">'Rio de Janeiro'</span>
+<span class="sql-keyword">OR</span> cidade = <span class="sql-string">'São Paulo'</span>
+<span class="sql-keyword">OR</span> cidade = <span class="sql-string">'Belo Horizonte'</span></code></pre>
+
+
+            <p>
+                Podemos escrever:
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span> *
+<span class="sql-keyword">FROM</span> clientes
+<span class="sql-keyword">WHERE</span> cidade <span class="sql-keyword">IN</span> (
+    <span class="sql-string">'Rio de Janeiro'</span>,
+    <span class="sql-string">'São Paulo'</span>,
+    <span class="sql-string">'Belo Horizonte'</span>
+);</code></pre>
+
+
+            <div class="highlight">
+
+                <strong>IN</strong>
+
+                <p>
+                    É útil quando temos uma lista de valores
+                    possíveis.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             BETWEEN
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Utilizando BETWEEN
+            </h2>
+
+            <p>
+                O <strong>BETWEEN</strong> pode ser utilizado
+                para verificar se um valor está dentro de um
+                intervalo.
+            </p>
+
+
+            <p>
+                Por exemplo, clientes com idade entre 20 e 30:
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span> *
+<span class="sql-keyword">FROM</span> clientes
+<span class="sql-keyword">WHERE</span> idade <span class="sql-keyword">BETWEEN</span> 20 <span class="sql-keyword">AND</span> 30;</code></pre>
+
+
+            <p>
+                O intervalo do exemplo inclui os valores
+                das extremidades.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             LIKE
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Procurando textos com LIKE
+            </h2>
+
+            <p>
+                O operador <strong>LIKE</strong> permite realizar
+                buscas por padrões em textos.
+            </p>
+
+
+            <p>
+                Por exemplo, para procurar nomes que começam
+                com "A":
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span> *
+<span class="sql-keyword">FROM</span> clientes
+<span class="sql-keyword">WHERE</span> nome <span class="sql-keyword">LIKE</span> <span class="sql-string">'A%'</span>;</code></pre>
+
+
+            <p>
+                O símbolo <strong>%</strong> representa uma
+                sequência de caracteres.
+            </p>
+
+
+            <p>
+                Outro exemplo:
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span> *
+<span class="sql-keyword">FROM</span> clientes
+<span class="sql-keyword">WHERE</span> nome <span class="sql-keyword">LIKE</span> <span class="sql-string">'%Silva%'</span>;</code></pre>
+
+
+            <p>
+                Nesse caso, estamos procurando nomes que contenham
+                "Silva".
+            </p>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Padrão</th>
+                            <th>Significado</th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>
+                                A%
+                            </td>
+
+                            <td>
+                                Começa com A.
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                %A
+                            </td>
+
+                            <td>
+                                Termina com A.
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                %A%
+                            </td>
+
+                            <td>
+                                Contém A.
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             ORDER BY
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Ordenando resultados com ORDER BY
+            </h2>
+
+            <p>
+                O <strong>ORDER BY</strong> permite definir
+                a ordem dos resultados.
+            </p>
+
+
+            <p>
+                Para ordenar pela idade:
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span> *
+<span class="sql-keyword">FROM</span> clientes
+<span class="sql-keyword">ORDER BY</span> idade;</code></pre>
+
+
+            <p>
+                Por padrão, a ordenação é crescente.
+            </p>
+
+
+            <p>
+                Podemos deixar isso explícito utilizando
+                <strong>ASC</strong>:
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span> *
+<span class="sql-keyword">FROM</span> clientes
+<span class="sql-keyword">ORDER BY</span> idade <span class="sql-keyword">ASC</span>;</code></pre>
+
+
+            <p>
+                Para ordenar de forma decrescente:
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span> *
+<span class="sql-keyword">FROM</span> clientes
+<span class="sql-keyword">ORDER BY</span> idade <span class="sql-keyword">DESC</span>;</code></pre>
+
+
+            <div class="highlight">
+
+                <p>
+                    <strong>ASC</strong> → crescente
+                </p>
+
+                <p>
+                    <strong>DESC</strong> → decrescente
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             LIMIT
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Limitando resultados com LIMIT
+            </h2>
+
+            <p>
+                O <strong>LIMIT</strong> permite limitar a quantidade
+                de registros retornados.
+            </p>
+
+
+            <p>
+                Por exemplo, podemos solicitar apenas cinco clientes:
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span> *
+<span class="sql-keyword">FROM</span> clientes
+<span class="sql-keyword">LIMIT</span> 5;</code></pre>
+
+
+            <p>
+                Podemos combinar LIMIT com ORDER BY.
+            </p>
+
+
+            <p>
+                Por exemplo, para consultar os três clientes
+                mais velhos:
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span> *
+<span class="sql-keyword">FROM</span> clientes
+<span class="sql-keyword">ORDER BY</span> idade <span class="sql-keyword">DESC</span>
+<span class="sql-keyword">LIMIT</span> 3;</code></pre>
+
+
+            <div class="highlight">
+
+                <strong>Observação:</strong>
+
+                <p>
+                    A sintaxe e o comportamento de LIMIT podem
+                    variar entre SGBDs. Em PostgreSQL e MySQL,
+                    por exemplo, LIMIT é amplamente utilizado.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             DISTINCT
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Removendo valores repetidos com DISTINCT
+            </h2>
+
+            <p>
+                O <strong>DISTINCT</strong> permite retornar
+                somente valores diferentes.
+            </p>
+
+
+            <p>
+                Imagine que vários clientes moram na mesma cidade.
+            </p>
+
+
+            <p>
+                Uma consulta normal:
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span> cidade
+<span class="sql-keyword">FROM</span> clientes;</code></pre>
+
+
+            <p>
+                Poderia retornar:
+            </p>
+
+
+            <div class="highlight">
+
+                <p>
+                    Rio de Janeiro
+                </p>
+
+                <p>
+                    São Paulo
+                </p>
+
+                <p>
+                    Rio de Janeiro
+                </p>
+
+                <p>
+                    Belo Horizonte
+                </p>
+
+            </div>
+
+
+            <p>
+                Utilizando DISTINCT:
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT DISTINCT</span> cidade
+<span class="sql-keyword">FROM</span> clientes;</code></pre>
+
+
+            <p>
+                Teremos cada cidade somente uma vez.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             COMBINANDO CLAUSULAS
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Combinando os recursos
+            </h2>
+
+            <p>
+                O verdadeiro poder das consultas aparece quando
+                combinamos diferentes cláusulas.
+            </p>
+
+
+            <p>
+                Por exemplo:
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span> nome, idade, cidade
+<span class="sql-keyword">FROM</span> clientes
+<span class="sql-keyword">WHERE</span> idade &gt;= 18
+<span class="sql-keyword">AND</span> cidade = <span class="sql-string">'Rio de Janeiro'</span>
+<span class="sql-keyword">ORDER BY</span> idade <span class="sql-keyword">DESC</span>
+<span class="sql-keyword">LIMIT</span> 5;</code></pre>
+
+
+            <p>
+                Essa consulta:
+            </p>
+
+
+            <ol>
+
+                <li>
+                    seleciona nome, idade e cidade;
+                </li>
+
+                <li>
+                    utiliza a tabela clientes;
+                </li>
+
+                <li>
+                    filtra clientes maiores ou iguais a 18 anos;
+                </li>
+
+                <li>
+                    mantém somente clientes do Rio de Janeiro;
+                </li>
+
+                <li>
+                    ordena pela idade de forma decrescente;
+                </li>
+
+                <li>
+                    retorna no máximo cinco registros.
+                </li>
+
+            </ol>
+
+        </section>
+
+
+        <!-- =====================================================
+             ORDEM DAS CLÁUSULAS
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                A ordem das cláusulas
+            </h2>
+
+            <p>
+                É importante aprender a estrutura de uma consulta
+                SQL.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span> colunas
+<span class="sql-keyword">FROM</span> tabela
+<span class="sql-keyword">WHERE</span> condição
+<span class="sql-keyword">ORDER BY</span> coluna
+<span class="sql-keyword">LIMIT</span> quantidade;</code></pre>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Cláusula</th>
+                            <th>Função</th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>
+                                SELECT
+                            </td>
+
+                            <td>
+                                Define quais colunas serão retornadas.
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                FROM
+                            </td>
+
+                            <td>
+                                Define de qual tabela os dados serão obtidos.
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                WHERE
+                            </td>
+
+                            <td>
+                                Filtra os registros.
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                ORDER BY
+                            </td>
+
+                            <td>
+                                Ordena os resultados.
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                LIMIT
+                            </td>
+
+                            <td>
+                                Limita a quantidade de resultados.
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             EXEMPLO PRÁTICO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Exemplo prático — Produtos
+            </h2>
+
+            <p>
+                Vamos imaginar uma tabela chamada
+                <strong>produtos</strong>:
+            </p>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>ID</th>
+                            <th>Nome</th>
+                            <th>Preço</th>
+                            <th>Estoque</th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>1</td>
+                            <td>Notebook</td>
+                            <td>3500</td>
+                            <td>10</td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>2</td>
+                            <td>Mouse</td>
+                            <td>80</td>
+                            <td>50</td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>3</td>
+                            <td>Teclado</td>
+                            <td>150</td>
+                            <td>25</td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>4</td>
+                            <td>Monitor</td>
+                            <td>1200</td>
+                            <td>8</td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>5</td>
+                            <td>Headset</td>
+                            <td>250</td>
+                            <td>15</td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+            <h3>
+                Produtos acima de R$ 200
+            </h3>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span> *
+<span class="sql-keyword">FROM</span> produtos
+<span class="sql-keyword">WHERE</span> preco &gt; 200;</code></pre>
+
+
+            <h3>
+                Produtos ordenados pelo preço
+            </h3>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span> nome, preco
+<span class="sql-keyword">FROM</span> produtos
+<span class="sql-keyword">ORDER BY</span> preco <span class="sql-keyword">DESC</span>;</code></pre>
+
+
+            <h3>
+                Os três produtos mais baratos
+            </h3>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span> nome, preco
+<span class="sql-keyword">FROM</span> produtos
+<span class="sql-keyword">ORDER BY</span> preco <span class="sql-keyword">ASC</span>
+<span class="sql-keyword">LIMIT</span> 3;</code></pre>
+
+
+            <h3>
+                Produtos com estoque baixo
+            </h3>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span> nome, estoque
+<span class="sql-keyword">FROM</span> produtos
+<span class="sql-keyword">WHERE</span> estoque &lt; 10;</code></pre>
+
+        </section>
+
+
+        <!-- =====================================================
+             ERROS COMUNS
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                ⚠️ Erros comuns
+            </h2>
+
+
+            <div class="cards">
+
+
+                <div class="card">
+
+                    <h3>
+                        Esquecer o WHERE
+                    </h3>
+
+                    <p>
+                        Em consultas isso pode retornar muito mais
+                        dados do que o necessário.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        Usar SELECT *
+                    </h3>
+
+                    <p>
+                        É útil para estudar, mas em aplicações
+                        nem sempre é necessário buscar todas
+                        as colunas.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        Confundir = com LIKE
+                    </h3>
+
+                    <p>
+                        O operador = compara valores.
+                        LIKE trabalha com padrões de texto.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        Esquecer ORDER BY
+                    </h3>
+
+                    <p>
+                        Não devemos assumir uma ordem específica
+                        dos resultados sem solicitar uma ordenação.
+                    </p>
+
+                </div>
+
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             EXERCÍCIO 1
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🧪 Exercício 1 — Consultas básicas
+            </h2>
+
+            <p>
+                Considere a tabela <strong>produtos</strong>
+                apresentada anteriormente.
+            </p>
+
+
+            <p>
+                Faça consultas para:
+            </p>
+
+
+            <ol>
+
+                <li>
+                    Mostrar todos os produtos.
+                </li>
+
+                <li>
+                    Mostrar somente nome e preço.
+                </li>
+
+                <li>
+                    Mostrar produtos com preço maior que 500.
+                </li>
+
+                <li>
+                    Mostrar produtos com estoque menor que 20.
+                </li>
+
+                <li>
+                    Mostrar produtos com preço menor ou igual a 200.
+                </li>
+
+            </ol>
+
+        </section>
+
+
+        <!-- =====================================================
+             EXERCÍCIO 2
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🧪 Exercício 2 — Filtros
+            </h2>
+
+            <p>
+                Agora pratique:
+            </p>
+
+
+            <ol>
+
+                <li>
+                    Produtos com preço entre 100 e 500.
+                </li>
+
+                <li>
+                    Produtos com preço maior que 100
+                    e estoque menor que 30.
+                </li>
+
+                <li>
+                    Produtos cujo nome começa com "M".
+                </li>
+
+                <li>
+                    Produtos cujo nome contém "te".
+                </li>
+
+            </ol>
+
+        </section>
+
+
+        <!-- =====================================================
+             EXERCÍCIO 3
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🧪 Exercício 3 — Ordenação
+            </h2>
+
+            <p>
+                Faça consultas para:
+            </p>
+
+
+            <ol>
+
+                <li>
+                    Ordenar produtos pelo preço crescente.
+                </li>
+
+                <li>
+                    Ordenar produtos pelo preço decrescente.
+                </li>
+
+                <li>
+                    Ordenar produtos pelo estoque crescente.
+                </li>
+
+                <li>
+                    Mostrar somente os três produtos mais caros.
+                </li>
+
+            </ol>
+
+        </section>
+
+
+        <!-- =====================================================
+             DESAFIO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🎯 Desafio da aula
+            </h2>
+
+            <p>
+                Imagine que você trabalha em uma loja virtual
+                e recebeu a seguinte solicitação:
+            </p>
+
+
+            <div class="highlight">
+
+                <p>
+                    "Preciso dos nomes e preços dos cinco produtos
+                    mais caros que custam pelo menos R$ 100."
+                </p>
+
+            </div>
+
+
+            <p>
+                Tente construir a consulta sozinho.
+            </p>
+
+
+            <p>
+                Uma solução possível:
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span> nome, preco
+<span class="sql-keyword">FROM</span> produtos
+<span class="sql-keyword">WHERE</span> preco &gt;= 100
+<span class="sql-keyword">ORDER BY</span> preco <span class="sql-keyword">DESC</span>
+<span class="sql-keyword">LIMIT</span> 5;</code></pre>
+
+
+            <p>
+                Perceba que uma única consulta pode combinar
+                vários recursos aprendidos nesta aula.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             MAPA MENTAL
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🧠 Mapa mental da aula
+            </h2>
+
+
+            <div class="highlight">
+
+                <p>
+                    <strong>SELECT</strong>
+                    → consultar
+                </p>
+
+                <p>
+                    <strong>WHERE</strong>
+                    → filtrar
+                </p>
+
+                <p>
+                    <strong>AND / OR / NOT</strong>
+                    → combinar condições
+                </p>
+
+                <p>
+                    <strong>IN</strong>
+                    → verificar uma lista de valores
+                </p>
+
+                <p>
+                    <strong>BETWEEN</strong>
+                    → trabalhar com intervalos
+                </p>
+
+                <p>
+                    <strong>LIKE</strong>
+                    → procurar padrões em textos
+                </p>
+
+                <p>
+                    <strong>ORDER BY</strong>
+                    → ordenar
+                </p>
+
+                <p>
+                    <strong>LIMIT</strong>
+                    → limitar resultados
+                </p>
+
+                <p>
+                    <strong>DISTINCT</strong>
+                    → remover duplicidades do resultado
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             RESUMO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Resumindo
+            </h2>
+
+
+            <div class="highlight">
+
+                <p>
+                    🔎 <strong>SELECT</strong> consulta dados.
+                </p>
+
+                <p>
+                    🎯 <strong>WHERE</strong> filtra registros.
+                </p>
+
+                <p>
+                    🔗 <strong>AND</strong> exige que as condições
+                    combinadas sejam verdadeiras.
+                </p>
+
+                <p>
+                    🔀 <strong>OR</strong> permite alternativas.
+                </p>
+
+                <p>
+                    🚫 <strong>NOT</strong> nega uma condição.
+                </p>
+
+                <p>
+                    📋 <strong>IN</strong> verifica valores
+                    pertencentes a uma lista.
+                </p>
+
+                <p>
+                    📏 <strong>BETWEEN</strong> trabalha com
+                    intervalos.
+                </p>
+
+                <p>
+                    🔤 <strong>LIKE</strong> procura padrões
+                    em textos.
+                </p>
+
+                <p>
+                    ↕️ <strong>ORDER BY</strong> organiza os
+                    resultados.
+                </p>
+
+                <p>
+                    🔢 <strong>LIMIT</strong> restringe a quantidade
+                    de registros retornados.
+                </p>
+
+                <p>
+                    🧹 <strong>DISTINCT</strong> elimina valores
+                    duplicados do resultado da consulta.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             CHECKPOINT
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🧠 Você entendeu?
+            </h2>
+
+            <p>
+                Antes de avançar para a próxima aula,
+                tente responder:
+            </p>
+
+
+            <ul>
+
+                <li>
+                    Para que serve o SELECT?
+                </li>
+
+                <li>
+                    Qual é a função do WHERE?
+                </li>
+
+                <li>
+                    Qual é a diferença entre AND e OR?
+                </li>
+
+                <li>
+                    Para que serve o LIKE?
+                </li>
+
+                <li>
+                    Qual é a diferença entre ASC e DESC?
+                </li>
+
+                <li>
+                    Para que serve LIMIT?
+                </li>
+
+                <li>
+                    Para que serve DISTINCT?
+                </li>
+
+                <li>
+                    Por que uma consulta pode combinar WHERE,
+                    ORDER BY e LIMIT?
+                </li>
+
+            </ul>
+
+        </section>
+
+
+        <!-- =====================================================
+             PRÓXIMA AULA
+        ====================================================== -->
+
+        <section class="cta">
+
+            <h2>
+                Aula 6 concluída!
+            </h2>
+
+            <p>
+                Agora você já consegue construir consultas SQL
+                muito mais úteis, utilizando filtros, condições,
+                ordenação e limites.
+            </p>
+
+            <p>
+                Na próxima aula, vamos aprender um dos conceitos
+                mais importantes dos bancos relacionais:
+                <strong>relacionamentos entre tabelas e JOIN</strong>.
+            </p>
+
+
+            <a
+                href="./7.html"
+                class="cta-button">
+
+                Aula 7 →
+
+            </a>
+
+        </section>
+
+
+    </main>
+
+
+    <!-- =====================================================
+         FOOTER
+    ====================================================== -->
+
+    <footer>
+
+        <p>
+            Guia de Banco de Dados
+        </p>
+
+        <p>
+            Aula 6 • Consultando dados com SELECT
+        </p>
+
+    </footer>
+
+
+    <!-- =====================================================
+         JAVASCRIPT — DARK / LIGHT MODE
+    ====================================================== -->
+
+    <script src="./script.js"></script>
+
+</body>
+
+</html>

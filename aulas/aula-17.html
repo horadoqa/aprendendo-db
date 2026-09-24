@@ -1,0 +1,1621 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="./style.css">
+
+    <link rel="icon" type="image/png" href="./assets/images/logo.png">
+
+    <title>Aula 17 — Introdução ao MongoDB</title>
+
+</head>
+
+<body>
+
+
+    <!-- =====================================================
+         HEADER
+    ====================================================== -->
+
+    <header>
+
+        <button
+            class="theme-toggle"
+            id="themeToggle"
+            type="button"
+            aria-label="Alternar tema">
+
+            <span class="theme-icon" id="themeIcon">
+                ☀️
+            </span>
+
+            <span class="theme-label" id="themeLabel">
+                Modo claro
+            </span>
+
+        </button>
+
+
+        <div class="header-content">
+
+            <span class="eyebrow">
+                AULA 17 • MONGODB
+            </span>
+
+            <h1>
+                Introdução ao MongoDB
+            </h1>
+
+            <p>
+                Conheça o MongoDB, um SGBD NoSQL orientado a documentos,
+                e entenda como bancos de dados, coleções e documentos
+                se relacionam.
+            </p>
+
+        </div>
+
+    </header>
+
+
+    <!-- =====================================================
+         CONTEÚDO
+    ====================================================== -->
+
+    <main>
+
+
+        <!-- =====================================================
+             OBJETIVOS
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🎯 Objetivos da aula
+            </h2>
+
+            <p>
+                Nesta aula vamos começar nossa jornada prática com
+                MongoDB.
+            </p>
+
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <div class="icon">
+                        🍃
+                    </div>
+
+                    <h3>
+                        Conhecer o MongoDB
+                    </h3>
+
+                    <p>
+                        Entender o que é e qual modelo de banco
+                        de dados ele utiliza.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        📄
+                    </div>
+
+                    <h3>
+                        Entender documentos
+                    </h3>
+
+                    <p>
+                        Aprender como os dados são representados
+                        dentro do MongoDB.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🗂️
+                    </div>
+
+                    <h3>
+                        Conhecer coleções
+                    </h3>
+
+                    <p>
+                        Entender como documentos são organizados
+                        dentro de coleções.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🧠
+                    </div>
+
+                    <h3>
+                        Criar um modelo mental
+                    </h3>
+
+                    <p>
+                        Relacionar os conceitos de SQL com
+                        os conceitos do MongoDB.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             O QUE É MONGODB
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🍃 O que é MongoDB?
+            </h2>
+
+            <p>
+                <strong>MongoDB</strong> é um SGBD NoSQL orientado
+                a documentos.
+            </p>
+
+            <p>
+                Diferentemente de um banco de dados relacional,
+                que normalmente organiza os dados em tabelas,
+                o MongoDB trabalha principalmente com
+                <strong>documentos</strong> agrupados em
+                <strong>coleções</strong>.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>Uma distinção importante:</strong>
+
+                <p>
+                    MongoDB é o <strong>SGBD</strong>.
+                </p>
+
+                <p>
+                    Dentro dele podemos criar e gerenciar
+                    <strong>bancos de dados</strong>.
+                </p>
+
+                <p>
+                    Esses bancos podem conter
+                    <strong>coleções</strong>, que armazenam
+                    <strong>documentos</strong>.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             HIERARQUIA
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🗂️ Como os conceitos se organizam?
+            </h2>
+
+            <p>
+                Podemos imaginar a estrutura básica do MongoDB
+                desta maneira:
+            </p>
+
+
+            <pre><code>MongoDB
+   │
+   ├── Banco de dados
+   │       │
+   │       ├── Coleção
+   │       │      ├── Documento
+   │       │      ├── Documento
+   │       │      └── Documento
+   │       │
+   │       └── Coleção
+   │              ├── Documento
+   │              └── Documento
+   │
+   └── Outro banco de dados</code></pre>
+
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <h3>
+                        SGBD
+                    </h3>
+
+                    <p>
+                        MongoDB gerencia os bancos e fornece
+                        os recursos para trabalhar com os dados.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        Banco de dados
+                    </h3>
+
+                    <p>
+                        Ambiente onde as coleções são organizadas.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        Coleção
+                    </h3>
+
+                    <p>
+                        Grupo de documentos relacionados.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        Documento
+                    </h3>
+
+                    <p>
+                        Estrutura que representa uma informação.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             COMPARAÇÃO SQL
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🔄 MongoDB × Banco relacional
+            </h2>
+
+            <p>
+                Uma maneira simples de começar a entender MongoDB
+                é comparar alguns conceitos com aquilo que já
+                aprendemos em SQL.
+            </p>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Relacional
+                            </th>
+
+                            <th>
+                                MongoDB
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>
+                                Banco de dados
+                            </td>
+
+                            <td>
+                                Database
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Tabela
+                            </td>
+
+                            <td>
+                                Coleção
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Linha / registro
+                            </td>
+
+                            <td>
+                                Documento
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Coluna
+                            </td>
+
+                            <td>
+                                Campo
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                JOIN
+                            </td>
+
+                            <td>
+                                Existem diferentes formas
+                                de trabalhar com dados relacionados,
+                                dependendo do caso.
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+            <div class="highlight">
+
+                <strong>Atenção:</strong>
+
+                <p>
+                    Essa tabela é uma aproximação para facilitar
+                    o aprendizado.
+                </p>
+
+                <p>
+                    Uma coleção não é simplesmente uma "tabela
+                    diferente", e um documento não é exatamente
+                    equivalente a uma linha de uma tabela.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             DOCUMENTO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                📄 O que é um documento?
+            </h2>
+
+            <p>
+                Um documento MongoDB representa um conjunto de
+                campos e valores.
+            </p>
+
+
+            <pre><code>{
+    <span class="json-key">"_id"</span>: <span class="json-string">"..."</span>,
+    <span class="json-key">"nome"</span>: <span class="json-string">"Ana Silva"</span>,
+    <span class="json-key">"email"</span>: <span class="json-string">"ana@email.com"</span>,
+    <span class="json-key">"idade"</span>: <span class="json-number">25</span>
+}</code></pre>
+
+
+            <p>
+                Nesse exemplo temos quatro campos:
+            </p>
+
+
+            <ul>
+
+                <li>
+                    <strong>_id</strong>
+                </li>
+
+                <li>
+                    <strong>nome</strong>
+                </li>
+
+                <li>
+                    <strong>email</strong>
+                </li>
+
+                <li>
+                    <strong>idade</strong>
+                </li>
+
+            </ul>
+
+
+            <p>
+                Cada campo possui um valor associado.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             JSON E BSON
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🧩 JSON e BSON
+            </h2>
+
+            <p>
+                Ao trabalhar com MongoDB, você verá frequentemente
+                estruturas semelhantes ao <strong>JSON</strong>.
+            </p>
+
+
+            <pre><code>{
+    <span class="json-key">"nome"</span>: <span class="json-string">"Ana"</span>,
+    <span class="json-key">"idade"</span>: <span class="json-number">25</span>,
+    <span class="json-key">"ativo"</span>: <span class="json-boolean">true</span>
+}</code></pre>
+
+
+            <p>
+                Internamente, o MongoDB utiliza
+                <strong>BSON</strong>, que significa
+                <strong>Binary JSON</strong>.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>Resumo:</strong>
+
+                <p>
+                    JSON é uma representação textual muito utilizada
+                    para visualizar e trocar dados.
+                </p>
+
+                <p>
+                    BSON é o formato binário utilizado pelo MongoDB
+                    para representar documentos internamente.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             TIPOS DE DADOS
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🔢 Tipos de dados
+            </h2>
+
+            <p>
+                Documentos MongoDB podem armazenar diferentes
+                tipos de valores.
+            </p>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Tipo
+                            </th>
+
+                            <th>
+                                Exemplo
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>
+                                String
+                            </td>
+
+                            <td>
+                                "Ana"
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Número
+                            </td>
+
+                            <td>
+                                25
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Boolean
+                            </td>
+
+                            <td>
+                                true
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Array
+                            </td>
+
+                            <td>
+                                ["SQL", "NoSQL"]
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Objeto
+                            </td>
+
+                            <td>
+                                { cidade: "Rio" }
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Data
+                            </td>
+
+                            <td>
+                                Date
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                ObjectId
+                            </td>
+
+                            <td>
+                                Identificador utilizado frequentemente
+                                pelo MongoDB.
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             ID
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🆔 O campo _id
+            </h2>
+
+            <p>
+                Um conceito muito importante no MongoDB é o campo
+                <strong>_id</strong>.
+            </p>
+
+            <p>
+                Cada documento de uma coleção possui um identificador
+                único.
+            </p>
+
+
+            <pre><code>{
+    <span class="json-key">"_id"</span>: <span class="json-string">ObjectId("65a123...")</span>,
+    <span class="json-key">"nome"</span>: <span class="json-string">"Ana Silva"</span>
+}</code></pre>
+
+
+            <p>
+                Quando não fornecemos um valor para
+                <strong>_id</strong>, o MongoDB normalmente gera
+                automaticamente um <strong>ObjectId</strong>.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>Por que isso é importante?</strong>
+
+                <p>
+                    O identificador permite distinguir um documento
+                    dos demais dentro de uma coleção.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             COLEÇÕES
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🗃️ O que é uma coleção?
+            </h2>
+
+            <p>
+                Uma <strong>coleção</strong> é um agrupamento de
+                documentos relacionados.
+            </p>
+
+
+            <p>
+                Podemos imaginar um banco de dados de uma loja:
+            </p>
+
+
+            <pre><code>loja
+│
+├── clientes
+│      ├── documento
+│      ├── documento
+│      └── documento
+│
+├── produtos
+│      ├── documento
+│      ├── documento
+│      └── documento
+│
+└── pedidos
+       ├── documento
+       └── documento</code></pre>
+
+
+            <p>
+                Nesse exemplo, temos três coleções:
+            </p>
+
+
+            <ul>
+
+                <li>
+                    <strong>clientes</strong>
+                </li>
+
+                <li>
+                    <strong>produtos</strong>
+                </li>
+
+                <li>
+                    <strong>pedidos</strong>
+                </li>
+
+            </ul>
+
+        </section>
+
+
+        <!-- =====================================================
+             EXEMPLO PRÁTICO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🛒 Exemplo: loja virtual
+            </h2>
+
+            <p>
+                Imagine que queremos armazenar um cliente.
+            </p>
+
+
+            <pre><code>{
+    <span class="json-key">"nome"</span>: <span class="json-string">"Carlos Souza"</span>,
+    <span class="json-key">"email"</span>: <span class="json-string">"carlos@email.com"</span>,
+    <span class="json-key">"idade"</span>: <span class="json-number">32</span>,
+    <span class="json-key">"cidade"</span>: <span class="json-string">"São Paulo"</span>
+}</code></pre>
+
+
+            <p>
+                Esse documento poderia estar dentro da coleção
+                <strong>clientes</strong>.
+            </p>
+
+
+            <p>
+                Outro cliente poderia ser representado por outro
+                documento:
+            </p>
+
+
+            <pre><code>{
+    <span class="json-key">"nome"</span>: <span class="json-string">"Mariana Oliveira"</span>,
+    <span class="json-key">"email"</span>: <span class="json-string">"mariana@email.com"</span>,
+    <span class="json-key">"idade"</span>: <span class="json-number">28</span>,
+    <span class="json-key">"cidade"</span>: <span class="json-string">"Belo Horizonte"</span>
+}</code></pre>
+
+
+            <div class="highlight">
+
+                <strong>Perceba:</strong>
+
+                <p>
+                    Os documentos possuem uma estrutura semelhante,
+                    mas o MongoDB permite trabalhar com estruturas
+                    que podem variar conforme o modelo e as regras
+                    definidas para a aplicação.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             DOCUMENTOS ANINHADOS
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                📦 Documentos podem conter outros dados
+            </h2>
+
+            <p>
+                Uma característica importante do modelo documental
+                é a possibilidade de representar estruturas aninhadas.
+            </p>
+
+
+            <pre><code>{
+    <span class="json-key">"nome"</span>: <span class="json-string">"Ana Silva"</span>,
+
+    <span class="json-key">"endereco"</span>: {
+
+        <span class="json-key">"rua"</span>: <span class="json-string">"Rua das Flores"</span>,
+
+        <span class="json-key">"numero"</span>: <span class="json-number">100</span>,
+
+        <span class="json-key">"cidade"</span>: <span class="json-string">"Rio de Janeiro"</span>
+
+    }
+}</code></pre>
+
+
+            <p>
+                O campo <strong>endereco</strong> contém outro
+                objeto com seus próprios campos.
+            </p>
+
+
+            <p>
+                Isso permite representar estruturas que seriam
+                modeladas de outra maneira em um banco relacional.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             ARRAYS
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                📚 Arrays dentro dos documentos
+            </h2>
+
+            <p>
+                Também podemos armazenar listas dentro de um documento.
+            </p>
+
+
+            <pre><code>{
+    <span class="json-key">"nome"</span>: <span class="json-string">"Ana"</span>,
+
+    <span class="json-key">"interesses"</span>: [
+
+        <span class="json-string">"Banco de Dados"</span>,
+
+        <span class="json-string">"Programação"</span>,
+
+        <span class="json-string">"Tecnologia"</span>
+
+    ]
+}</code></pre>
+
+
+            <p>
+                Nesse exemplo, <strong>interesses</strong> é um array
+                contendo três valores.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>Essa é uma das ideias centrais do modelo
+                documental:</strong>
+
+                <p>
+                    Dados relacionados podem, em determinados casos,
+                    ser representados juntos no mesmo documento.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             BANCO E COLEÇÃO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🏗️ Criando nosso modelo mental
+            </h2>
+
+
+            <pre><code>MongoDB
+   │
+   ▼
+Banco: loja
+   │
+   ├── clientes
+   │      │
+   │      ├── { nome: "Ana" }
+   │      ├── { nome: "João" }
+   │      └── { nome: "Maria" }
+   │
+   ├── produtos
+   │      │
+   │      ├── { nome: "Notebook" }
+   │      └── { nome: "Mouse" }
+   │
+   └── pedidos
+          │
+          ├── { total: 500 }
+          └── { total: 250 }</code></pre>
+
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <h3>
+                        MongoDB
+                    </h3>
+
+                    <p>
+                        SGBD utilizado para gerenciar os dados.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        loja
+                    </h3>
+
+                    <p>
+                        Banco de dados utilizado pela aplicação.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        clientes
+                    </h3>
+
+                    <p>
+                        Coleção que agrupa documentos de clientes.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        Documento
+                    </h3>
+
+                    <p>
+                        Representa uma entidade ou conjunto de dados.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             PRIMEIRO COMANDO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                💻 Conhecendo o Mongo Shell
+            </h2>
+
+            <p>
+                Para interagir com o MongoDB podemos utilizar ferramentas
+                de linha de comando, como o <strong>mongosh</strong>.
+            </p>
+
+
+            <p>
+                Depois de conectar ao servidor MongoDB, podemos
+                selecionar um banco de dados:
+            </p>
+
+
+            <pre><code>use loja</code></pre>
+
+
+            <p>
+                Podemos verificar o banco atualmente selecionado:
+            </p>
+
+
+            <pre><code>db</code></pre>
+
+
+            <p>
+                E podemos listar as coleções existentes:
+            </p>
+
+
+            <pre><code>show collections</code></pre>
+
+
+            <div class="highlight">
+
+                <strong>Importante:</strong>
+
+                <p>
+                    Esses comandos serão utilizados apenas para
+                    introduzir o ambiente.
+                </p>
+
+                <p>
+                    Na próxima aula vamos começar a criar e consultar
+                    documentos de maneira mais detalhada.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             PRIMEIRO DOCUMENTO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                ✍️ Inserindo um documento
+            </h2>
+
+            <p>
+                Uma das operações mais básicas do MongoDB é inserir
+                um documento em uma coleção.
+            </p>
+
+
+            <pre><code>db.clientes.insertOne({
+
+    nome: "Ana Silva",
+
+    email: "ana@email.com",
+
+    idade: 25
+
+})</code></pre>
+
+
+            <p>
+                Nesse exemplo:
+            </p>
+
+
+            <ul>
+
+                <li>
+                    <strong>db</strong> representa o banco selecionado.
+                </li>
+
+                <li>
+                    <strong>clientes</strong> representa a coleção.
+                </li>
+
+                <li>
+                    <strong>insertOne()</strong> solicita a inserção
+                    de um documento.
+                </li>
+
+                <li>
+                    O objeto contém os dados que serão armazenados.
+                </li>
+
+            </ul>
+
+
+            <div class="highlight">
+
+                <strong>Não precisa decorar agora.</strong>
+
+                <p>
+                    O objetivo desta aula é reconhecer a estrutura.
+                    As operações CRUD serão estudadas com mais
+                    profundidade nas próximas aulas.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             CONSULTANDO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🔎 Consultando documentos
+            </h2>
+
+            <p>
+                Também podemos solicitar documentos de uma coleção.
+            </p>
+
+
+            <pre><code>db.clientes.find()</code></pre>
+
+
+            <p>
+                Esse comando solicita os documentos existentes
+                na coleção <strong>clientes</strong>.
+            </p>
+
+
+            <p>
+                Podemos pensar inicialmente em uma comparação
+                conceitual:
+            </p>
+
+
+            <pre><code>SQL:
+
+SELECT *
+FROM clientes;
+
+
+MongoDB:
+
+db.clientes.find()</code></pre>
+
+
+            <div class="highlight">
+
+                <strong>Importante:</strong>
+
+                <p>
+                    As duas operações possuem objetivos semelhantes,
+                    mas SQL e a linguagem de consulta do MongoDB
+                    possuem sintaxes e modelos diferentes.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             O QUE APRENDEMOS
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🧠 O que aprendemos?
+            </h2>
+
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <h3>
+                        MongoDB
+                    </h3>
+
+                    <p>
+                        É um SGBD NoSQL orientado a documentos.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        Database
+                    </h3>
+
+                    <p>
+                        É o banco de dados onde as coleções
+                        são organizadas.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        Collection
+                    </h3>
+
+                    <p>
+                        Agrupa documentos relacionados.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        Document
+                    </h3>
+
+                    <p>
+                        Armazena campos e valores.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             ERROS COMUNS
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                ⚠️ Erros comuns
+            </h2>
+
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <h3>
+                        ❌ "MongoDB é um banco de dados"
+                    </h3>
+
+                    <p>
+                        Tecnicamente, MongoDB é um SGBD que gerencia
+                        bancos de dados.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        ❌ "Coleção é exatamente uma tabela"
+                    </h3>
+
+                    <p>
+                        A comparação ajuda no início, mas os modelos
+                        possuem diferenças importantes.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        ❌ "Documento é exatamente uma linha"
+                    </h3>
+
+                    <p>
+                        Um documento pode conter estruturas aninhadas
+                        e arrays.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        ❌ "JSON e BSON são a mesma coisa"
+                    </h3>
+
+                    <p>
+                        São formatos relacionados, mas possuem
+                        características diferentes.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             CHECKPOINT
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🧠 Checkpoint
+            </h2>
+
+            <p>
+                Antes de seguir para a próxima aula, tente responder:
+            </p>
+
+
+            <ol>
+
+                <li>
+                    O que é MongoDB?
+                </li>
+
+                <li>
+                    MongoDB é um banco de dados ou um SGBD?
+                </li>
+
+                <li>
+                    O que é uma coleção?
+                </li>
+
+                <li>
+                    O que é um documento?
+                </li>
+
+                <li>
+                    Qual é a função do campo <strong>_id</strong>?
+                </li>
+
+                <li>
+                    O que significa BSON?
+                </li>
+
+                <li>
+                    Qual é a diferença conceitual entre uma tabela
+                    SQL e uma coleção MongoDB?
+                </li>
+
+                <li>
+                    O que significa utilizar documentos aninhados?
+                </li>
+
+                <li>
+                    Para que serve o comando
+                    <strong>db.clientes.find()</strong>?
+                </li>
+
+            </ol>
+
+        </section>
+
+
+        <!-- =====================================================
+             DESAFIO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🧪 Desafio da aula
+            </h2>
+
+            <p>
+                Imagine que você está construindo um sistema para
+                uma escola.
+            </p>
+
+
+            <p>
+                O sistema precisa armazenar:
+            </p>
+
+
+            <ul>
+
+                <li>
+                    Alunos
+                </li>
+
+                <li>
+                    Professores
+                </li>
+
+                <li>
+                    Cursos
+                </li>
+
+                <li>
+                    Disciplinas
+                </li>
+
+            </ul>
+
+
+            <p>
+                Crie mentalmente a seguinte estrutura:
+            </p>
+
+
+            <pre><code>escola
+│
+├── alunos
+│
+├── professores
+│
+├── cursos
+│
+└── disciplinas</code></pre>
+
+
+            <p>
+                Agora escolha uma dessas coleções e imagine
+                como seria um documento.
+            </p>
+
+
+            <pre><code>{
+    nome: "...",
+    email: "...",
+    idade: ...
+}</code></pre>
+
+
+            <div class="highlight">
+
+                <strong>Objetivo:</strong>
+
+                <p>
+                    Começar a pensar em documentos e coleções
+                    antes de aprender comandos mais avançados.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             RESUMO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                📝 Resumindo
+            </h2>
+
+
+            <div class="highlight">
+
+                <p>
+                    <strong>MongoDB</strong> é um SGBD NoSQL
+                    orientado a documentos.
+                </p>
+
+                <p>
+                    Um banco MongoDB pode conter
+                    <strong>coleções</strong>.
+                </p>
+
+                <p>
+                    As coleções armazenam
+                    <strong>documentos</strong>.
+                </p>
+
+                <p>
+                    Os documentos são estruturas compostas por
+                    <strong>campos e valores</strong>.
+                </p>
+
+                <p>
+                    O MongoDB utiliza <strong>BSON</strong> para
+                    representar documentos internamente.
+                </p>
+
+                <p>
+                    O campo <strong>_id</strong> identifica
+                    unicamente cada documento dentro de uma coleção.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             PRÓXIMA AULA
+        ====================================================== -->
+
+        <section class="cta">
+
+            <h2>
+                🚀 Próxima aula: Documentos e Coleções
+            </h2>
+
+            <p>
+                Agora que você conhece a estrutura básica do MongoDB,
+                vamos aprofundar os conceitos de documentos e coleções.
+            </p>
+
+            <p>
+                Na próxima aula vamos começar a trabalhar de forma
+                mais prática com inserção, leitura e estruturação
+                de documentos.
+            </p>
+
+
+            <a
+                href="./18.html"
+                class="cta-button">
+
+                Aula 18 — Documentos e Coleções →
+
+            </a>
+
+        </section>
+
+
+    </main>
+
+
+    <!-- =====================================================
+         FOOTER
+    ====================================================== -->
+
+    <footer>
+
+        <p>
+            Guia de Banco de Dados
+        </p>
+
+        <p>
+            Aula 17 • Introdução ao MongoDB
+        </p>
+
+    </footer>
+
+
+    <!-- =====================================================
+         JAVASCRIPT — DARK / LIGHT MODE
+    ====================================================== -->
+
+    <script src="./script.js"></script>
+
+</body>
+
+</html>

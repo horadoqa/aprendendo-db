@@ -1,0 +1,1885 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="./style.css">
+
+    <link rel="icon" type="image/png" href="./assets/images/logo.png">
+
+    <title>Aula 10 — Window Functions</title>
+
+</head>
+
+<body>
+
+
+    <!-- =====================================================
+         HEADER
+    ====================================================== -->
+
+    <header>
+
+        <button
+            class="theme-toggle"
+            id="themeToggle"
+            type="button"
+            aria-label="Alternar tema">
+
+            <span class="theme-icon" id="themeIcon">
+                ☀️
+            </span>
+
+            <span class="theme-label" id="themeLabel">
+                Modo claro
+            </span>
+
+        </button>
+
+
+        <div class="header-content">
+
+            <span class="eyebrow">
+                AULA 10 • WINDOW FUNCTIONS
+            </span>
+
+            <h1>
+                Window Functions
+            </h1>
+
+            <p>
+                Aprenda a analisar e comparar registros relacionados
+                sem perder as linhas individuais do resultado.
+            </p>
+
+        </div>
+
+    </header>
+
+
+    <!-- =====================================================
+         CONTEÚDO
+    ====================================================== -->
+
+    <main>
+
+
+        <!-- =====================================================
+             OBJETIVOS
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Objetivos da aula
+            </h2>
+
+            <p>
+                Nas aulas anteriores aprendemos a utilizar
+                <strong>GROUP BY</strong>, funções de agregação,
+                <strong>JOIN</strong>, subconsultas e CTEs.
+            </p>
+
+            <p>
+                Agora vamos aprender uma ferramenta muito importante
+                para análise de dados: as
+                <strong>Window Functions</strong>.
+            </p>
+
+
+            <div class="cards">
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🪟
+                    </div>
+
+                    <h3>
+                        Window Functions
+                    </h3>
+
+                    <p>
+                        Realizar cálculos considerando outras linhas
+                        relacionadas.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🔢
+                    </div>
+
+                    <h3>
+                        ROW_NUMBER
+                    </h3>
+
+                    <p>
+                        Numerar linhas dentro de um conjunto de dados.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🏆
+                    </div>
+
+                    <h3>
+                        RANK
+                    </h3>
+
+                    <p>
+                        Criar classificações e rankings.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        ↔️
+                    </div>
+
+                    <h3>
+                        LAG e LEAD
+                    </h3>
+
+                    <p>
+                        Comparar uma linha com linhas anteriores
+                        ou posteriores.
+                    </p>
+
+                </div>
+
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             O QUE É WINDOW FUNCTION
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                O que é uma Window Function?
+            </h2>
+
+            <p>
+                Uma <strong>Window Function</strong>, ou
+                <strong>função de janela</strong>, permite realizar
+                cálculos utilizando um conjunto de linhas relacionadas
+                à linha atual.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>Uma diferença importante:</strong>
+
+                <p>
+                    O <strong>GROUP BY</strong> normalmente reduz
+                    várias linhas em uma única linha por grupo.
+                </p>
+
+                <p>
+                    Uma <strong>Window Function</strong> realiza o
+                    cálculo, mas mantém as linhas individuais
+                    no resultado.
+                </p>
+
+            </div>
+
+
+            <p>
+                Essa diferença é fundamental para entender
+                funções de janela.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             GROUP BY VS WINDOW
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                GROUP BY × Window Function
+            </h2>
+
+
+            <p>
+                Imagine a seguinte tabela:
+            </p>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Cliente</th>
+                            <th>Pedido</th>
+                            <th>Total</th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>Ana</td>
+                            <td>101</td>
+                            <td>500</td>
+
+                        </tr>
+
+                        <tr>
+
+                            <td>Ana</td>
+                            <td>102</td>
+                            <td>300</td>
+
+                        </tr>
+
+                        <tr>
+
+                            <td>João</td>
+                            <td>103</td>
+                            <td>700</td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+            <p>
+                Com <strong>GROUP BY</strong>, poderíamos calcular
+                o total de cada cliente:
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span>
+
+    cliente_id,
+
+    <span class="sql-keyword">SUM</span>(total) <span class="sql-keyword">AS</span> total_cliente
+
+<span class="sql-keyword">FROM</span> pedidos
+
+<span class="sql-keyword">GROUP BY</span> cliente_id;</code></pre>
+
+
+            <p>
+                O resultado teria uma linha por cliente.
+            </p>
+
+
+            <p>
+                Com uma Window Function, podemos manter cada pedido
+                e ainda mostrar o total daquele cliente:
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span>
+
+    cliente_id,
+
+    id,
+
+    total,
+
+    <span class="sql-keyword">SUM</span>(total)
+        <span class="sql-keyword">OVER</span> (
+            <span class="sql-keyword">PARTITION BY</span> cliente_id
+        ) <span class="sql-keyword">AS</span> total_cliente
+
+<span class="sql-keyword">FROM</span> pedidos;</code></pre>
+
+        </section>
+
+
+        <!-- =====================================================
+             OVER
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                A palavra-chave OVER
+            </h2>
+
+            <p>
+                A cláusula <strong>OVER</strong> é uma das partes
+                fundamentais das Window Functions.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SUM</span>(total)
+<span class="sql-keyword">OVER</span> (
+    ...
+)</code></pre>
+
+
+            <p>
+                Ela define a janela de linhas que será utilizada
+                no cálculo.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>
+                    Pense assim:
+                </strong>
+
+                <p>
+                    <strong>OVER</strong> define
+                    "sobre quais linhas o cálculo deve olhar".
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             PARTITION BY
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                PARTITION BY
+            </h2>
+
+            <p>
+                <strong>PARTITION BY</strong> divide os registros
+                em grupos para que a Window Function seja calculada
+                separadamente em cada grupo.
+            </p>
+
+
+            <p>
+                Por exemplo, podemos calcular o total de pedidos
+                separadamente para cada cliente.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span>
+
+    cliente_id,
+
+    id,
+
+    total,
+
+    <span class="sql-keyword">SUM</span>(total)
+    <span class="sql-keyword">OVER</span> (
+
+        <span class="sql-keyword">PARTITION BY</span> cliente_id
+
+    ) <span class="sql-keyword">AS</span> total_cliente
+
+<span class="sql-keyword">FROM</span> pedidos;</code></pre>
+
+
+            <div class="highlight">
+
+                <p>
+                    <strong>PARTITION BY cliente_id</strong>
+                    significa:
+                </p>
+
+                <p>
+                    "Faça o cálculo separadamente para cada cliente."
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             ORDER BY OVER
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                ORDER BY dentro do OVER
+            </h2>
+
+            <p>
+                Também podemos utilizar <strong>ORDER BY</strong>
+                dentro da janela.
+            </p>
+
+
+            <p>
+                Isso permite definir a ordem em que os registros
+                serão analisados.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span>
+
+    id,
+
+    cliente_id,
+
+    total,
+
+    <span class="sql-keyword">SUM</span>(total)
+    <span class="sql-keyword">OVER</span> (
+
+        <span class="sql-keyword">PARTITION BY</span> cliente_id
+
+        <span class="sql-keyword">ORDER BY</span> id
+
+    ) <span class="sql-keyword">AS</span> total_acumulado
+
+<span class="sql-keyword">FROM</span> pedidos;</code></pre>
+
+
+            <p>
+                Agora podemos obter um
+                <strong>total acumulado</strong>.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             ROW_NUMBER
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                ROW_NUMBER()
+            </h2>
+
+            <p>
+                A função <strong>ROW_NUMBER()</strong> atribui um
+                número sequencial para cada linha dentro da janela.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span>
+
+    id,
+
+    cliente_id,
+
+    total,
+
+    <span class="sql-keyword">ROW_NUMBER</span>()
+    <span class="sql-keyword">OVER</span> (
+
+        <span class="sql-keyword">ORDER BY</span> total <span class="sql-keyword">DESC</span>
+
+    ) <span class="sql-keyword">AS</span> posicao
+
+<span class="sql-keyword">FROM</span> pedidos;</code></pre>
+
+
+            <p>
+                O pedido de maior valor receberá posição 1,
+                o segundo receberá posição 2 e assim por diante.
+            </p>
+
+
+            <p>
+                Também podemos reiniciar a numeração para cada cliente:
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span>
+
+    id,
+
+    cliente_id,
+
+    total,
+
+    <span class="sql-keyword">ROW_NUMBER</span>()
+    <span class="sql-keyword">OVER</span> (
+
+        <span class="sql-keyword">PARTITION BY</span> cliente_id
+
+        <span class="sql-keyword">ORDER BY</span> total <span class="sql-keyword">DESC</span>
+
+    ) <span class="sql-keyword">AS</span> posicao
+
+<span class="sql-keyword">FROM</span> pedidos;</code></pre>
+
+
+            <div class="highlight">
+
+                <p>
+                    Nesse caso, cada cliente começa novamente
+                    na posição 1.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             RANK
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                RANK()
+            </h2>
+
+            <p>
+                A função <strong>RANK()</strong> cria uma classificação
+                considerando empates.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span>
+
+    id,
+
+    total,
+
+    <span class="sql-keyword">RANK</span>()
+    <span class="sql-keyword">OVER</span> (
+
+        <span class="sql-keyword">ORDER BY</span> total <span class="sql-keyword">DESC</span>
+
+    ) <span class="sql-keyword">AS</span> ranking
+
+<span class="sql-keyword">FROM</span> pedidos;</code></pre>
+
+
+            <p>
+                Imagine os valores:
+            </p>
+
+
+            <pre><code>1000
+900
+900
+500</code></pre>
+
+
+            <p>
+                Com <strong>RANK()</strong>, o resultado será:
+            </p>
+
+
+            <pre><code>1
+2
+2
+4</code></pre>
+
+
+            <p>
+                Observe que a posição 3 é pulada devido ao empate.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             DENSE_RANK
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                DENSE_RANK()
+            </h2>
+
+            <p>
+                O <strong>DENSE_RANK()</strong> também considera
+                empates, mas não pula posições.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span>
+
+    id,
+
+    total,
+
+    <span class="sql-keyword">DENSE_RANK</span>()
+    <span class="sql-keyword">OVER</span> (
+
+        <span class="sql-keyword">ORDER BY</span> total <span class="sql-keyword">DESC</span>
+
+    ) <span class="sql-keyword">AS</span> ranking
+
+<span class="sql-keyword">FROM</span> pedidos;</code></pre>
+
+
+            <p>
+                Para os valores:
+            </p>
+
+
+            <pre><code>1000
+900
+900
+500</code></pre>
+
+
+            <p>
+                O resultado será:
+            </p>
+
+
+            <pre><code>1
+2
+2
+3</code></pre>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Função</th>
+                            <th>Resultado</th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>ROW_NUMBER()</td>
+                            <td>1, 2, 3, 4</td>
+
+                        </tr>
+
+                        <tr>
+
+                            <td>RANK()</td>
+                            <td>1, 2, 2, 4</td>
+
+                        </tr>
+
+                        <tr>
+
+                            <td>DENSE_RANK()</td>
+                            <td>1, 2, 2, 3</td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             LAG
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                LAG()
+            </h2>
+
+            <p>
+                A função <strong>LAG()</strong> permite acessar
+                o valor de uma linha anterior.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span>
+
+    id,
+
+    total,
+
+    <span class="sql-keyword">LAG</span>(total)
+    <span class="sql-keyword">OVER</span> (
+
+        <span class="sql-keyword">ORDER BY</span> id
+
+    ) <span class="sql-keyword">AS</span> total_anterior
+
+<span class="sql-keyword">FROM</span> pedidos;</code></pre>
+
+
+            <p>
+                Imagine:
+            </p>
+
+
+            <pre><code>Pedido     Total
+
+1          100
+2          200
+3          150</code></pre>
+
+
+            <p>
+                O resultado poderia ser:
+            </p>
+
+
+            <pre><code>Pedido     Total     Total anterior
+
+1          100       NULL
+2          200       100
+3          150       200</code></pre>
+
+
+            <div class="highlight">
+
+                <p>
+                    A primeira linha não possui uma linha anterior,
+                    por isso o resultado é <strong>NULL</strong>.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             LEAD
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                LEAD()
+            </h2>
+
+            <p>
+                A função <strong>LEAD()</strong> faz o contrário
+                de LAG: permite acessar o valor de uma linha posterior.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span>
+
+    id,
+
+    total,
+
+    <span class="sql-keyword">LEAD</span>(total)
+    <span class="sql-keyword">OVER</span> (
+
+        <span class="sql-keyword">ORDER BY</span> id
+
+    ) <span class="sql-keyword">AS</span> proximo_total
+
+<span class="sql-keyword">FROM</span> pedidos;</code></pre>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Função</th>
+                            <th>Acessa</th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>LAG()</td>
+                            <td>Linha anterior</td>
+
+                        </tr>
+
+                        <tr>
+
+                            <td>LEAD()</td>
+                            <td>Próxima linha</td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             COMPARAÇÃO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Comparando valores
+            </h2>
+
+            <p>
+                Podemos utilizar LAG para descobrir a diferença
+                entre um pedido e o pedido anterior.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span>
+
+    id,
+
+    total,
+
+    <span class="sql-keyword">LAG</span>(total)
+    <span class="sql-keyword">OVER</span> (
+
+        <span class="sql-keyword">ORDER BY</span> id
+
+    ) <span class="sql-keyword">AS</span> total_anterior,
+
+    total -
+
+    <span class="sql-keyword">LAG</span>(total)
+    <span class="sql-keyword">OVER</span> (
+
+        <span class="sql-keyword">ORDER BY</span> id
+
+    ) <span class="sql-keyword">AS</span> diferenca
+
+<span class="sql-keyword">FROM</span> pedidos;</code></pre>
+
+
+            <p>
+                Isso permite realizar análises de evolução,
+                variação e comparação entre períodos.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             TOTAL ACUMULADO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Total acumulado
+            </h2>
+
+            <p>
+                Window Functions também permitem calcular valores
+                acumulados.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span>
+
+    id,
+
+    total,
+
+    <span class="sql-keyword">SUM</span>(total)
+    <span class="sql-keyword">OVER</span> (
+
+        <span class="sql-keyword">ORDER BY</span> id
+
+    ) <span class="sql-keyword">AS</span> total_acumulado
+
+<span class="sql-keyword">FROM</span> pedidos;</code></pre>
+
+
+            <p>
+                Se os pedidos forem:
+            </p>
+
+
+            <pre><code>100
+200
+300</code></pre>
+
+
+            <p>
+                O total acumulado será:
+            </p>
+
+
+            <pre><code>100
+300
+600</code></pre>
+
+
+            <div class="highlight">
+
+                <strong>
+                    Esse recurso é muito utilizado em:
+                </strong>
+
+                <ul>
+
+                    <li>
+                        Relatórios financeiros.
+                    </li>
+
+                    <li>
+                        Análise de vendas.
+                    </li>
+
+                    <li>
+                        Indicadores acumulados.
+                    </li>
+
+                    <li>
+                        Análise de crescimento.
+                    </li>
+
+                </ul>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             MÉDIA MÓVEL
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Média móvel
+            </h2>
+
+            <p>
+                Também podemos calcular uma média considerando
+                um determinado conjunto de linhas ao redor da
+                linha atual.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span>
+
+    id,
+
+    total,
+
+    <span class="sql-keyword">AVG</span>(total)
+    <span class="sql-keyword">OVER</span> (
+
+        <span class="sql-keyword">ORDER BY</span> id
+
+        <span class="sql-keyword">ROWS BETWEEN</span>
+        2 <span class="sql-keyword">PRECEDING</span>
+        <span class="sql-keyword">AND CURRENT ROW</span>
+
+    ) <span class="sql-keyword">AS</span> media_movel
+
+<span class="sql-keyword">FROM</span> pedidos;</code></pre>
+
+
+            <p>
+                Nesse exemplo, a média considera a linha atual
+                e até duas linhas anteriores.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             TOP 1 POR GRUPO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Encontrando o primeiro registro de cada grupo
+            </h2>
+
+            <p>
+                Um uso muito comum de Window Functions é encontrar
+                o primeiro ou o último registro de cada grupo.
+            </p>
+
+
+            <p>
+                Por exemplo, podemos encontrar o maior pedido
+                de cada cliente.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">WITH</span> pedidos_ordenados <span class="sql-keyword">AS</span> (
+
+    <span class="sql-keyword">SELECT</span>
+
+        id,
+
+        cliente_id,
+
+        total,
+
+        <span class="sql-keyword">ROW_NUMBER</span>()
+        <span class="sql-keyword">OVER</span> (
+
+            <span class="sql-keyword">PARTITION BY</span> cliente_id
+
+            <span class="sql-keyword">ORDER BY</span> total <span class="sql-keyword">DESC</span>
+
+        ) <span class="sql-keyword">AS</span> posicao
+
+    <span class="sql-keyword">FROM</span> pedidos
+
+)
+
+
+<span class="sql-keyword">SELECT</span>
+
+    id,
+
+    cliente_id,
+
+    total
+
+<span class="sql-keyword">FROM</span> pedidos_ordenados
+
+<span class="sql-keyword">WHERE</span> posicao = 1;</code></pre>
+
+
+            <div class="highlight">
+
+                <p>
+                    A Window Function cria a posição.
+                </p>
+
+                <p>
+                    A CTE permite depois filtrar essa posição.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             WINDOW FUNCTIONS + PARTITION
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                PARTITION BY na prática
+            </h2>
+
+            <p>
+                Imagine que queremos criar um ranking de pedidos
+                separado para cada cliente.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span>
+
+    cliente_id,
+
+    id,
+
+    total,
+
+    <span class="sql-keyword">RANK</span>()
+    <span class="sql-keyword">OVER</span> (
+
+        <span class="sql-keyword">PARTITION BY</span> cliente_id
+
+        <span class="sql-keyword">ORDER BY</span> total <span class="sql-keyword">DESC</span>
+
+    ) <span class="sql-keyword">AS</span> ranking
+
+<span class="sql-keyword">FROM</span> pedidos;</code></pre>
+
+
+            <p>
+                Cada cliente terá seu próprio ranking.
+            </p>
+
+
+            <div class="highlight">
+
+                <p>
+                    Sem <strong>PARTITION BY</strong>:
+                    existe um ranking geral.
+                </p>
+
+                <p>
+                    Com <strong>PARTITION BY cliente_id</strong>:
+                    existe um ranking para cada cliente.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             WINDOW FUNCTIONS PRINCIPAIS
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Principais Window Functions
+            </h2>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Função</th>
+                            <th>Objetivo</th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>ROW_NUMBER()</td>
+
+                            <td>
+                                Numeração sequencial.
+                            </td>
+
+                        </tr>
+
+                        <tr>
+
+                            <td>RANK()</td>
+
+                            <td>
+                                Ranking com saltos após empates.
+                            </td>
+
+                        </tr>
+
+                        <tr>
+
+                            <td>DENSE_RANK()</td>
+
+                            <td>
+                                Ranking sem saltos após empates.
+                            </td>
+
+                        </tr>
+
+                        <tr>
+
+                            <td>LAG()</td>
+
+                            <td>
+                                Acessa uma linha anterior.
+                            </td>
+
+                        </tr>
+
+                        <tr>
+
+                            <td>LEAD()</td>
+
+                            <td>
+                                Acessa uma linha posterior.
+                            </td>
+
+                        </tr>
+
+                        <tr>
+
+                            <td>SUM() OVER</td>
+
+                            <td>
+                                Soma dentro da janela.
+                            </td>
+
+                        </tr>
+
+                        <tr>
+
+                            <td>AVG() OVER</td>
+
+                            <td>
+                                Média dentro da janela.
+                            </td>
+
+                        </tr>
+
+                        <tr>
+
+                            <td>COUNT() OVER</td>
+
+                            <td>
+                                Contagem dentro da janela.
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             GROUP BY VS WINDOW
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Quando usar GROUP BY e quando usar Window Function?
+            </h2>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Necessidade</th>
+                            <th>Recurso</th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>
+                                Reduzir registros por grupo
+                            </td>
+
+                            <td>
+                                GROUP BY
+                            </td>
+
+                        </tr>
+
+                        <tr>
+
+                            <td>
+                                Manter as linhas individuais
+                            </td>
+
+                            <td>
+                                Window Function
+                            </td>
+
+                        </tr>
+
+                        <tr>
+
+                            <td>
+                                Criar ranking
+                            </td>
+
+                            <td>
+                                RANK / DENSE_RANK
+                            </td>
+
+                        </tr>
+
+                        <tr>
+
+                            <td>
+                                Criar numeração
+                            </td>
+
+                            <td>
+                                ROW_NUMBER
+                            </td>
+
+                        </tr>
+
+                        <tr>
+
+                            <td>
+                                Comparar com linha anterior
+                            </td>
+
+                            <td>
+                                LAG
+                            </td>
+
+                        </tr>
+
+                        <tr>
+
+                            <td>
+                                Comparar com próxima linha
+                            </td>
+
+                            <td>
+                                LEAD
+                            </td>
+
+                        </tr>
+
+                        <tr>
+
+                            <td>
+                                Total acumulado
+                            </td>
+
+                            <td>
+                                SUM() OVER
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             EXERCÍCIO 1
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🧪 Exercício 1 — Numeração
+            </h2>
+
+            <p>
+                Utilize a tabela <strong>pedidos</strong> e crie
+                uma consulta que mostre:
+            </p>
+
+
+            <ul>
+
+                <li>
+                    ID do pedido.
+                </li>
+
+                <li>
+                    Cliente.
+                </li>
+
+                <li>
+                    Total.
+                </li>
+
+                <li>
+                    Número sequencial do pedido.
+                </li>
+
+            </ul>
+
+
+            <p>
+                Utilize <strong>ROW_NUMBER()</strong>.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             EXERCÍCIO 2
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🧪 Exercício 2 — Ranking
+            </h2>
+
+            <p>
+                Crie um ranking dos pedidos pelo maior valor.
+            </p>
+
+
+            <p>
+                Depois faça um ranking separado para cada cliente.
+            </p>
+
+
+            <p>
+                Utilize <strong>RANK()</strong> e
+                <strong>PARTITION BY</strong>.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             EXERCÍCIO 3
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🧪 Exercício 3 — Pedido anterior
+            </h2>
+
+            <p>
+                Mostre cada pedido junto com o valor do pedido anterior.
+            </p>
+
+
+            <p>
+                Utilize:
+            </p>
+
+
+            <pre><code><span class="sql-keyword">LAG</span>(total)</code></pre>
+
+
+            <p>
+                Depois crie uma coluna mostrando a diferença entre
+                o pedido atual e o anterior.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             EXERCÍCIO 4
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🧪 Exercício 4 — Total acumulado
+            </h2>
+
+            <p>
+                Crie uma consulta que mostre:
+            </p>
+
+
+            <ul>
+
+                <li>
+                    ID do pedido.
+                </li>
+
+                <li>
+                    Valor do pedido.
+                </li>
+
+                <li>
+                    Total acumulado.
+                </li>
+
+            </ul>
+
+
+            <p>
+                Utilize:
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SUM</span>(total)
+<span class="sql-keyword">OVER</span> (
+    <span class="sql-keyword">ORDER BY</span> id
+)</code></pre>
+
+        </section>
+
+
+        <!-- =====================================================
+             DESAFIO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🎯 Desafio da aula
+            </h2>
+
+            <p>
+                Crie um relatório que mostre os três maiores pedidos
+                de cada cliente.
+            </p>
+
+
+            <p>
+                O resultado deve apresentar:
+            </p>
+
+
+            <ul>
+
+                <li>
+                    Nome do cliente.
+                </li>
+
+                <li>
+                    ID do pedido.
+                </li>
+
+                <li>
+                    Valor do pedido.
+                </li>
+
+                <li>
+                    Posição do pedido dentro do cliente.
+                </li>
+
+            </ul>
+
+
+            <p>
+                Utilize:
+            </p>
+
+
+            <ul>
+
+                <li>
+                    <strong>ROW_NUMBER()</strong> ou
+                    <strong>RANK()</strong>.
+                </li>
+
+                <li>
+                    <strong>PARTITION BY</strong>.
+                </li>
+
+                <li>
+                    <strong>ORDER BY</strong>.
+                </li>
+
+                <li>
+                    Uma CTE.
+                </li>
+
+            </ul>
+
+
+            <div class="highlight">
+
+                <strong>Dica:</strong>
+
+                <p>
+                    Primeiro crie o ranking dentro da CTE.
+                </p>
+
+                <p>
+                    Depois filtre a posição para obter somente
+                    os três primeiros registros de cada cliente.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             MAPA MENTAL
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🧠 Mapa mental da aula
+            </h2>
+
+
+            <div class="highlight">
+
+                <p>
+                    <strong>Window Function</strong>
+                    → calcula informações olhando para outras linhas
+                    sem eliminá-las.
+                </p>
+
+                <p>
+                    <strong>OVER</strong>
+                    → define a janela utilizada pelo cálculo.
+                </p>
+
+                <p>
+                    <strong>PARTITION BY</strong>
+                    → divide os registros em grupos.
+                </p>
+
+                <p>
+                    <strong>ORDER BY</strong>
+                    → define a ordem dentro da janela.
+                </p>
+
+                <p>
+                    <strong>ROW_NUMBER()</strong>
+                    → numeração sequencial.
+                </p>
+
+                <p>
+                    <strong>RANK()</strong>
+                    → ranking com saltos após empates.
+                </p>
+
+                <p>
+                    <strong>DENSE_RANK()</strong>
+                    → ranking sem saltos após empates.
+                </p>
+
+                <p>
+                    <strong>LAG()</strong>
+                    → linha anterior.
+                </p>
+
+                <p>
+                    <strong>LEAD()</strong>
+                    → linha posterior.
+                </p>
+
+                <p>
+                    <strong>SUM() OVER</strong>
+                    → soma na janela.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             RESUMO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Resumindo
+            </h2>
+
+
+            <div class="highlight">
+
+                <p>
+                    Window Functions permitem realizar cálculos
+                    considerando várias linhas sem transformar
+                    todo o resultado em uma única linha por grupo.
+                </p>
+
+                <p>
+                    <strong>OVER</strong> define a janela utilizada
+                    pela função.
+                </p>
+
+                <p>
+                    <strong>PARTITION BY</strong> divide os dados
+                    em grupos independentes.
+                </p>
+
+                <p>
+                    <strong>ROW_NUMBER()</strong>,
+                    <strong>RANK()</strong> e
+                    <strong>DENSE_RANK()</strong> são utilizadas
+                    principalmente para classificação e ordenação.
+                </p>
+
+                <p>
+                    <strong>LAG()</strong> e
+                    <strong>LEAD()</strong> permitem comparar
+                    registros anteriores e posteriores.
+                </p>
+
+                <p>
+                    Funções agregadas como
+                    <strong>SUM()</strong>,
+                    <strong>AVG()</strong> e
+                    <strong>COUNT()</strong> também podem ser
+                    utilizadas como Window Functions.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             CHECKPOINT
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🧠 Você entendeu?
+            </h2>
+
+            <p>
+                Antes de avançar, tente responder:
+            </p>
+
+
+            <ul>
+
+                <li>
+                    O que é uma Window Function?
+                </li>
+
+                <li>
+                    Qual a diferença entre GROUP BY e uma Window Function?
+                </li>
+
+                <li>
+                    Para que serve OVER?
+                </li>
+
+                <li>
+                    Para que serve PARTITION BY?
+                </li>
+
+                <li>
+                    Qual a diferença entre ROW_NUMBER, RANK e DENSE_RANK?
+                </li>
+
+                <li>
+                    Para que serve LAG?
+                </li>
+
+                <li>
+                    Para que serve LEAD?
+                </li>
+
+                <li>
+                    Como criar um total acumulado?
+                </li>
+
+            </ul>
+
+        </section>
+
+
+        <!-- =====================================================
+             PRÓXIMA AULA
+        ====================================================== -->
+
+        <section class="cta">
+
+            <h2>
+                Aula 10 concluída!
+            </h2>
+
+            <p>
+                Agora você já consegue criar rankings, numerações,
+                totais acumulados e comparar registros utilizando
+                Window Functions.
+            </p>
+
+            <p>
+                Na próxima aula, podemos avançar para
+                <strong>Views, Stored Procedures, Functions e Triggers</strong>,
+                entrando em recursos que permitem colocar lógica
+                dentro do próprio banco de dados.
+            </p>
+
+
+            <a
+                href="./11.html"
+                class="cta-button">
+
+                Aula 11 →
+
+            </a>
+
+        </section>
+
+
+    </main>
+
+
+    <!-- =====================================================
+         FOOTER
+    ====================================================== -->
+
+    <footer>
+
+        <p>
+            Guia de Banco de Dados
+        </p>
+
+        <p>
+            Aula 10 • Window Functions
+        </p>
+
+    </footer>
+
+
+    <!-- =====================================================
+         JAVASCRIPT — DARK / LIGHT MODE
+    ====================================================== -->
+
+    <script src="./script.js"></script>
+
+</body>
+
+</html>

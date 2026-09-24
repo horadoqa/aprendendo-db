@@ -1,0 +1,1570 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="./style.css">
+
+    <link rel="icon" type="image/png" href="./assets/images/logo.png">
+
+    <title>Aula 21 — Consultas Avançadas no MongoDB</title>
+
+</head>
+
+<body>
+
+
+    <!-- =====================================================
+         HEADER
+    ====================================================== -->
+
+    <header>
+
+        <button
+            class="theme-toggle"
+            id="themeToggle"
+            type="button"
+            aria-label="Alternar tema">
+
+            <span class="theme-icon" id="themeIcon">
+                ☀️
+            </span>
+
+            <span class="theme-label" id="themeLabel">
+                Modo claro
+            </span>
+
+        </button>
+
+
+        <div class="header-content">
+
+            <span class="eyebrow">
+                AULA 21 • MONGODB
+            </span>
+
+            <h1>
+                Consultas Avançadas no MongoDB
+            </h1>
+
+            <p>
+                Aprenda a consultar arrays, documentos aninhados
+                e combinar condições para trabalhar com estruturas
+                de dados mais complexas.
+            </p>
+
+        </div>
+
+    </header>
+
+
+    <!-- =====================================================
+         CONTEÚDO
+    ====================================================== -->
+
+    <main>
+
+
+        <!-- =====================================================
+             OBJETIVOS
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🎯 Objetivos da aula
+            </h2>
+
+            <p>
+                Até agora aprendemos a consultar documentos simples.
+                Porém, uma das grandes características do MongoDB é
+                permitir que um documento contenha estruturas mais
+                complexas.
+            </p>
+
+            <p>
+                Nesta aula vamos aprender a consultar:
+            </p>
+
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <div class="icon">
+                        📋
+                    </div>
+
+                    <h3>
+                        Arrays
+                    </h3>
+
+                    <p>
+                        Listas de valores armazenadas dentro de documentos.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🧩
+                    </div>
+
+                    <h3>
+                        Documentos aninhados
+                    </h3>
+
+                    <p>
+                        Objetos armazenados dentro de outros documentos.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🔀
+                    </div>
+
+                    <h3>
+                        Operadores lógicos
+                    </h3>
+
+                    <p>
+                        Combinação de diferentes condições.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🔎
+                    </div>
+
+                    <h3>
+                        Consultas complexas
+                    </h3>
+
+                    <p>
+                        Construção de filtros mais específicos.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             REVISÃO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🔄 Relembrando o MongoDB
+            </h2>
+
+            <p>
+                No MongoDB, os dados são armazenados como documentos
+                BSON, que possuem uma estrutura semelhante ao JSON.
+            </p>
+
+
+            <p>
+                Um documento simples pode ser:
+            </p>
+
+
+            <pre><code>{
+    nome: "Ana",
+    idade: 25,
+    cidade: "Rio de Janeiro"
+}</code></pre>
+
+
+            <p>
+                Mas os documentos também podem possuir arrays e
+                outros objetos:
+            </p>
+
+
+            <pre><code>{
+    nome: "Ana",
+
+    idade: 25,
+
+    habilidades: [
+        "JavaScript",
+        "SQL",
+        "MongoDB"
+    ],
+
+    endereco: {
+        cidade: "Rio de Janeiro",
+        estado: "RJ"
+    }
+}</code></pre>
+
+
+            <div class="highlight">
+
+                <strong>
+                    Esse é um dos pontos importantes do MongoDB:
+                </strong>
+
+                <p>
+                    um documento pode representar uma estrutura
+                    de dados rica e hierárquica.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             ARRAYS
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                📋 O que são Arrays?
+            </h2>
+
+            <p>
+                Um <strong>array</strong> é uma coleção ordenada
+                de valores.
+            </p>
+
+
+            <p>
+                Por exemplo:
+            </p>
+
+
+            <pre><code>{
+    nome: "Carlos",
+
+    habilidades: [
+        "JavaScript",
+        "Python",
+        "MongoDB"
+    ]
+}</code></pre>
+
+
+            <p>
+                O campo <strong>habilidades</strong> possui três
+                valores.
+            </p>
+
+
+            <p>
+                Podemos consultar documentos que possuem uma
+                determinada habilidade.
+            </p>
+
+
+            <pre><code>db.alunos.find({
+
+    habilidades: "MongoDB"
+
+})</code></pre>
+
+
+            <p>
+                O MongoDB consegue encontrar documentos em que
+                o array contém o valor informado.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             $ALL
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                📚 $all — Vários valores no mesmo array
+            </h2>
+
+            <p>
+                O operador <strong>$all</strong> permite encontrar
+                documentos cujo array contenha todos os valores
+                especificados.
+            </p>
+
+
+            <pre><code>db.alunos.find({
+
+    habilidades: {
+        $all: [
+            "JavaScript",
+            "MongoDB"
+        ]
+    }
+
+})</code></pre>
+
+
+            <p>
+                O documento precisa possuir as duas habilidades.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             $SIZE
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                📏 $size — Quantidade de elementos
+            </h2>
+
+            <p>
+                O operador <strong>$size</strong> permite procurar
+                arrays com uma quantidade específica de elementos.
+            </p>
+
+
+            <pre><code>db.alunos.find({
+
+    habilidades: {
+        $size: 3
+    }
+
+})</code></pre>
+
+
+            <p>
+                Essa consulta encontra documentos cujo array
+                <strong>habilidades</strong> possui exatamente
+                três elementos.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             ARRAYS DE OBJETOS
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🧩 Arrays contendo objetos
+            </h2>
+
+            <p>
+                Arrays também podem armazenar documentos.
+            </p>
+
+
+            <pre><code>{
+    nome: "Ana",
+
+    cursos: [
+
+        {
+            nome: "Banco de Dados",
+            nota: 9
+        },
+
+        {
+            nome: "Programação",
+            nota: 8
+        }
+
+    ]
+}</code></pre>
+
+
+            <p>
+                Agora temos um array chamado
+                <strong>cursos</strong> que contém objetos.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             DOT NOTATION
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🔗 Dot Notation
+            </h2>
+
+            <p>
+                Para acessar campos dentro de documentos aninhados,
+                podemos utilizar a chamada <strong>dot notation</strong>.
+            </p>
+
+
+            <pre><code>db.alunos.find({
+
+    "endereco.cidade": "Rio de Janeiro"
+
+})</code></pre>
+
+
+            <p>
+                O ponto indica que queremos acessar um campo que
+                está dentro de outro campo.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>
+                    Pense assim:
+                </strong>
+
+                <p>
+                    <code>endereco.cidade</code>
+                    significa:
+                    campo <strong>cidade</strong> dentro de
+                    <strong>endereco</strong>.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             DOCUMENTOS ANINHADOS
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🏠 Consultando documentos aninhados
+            </h2>
+
+            <p>
+                Imagine os seguintes documentos:
+            </p>
+
+
+            <pre><code>{
+    nome: "João",
+
+    endereco: {
+        cidade: "São Paulo",
+        estado: "SP",
+        cep: "01000-000"
+    }
+}
+
+
+{
+    nome: "Maria",
+
+    endereco: {
+        cidade: "Rio de Janeiro",
+        estado: "RJ",
+        cep: "20000-000"
+    }
+}</code></pre>
+
+
+            <p>
+                Podemos encontrar pessoas do Rio de Janeiro:
+            </p>
+
+
+            <pre><code>db.pessoas.find({
+
+    "endereco.cidade": "Rio de Janeiro"
+
+})</code></pre>
+
+        </section>
+
+
+        <!-- =====================================================
+             ARRAYS DE OBJETOS COM DOT NOTATION
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🔎 Consultando arrays de objetos
+            </h2>
+
+            <p>
+                A dot notation também pode ser utilizada para
+                consultar campos dentro de objetos armazenados
+                em arrays.
+            </p>
+
+
+            <pre><code>db.alunos.find({
+
+    "cursos.nome": "Banco de Dados"
+
+})</code></pre>
+
+
+            <p>
+                Essa consulta procura alunos que possuem algum
+                curso com esse nome.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             OPERADORES LÓGICOS
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🔀 Operadores lógicos
+            </h2>
+
+            <p>
+                Os operadores lógicos permitem combinar diferentes
+                condições.
+            </p>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Operador
+                            </th>
+
+                            <th>
+                                Função
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>
+                                $and
+                            </td>
+
+                            <td>
+                                Todas as condições precisam ser atendidas.
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                $or
+                            </td>
+
+                            <td>
+                                Pelo menos uma condição precisa ser atendida.
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                $nor
+                            </td>
+
+                            <td>
+                                Nenhuma das condições deve ser atendida.
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                $not
+                            </td>
+
+                            <td>
+                                Nega uma condição.
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             AND
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🔗 $and
+            </h2>
+
+            <p>
+                O operador <strong>$and</strong> permite definir
+                explicitamente várias condições que precisam ser
+                satisfeitas.
+            </p>
+
+
+            <pre><code>db.produtos.find({
+
+    $and: [
+
+        {
+            preco: {
+                $gt: 100
+            }
+        },
+
+        {
+            estoque: {
+                $gt: 10
+            }
+        }
+
+    ]
+
+})</code></pre>
+
+
+            <p>
+                O produto precisa ter preço maior que 100
+                <strong>e</strong> estoque maior que 10.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>
+                    Observação:
+                </strong>
+
+                <p>
+                    Em muitos casos, o <strong>$and</strong> explícito
+                    não é necessário. Podemos simplesmente colocar
+                    as condições no mesmo objeto de filtro.
+                </p>
+
+            </div>
+
+
+            <pre><code>db.produtos.find({
+
+    preco: {
+        $gt: 100
+    },
+
+    estoque: {
+        $gt: 10
+    }
+
+})</code></pre>
+
+        </section>
+
+
+        <!-- =====================================================
+             OR
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🔀 $or
+            </h2>
+
+            <p>
+                O <strong>$or</strong> é utilizado quando queremos
+                aceitar uma condição ou outra.
+            </p>
+
+
+            <pre><code>db.produtos.find({
+
+    $or: [
+
+        {
+            categoria: "Eletrônicos"
+        },
+
+        {
+            preco: {
+                $lt: 100
+            }
+        }
+
+    ]
+
+})</code></pre>
+
+
+            <p>
+                O documento será retornado se pelo menos uma das
+                condições for verdadeira.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             NOR
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🚫 $nor
+            </h2>
+
+            <p>
+                O operador <strong>$nor</strong> encontra documentos
+                que não atendem a nenhuma das condições informadas.
+            </p>
+
+
+            <pre><code>db.produtos.find({
+
+    $nor: [
+
+        {
+            categoria: "Eletrônicos"
+        },
+
+        {
+            preco: {
+                $lt: 100
+            }
+        }
+
+    ]
+
+})</code></pre>
+
+
+            <p>
+                Nesse caso, o documento não pode satisfazer nenhuma
+                das duas condições.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             NOT
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                ❌ $not
+            </h2>
+
+            <p>
+                O operador <strong>$not</strong> nega uma condição
+                de comparação.
+            </p>
+
+
+            <pre><code>db.produtos.find({
+
+    preco: {
+        $not: {
+            $gt: 1000
+        }
+    }
+
+})</code></pre>
+
+
+            <p>
+                A consulta procura valores que não sejam maiores
+                que 1000.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             EXIST
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🔍 $exists
+            </h2>
+
+            <p>
+                O operador <strong>$exists</strong> permite verificar
+                se um determinado campo existe no documento.
+            </p>
+
+
+            <pre><code>db.produtos.find({
+
+    desconto: {
+        $exists: true
+    }
+
+})</code></pre>
+
+
+            <p>
+                Essa consulta procura produtos que possuem o campo
+                <strong>desconto</strong>.
+            </p>
+
+
+            <p>
+                Também podemos procurar documentos onde o campo
+                não existe:
+            </p>
+
+
+            <pre><code>db.produtos.find({
+
+    desconto: {
+        $exists: false
+    }
+
+})</code></pre>
+
+        </section>
+
+
+        <!-- =====================================================
+             TYPE
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🧬 $type
+            </h2>
+
+            <p>
+                O operador <strong>$type</strong> permite consultar
+                documentos com base no tipo BSON de um campo.
+            </p>
+
+
+            <p>
+                Por exemplo, podemos procurar documentos em que
+                determinado campo seja uma string.
+            </p>
+
+
+            <pre><code>db.produtos.find({
+
+    nome: {
+        $type: "string"
+    }
+
+})</code></pre>
+
+
+            <p>
+                Isso pode ser útil quando estamos trabalhando com
+                dados que possuem estruturas variadas.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             REGEX
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🔤 $regex
+            </h2>
+
+            <p>
+                O operador <strong>$regex</strong> permite procurar
+                padrões dentro de strings.
+            </p>
+
+
+            <p>
+                Por exemplo:
+            </p>
+
+
+            <pre><code>db.produtos.find({
+
+    nome: {
+        $regex: "note",
+        $options: "i"
+    }
+
+})</code></pre>
+
+
+            <p>
+                A opção <strong>i</strong> indica que a busca
+                não diferencia letras maiúsculas de minúsculas.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>
+                    Atenção:
+                </strong>
+
+                <p>
+                    Regex pode ser bastante útil, mas consultas
+                    com padrões podem exigir cuidados de performance,
+                    principalmente em coleções grandes.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             ELEMG
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🧩 $elemMatch
+            </h2>
+
+            <p>
+                Quando trabalhamos com arrays de documentos,
+                o operador <strong>$elemMatch</strong> permite
+                exigir que um mesmo elemento do array satisfaça
+                várias condições.
+            </p>
+
+
+            <p>
+                Imagine:
+            </p>
+
+
+            <pre><code>{
+    nome: "Ana",
+
+    cursos: [
+
+        {
+            nome: "Banco de Dados",
+            nota: 9
+        },
+
+        {
+            nome: "Programação",
+            nota: 7
+        }
+
+    ]
+}</code></pre>
+
+
+            <p>
+                Podemos procurar um curso chamado
+                "Banco de Dados" com nota maior que 8:
+            </p>
+
+
+            <pre><code>db.alunos.find({
+
+    cursos: {
+        $elemMatch: {
+            nome: "Banco de Dados",
+            nota: {
+                $gt: 8
+            }
+        }
+    }
+
+})</code></pre>
+
+
+            <div class="highlight">
+
+                <strong>
+                    Por que usar $elemMatch?
+                </strong>
+
+                <p>
+                    Ele deixa claro que as condições precisam ser
+                    satisfeitas pelo mesmo elemento do array.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             CONSULTA COMPLEXA
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🔥 Construindo uma consulta complexa
+            </h2>
+
+            <p>
+                Agora podemos combinar vários conceitos.
+            </p>
+
+
+            <p>
+                Imagine uma coleção de alunos:
+            </p>
+
+
+            <pre><code>{
+    nome: "Carlos",
+
+    idade: 22,
+
+    endereco: {
+        cidade: "Rio de Janeiro"
+    },
+
+    habilidades: [
+        "JavaScript",
+        "MongoDB"
+    ],
+
+    cursos: [
+
+        {
+            nome: "Banco de Dados",
+            nota: 9
+        }
+
+    ]
+}</code></pre>
+
+
+            <p>
+                Podemos procurar alunos que:
+            </p>
+
+
+            <ul>
+
+                <li>
+                    tenham idade maior ou igual a 18;
+                </li>
+
+                <li>
+                    morem no Rio de Janeiro;
+                </li>
+
+                <li>
+                    possuam MongoDB entre as habilidades.
+                </li>
+
+            </ul>
+
+
+            <pre><code>db.alunos.find({
+
+    idade: {
+        $gte: 18
+    },
+
+    "endereco.cidade": "Rio de Janeiro",
+
+    habilidades: "MongoDB"
+
+})</code></pre>
+
+        </section>
+
+
+        <!-- =====================================================
+             SQL X MONGODB
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🔄 Pensando em SQL
+            </h2>
+
+            <p>
+                Como você já estudou SQL, podemos comparar a ideia
+                de uma consulta relacional com uma consulta MongoDB.
+            </p>
+
+
+            <h3>
+                SQL
+            </h3>
+
+
+            <pre><code>SELECT nome, idade
+FROM alunos
+WHERE idade >= 18
+AND cidade = 'Rio de Janeiro';</code></pre>
+
+
+            <h3>
+                MongoDB
+            </h3>
+
+
+            <pre><code>db.alunos.find(
+
+    {
+        idade: {
+            $gte: 18
+        },
+
+        "endereco.cidade":
+            "Rio de Janeiro"
+    },
+
+    {
+        nome: 1,
+        idade: 1
+    }
+
+)</code></pre>
+
+
+            <div class="highlight">
+
+                <strong>
+                    O objetivo da comparação:
+                </strong>
+
+                <p>
+                    perceber que os dois modelos conseguem realizar
+                    consultas, mas utilizam estruturas e mecanismos
+                    diferentes.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             BOAS PRÁTICAS
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                ✅ Boas práticas
+            </h2>
+
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <h3>
+                        🎯 Seja específico
+                    </h3>
+
+                    <p>
+                        Utilize filtros que retornem apenas os dados
+                        realmente necessários.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        👁️ Use projeção
+                    </h3>
+
+                    <p>
+                        Retorne somente os campos necessários para
+                        a operação.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        📊 Pense em performance
+                    </h3>
+
+                    <p>
+                        Consultas complexas em grandes coleções podem
+                        exigir índices adequados.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        🧠 Entenda o documento
+                    </h3>
+
+                    <p>
+                        Conhecer a estrutura dos documentos facilita
+                        a construção das consultas.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             CHECKPOINT
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🧠 Checkpoint
+            </h2>
+
+            <p>
+                Antes de avançar, tente responder:
+            </p>
+
+
+            <ol>
+
+                <li>
+                    O que é um array no MongoDB?
+                </li>
+
+                <li>
+                    Como consultar um valor que está dentro de um array?
+                </li>
+
+                <li>
+                    Para que serve o operador $all?
+                </li>
+
+                <li>
+                    Para que serve o operador $size?
+                </li>
+
+                <li>
+                    O que é um documento aninhado?
+                </li>
+
+                <li>
+                    O que significa a expressão
+                    <code>endereco.cidade</code>?
+                </li>
+
+                <li>
+                    Qual a diferença entre $and e $or?
+                </li>
+
+                <li>
+                    Para que serve $exists?
+                </li>
+
+                <li>
+                    Para que serve $regex?
+                </li>
+
+                <li>
+                    Quando o $elemMatch pode ser útil?
+                </li>
+
+            </ol>
+
+        </section>
+
+
+        <!-- =====================================================
+             DESAFIO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🧪 Desafio da aula
+            </h2>
+
+            <p>
+                Crie uma coleção chamada
+                <strong>alunos</strong> com documentos que possuam:
+            </p>
+
+
+            <pre><code>{
+    nome: "...",
+
+    idade: 0,
+
+    endereco: {
+        cidade: "...",
+        estado: "..."
+    },
+
+    habilidades: [
+        "...",
+        "..."
+    ],
+
+    cursos: [
+
+        {
+            nome: "...",
+            nota: 0
+        }
+
+    ]
+}</code></pre>
+
+
+            <p>
+                Depois tente criar consultas para:
+            </p>
+
+
+            <ol>
+
+                <li>
+                    Encontrar alunos que possuem "MongoDB" nas
+                    habilidades.
+                </li>
+
+                <li>
+                    Encontrar alunos que possuem "MongoDB" e
+                    "JavaScript".
+                </li>
+
+                <li>
+                    Encontrar alunos que moram em determinada cidade.
+                </li>
+
+                <li>
+                    Encontrar alunos maiores ou iguais a 18 anos.
+                </li>
+
+                <li>
+                    Encontrar alunos que possuem um curso chamado
+                    "Banco de Dados".
+                </li>
+
+                <li>
+                    Encontrar alunos que possuem um curso de
+                    "Banco de Dados" com nota maior que 8.
+                </li>
+
+                <li>
+                    Encontrar documentos que possuem o campo
+                    "telefone".
+                </li>
+
+                <li>
+                    Procurar alunos cujo nome contenha determinada
+                    palavra utilizando regex.
+                </li>
+
+                <li>
+                    Retornar somente nome, idade e cidade.
+                </li>
+
+                <li>
+                    Criar uma consulta combinando pelo menos
+                    três condições.
+                </li>
+
+            </ol>
+
+
+            <div class="highlight">
+
+                <strong>
+                    Desafio extra:
+                </strong>
+
+                <p>
+                    Tente criar uma consulta que encontre alunos
+                    maiores de idade, que morem em uma determinada
+                    cidade e que tenham MongoDB entre suas habilidades.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             RESUMO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                📝 Resumindo
+            </h2>
+
+
+            <div class="highlight">
+
+                <p>
+                    O MongoDB permite armazenar
+                    <strong>arrays</strong> dentro dos documentos.
+                </p>
+
+                <p>
+                    Documentos também podem possuir
+                    <strong>objetos aninhados</strong>.
+                </p>
+
+                <p>
+                    A <strong>dot notation</strong> permite acessar
+                    campos dentro de estruturas aninhadas.
+                </p>
+
+                <p>
+                    Operadores como
+                    <strong>$and, $or, $nor e $not</strong>
+                    permitem construir condições lógicas.
+                </p>
+
+                <p>
+                    <strong>$exists</strong> verifica a existência
+                    de um campo.
+                </p>
+
+                <p>
+                    <strong>$regex</strong> permite realizar buscas
+                    baseadas em padrões de texto.
+                </p>
+
+                <p>
+                    <strong>$elemMatch</strong> é útil para consultar
+                    múltiplas condições dentro do mesmo elemento
+                    de um array de documentos.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             PRÓXIMA AULA
+        ====================================================== -->
+
+        <section class="cta">
+
+            <h2>
+                🚀 Próxima aula: Agregações no MongoDB
+            </h2>
+
+            <p>
+                Agora que você já sabe consultar documentos simples
+                e estruturas complexas, chegou a hora de aprender
+                a transformar, agrupar e analisar dados.
+            </p>
+
+            <p>
+                Na próxima aula vamos conhecer o
+                <strong>Aggregation Pipeline</strong>, uma das
+                ferramentas mais importantes do MongoDB para
+                análise e processamento de dados.
+            </p>
+
+
+            <a
+                href="./22.html"
+                class="cta-button">
+
+                Aula 22 — Aggregation Pipeline →
+
+            </a>
+
+        </section>
+
+
+    </main>
+
+
+    <!-- =====================================================
+         FOOTER
+    ====================================================== -->
+
+    <footer>
+
+        <p>
+            Guia de Banco de Dados
+        </p>
+
+        <p>
+            Aula 21 • Consultas Avançadas no MongoDB
+        </p>
+
+    </footer>
+
+
+    <!-- =====================================================
+         JAVASCRIPT — DARK / LIGHT MODE
+    ====================================================== -->
+
+    <script src="./script.js"></script>
+
+</body>
+
+</html>

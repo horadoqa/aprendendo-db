@@ -1,0 +1,1920 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="./style.css">
+
+    <link rel="icon" type="image/png" href="./assets/images/logo.png">
+
+    <title>Aula 5 — Primeiros passos com SQL</title>
+
+</head>
+
+<body>
+
+
+    <!-- =====================================================
+         HEADER
+    ====================================================== -->
+
+    <header>
+
+        <button
+            class="theme-toggle"
+            id="themeToggle"
+            type="button"
+            aria-label="Alternar tema">
+
+            <span class="theme-icon" id="themeIcon">
+                ☀️
+            </span>
+
+            <span class="theme-label" id="themeLabel">
+                Modo claro
+            </span>
+
+        </button>
+
+
+        <div class="header-content">
+
+            <span class="eyebrow">
+                AULA 5 • FUNDAMENTOS DE SQL
+            </span>
+
+            <h1>
+                Primeiros passos com SQL
+            </h1>
+
+            <p>
+                Aprenda o que é SQL e como criar tabelas,
+                inserir dados e consultar informações em
+                um banco de dados relacional.
+            </p>
+
+        </div>
+
+    </header>
+
+
+    <!-- =====================================================
+         CONTEÚDO
+    ====================================================== -->
+
+    <main>
+
+
+        <!-- =====================================================
+             OBJETIVOS
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Objetivos da aula
+            </h2>
+
+            <p>
+                Nas aulas anteriores, aprendemos a identificar
+                entidades, atributos e relacionamentos.
+            </p>
+
+            <p>
+                Agora vamos utilizar <strong>SQL</strong> para
+                começar a transformar esse modelo em estruturas
+                que podem ser utilizadas por um SGBD.
+            </p>
+
+
+            <div class="cards">
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🔤
+                    </div>
+
+                    <h3>
+                        Conhecer SQL
+                    </h3>
+
+                    <p>
+                        Entender o que é SQL e para que ele serve.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🏗️
+                    </div>
+
+                    <h3>
+                        Criar tabelas
+                    </h3>
+
+                    <p>
+                        Utilizar CREATE TABLE para definir estruturas.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        ➕
+                    </div>
+
+                    <h3>
+                        Inserir dados
+                    </h3>
+
+                    <p>
+                        Utilizar INSERT para adicionar registros.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🔎
+                    </div>
+
+                    <h3>
+                        Consultar dados
+                    </h3>
+
+                    <p>
+                        Utilizar SELECT para visualizar informações.
+                    </p>
+
+                </div>
+
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             REVISÃO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Relembrando a Aula 4
+            </h2>
+
+            <p>
+                Na aula anterior, aprendemos que antes de criar
+                tabelas devemos entender o problema e modelar
+                os dados.
+            </p>
+
+
+            <div class="highlight">
+
+                <p>
+                    🧠 <strong>Problema</strong>
+                </p>
+
+                <p>
+                    ↓
+                </p>
+
+                <p>
+                    🧩 <strong>Entidades</strong>
+                </p>
+
+                <p>
+                    ↓
+                </p>
+
+                <p>
+                    📝 <strong>Atributos</strong>
+                </p>
+
+                <p>
+                    ↓
+                </p>
+
+                <p>
+                    🔗 <strong>Relacionamentos</strong>
+                </p>
+
+                <p>
+                    ↓
+                </p>
+
+                <p>
+                    📊 <strong>Tabelas</strong>
+                </p>
+
+                <p>
+                    ↓
+                </p>
+
+                <p>
+                    🔤 <strong>SQL</strong>
+                </p>
+
+            </div>
+
+
+            <p>
+                Nesta aula vamos começar a trabalhar justamente
+                nessa última etapa.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             O QUE É SQL
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                O que é SQL?
+            </h2>
+
+            <p>
+                <strong>SQL</strong> significa
+                <strong>Structured Query Language</strong>,
+                ou Linguagem de Consulta Estruturada.
+            </p>
+
+            <p>
+                SQL é uma linguagem utilizada para trabalhar
+                principalmente com bancos de dados relacionais.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>Importante:</strong>
+
+                <p>
+                    SQL não é um banco de dados.
+                </p>
+
+                <p>
+                    SQL também não é um SGBD.
+                </p>
+
+                <p>
+                    SQL é uma <strong>linguagem</strong> utilizada
+                    para definir, consultar e manipular dados e
+                    estruturas em sistemas de banco de dados que
+                    suportam SQL.
+                </p>
+
+            </div>
+
+
+            <p>
+                PostgreSQL e MySQL, por exemplo, são SGBDs que
+                utilizam SQL como uma de suas principais formas
+                de interação com bancos de dados relacionais.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             SQL E SGBD
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                SQL, SGBD e banco de dados
+            </h2>
+
+            <p>
+                É importante não confundir esses conceitos.
+            </p>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Conceito</th>
+
+                            <th>O que é?</th>
+
+                            <th>Exemplo</th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>
+                                Banco de dados
+                            </td>
+
+                            <td>
+                                Conjunto organizado de dados
+                                armazenados.
+                            </td>
+
+                            <td>
+                                Banco da loja
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                SGBD
+                            </td>
+
+                            <td>
+                                Software que gerencia bancos
+                                de dados.
+                            </td>
+
+                            <td>
+                                PostgreSQL
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                SQL
+                            </td>
+
+                            <td>
+                                Linguagem utilizada para trabalhar
+                                com dados e estruturas.
+                            </td>
+
+                            <td>
+                                SELECT, INSERT, CREATE TABLE
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Aplicação
+                            </td>
+
+                            <td>
+                                Software utilizado pelo usuário
+                                ou por outros sistemas.
+                            </td>
+
+                            <td>
+                                Loja virtual
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             CATEGORIAS SQL
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Principais categorias de comandos SQL
+            </h2>
+
+            <p>
+                Os comandos SQL podem ser classificados de
+                diferentes maneiras.
+            </p>
+
+
+            <div class="cards">
+
+
+                <div class="card">
+
+                    <span class="badge">
+                        DDL
+                    </span>
+
+                    <h3>
+                        Data Definition Language
+                    </h3>
+
+                    <p>
+                        Comandos relacionados à definição
+                        da estrutura do banco.
+                    </p>
+
+                    <p>
+                        Exemplos:
+                        <strong>CREATE</strong>,
+                        <strong>ALTER</strong> e
+                        <strong>DROP</strong>.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <span class="badge">
+                        DML
+                    </span>
+
+                    <h3>
+                        Data Manipulation Language
+                    </h3>
+
+                    <p>
+                        Comandos utilizados para inserir,
+                        alterar e excluir dados.
+                    </p>
+
+                    <p>
+                        Exemplos:
+                        <strong>INSERT</strong>,
+                        <strong>UPDATE</strong> e
+                        <strong>DELETE</strong>.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <span class="badge">
+                        DQL
+                    </span>
+
+                    <h3>
+                        Data Query Language
+                    </h3>
+
+                    <p>
+                        Comandos utilizados para consultar
+                        dados.
+                    </p>
+
+                    <p>
+                        Principal exemplo:
+                        <strong>SELECT</strong>.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <span class="badge">
+                        DCL
+                    </span>
+
+                    <h3>
+                        Data Control Language
+                    </h3>
+
+                    <p>
+                        Comandos relacionados ao controle
+                        de permissões e acesso.
+                    </p>
+
+                    <p>
+                        Exemplos:
+                        <strong>GRANT</strong> e
+                        <strong>REVOKE</strong>.
+                    </p>
+
+                </div>
+
+
+            </div>
+
+
+            <div class="highlight">
+
+                <strong>Nesta aula:</strong>
+
+                <p>
+                    Nosso foco será principalmente em
+                    <strong>CREATE TABLE</strong>,
+                    <strong>INSERT</strong> e
+                    <strong>SELECT</strong>.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             CREATE DATABASE
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Criando um banco de dados
+            </h2>
+
+            <p>
+                Alguns SGBDs permitem criar um banco de dados
+                utilizando o comando <strong>CREATE DATABASE</strong>.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">CREATE DATABASE</span> loja;</code></pre>
+
+
+            <p>
+                Nesse exemplo, estamos solicitando ao SGBD a criação
+                de um banco de dados chamado <strong>loja</strong>.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>Atenção:</strong>
+
+                <p>
+                    A forma de criar e selecionar bancos de dados
+                    pode variar de acordo com o SGBD.
+                </p>
+
+                <p>
+                    Por isso, detalhes específicos de PostgreSQL,
+                    MySQL ou outros SGBDs serão estudados conforme
+                    avançarmos no curso.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             CREATE TABLE
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Criando uma tabela
+            </h2>
+
+            <p>
+                Depois de termos um banco de dados, podemos criar
+                tabelas dentro dele.
+            </p>
+
+
+            <p>
+                Vamos criar uma tabela para armazenar clientes:
+            </p>
+
+
+            <pre><code><span class="sql-keyword">CREATE TABLE</span> clientes (
+
+    id <span class="sql-keyword">INTEGER PRIMARY KEY</span>,
+
+    nome <span class="sql-keyword">VARCHAR</span>(100),
+
+    email <span class="sql-keyword">VARCHAR</span>(150)
+
+);</code></pre>
+
+
+            <p>
+                Esse comando define uma tabela chamada
+                <strong>clientes</strong>.
+            </p>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Elemento</th>
+
+                            <th>Significado</th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>
+                                CREATE TABLE
+                            </td>
+
+                            <td>
+                                Cria uma tabela.
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                clientes
+                            </td>
+
+                            <td>
+                                Nome da tabela.
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                id
+                            </td>
+
+                            <td>
+                                Coluna identificadora.
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                INTEGER
+                            </td>
+
+                            <td>
+                                Tipo de dado inteiro.
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                PRIMARY KEY
+                            </td>
+
+                            <td>
+                                Define a chave primária.
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                VARCHAR(100)
+                            </td>
+
+                            <td>
+                                Texto com tamanho máximo
+                                especificado.
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             TIPOS DE DADOS
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Tipos de dados
+            </h2>
+
+            <p>
+                Cada coluna precisa representar um determinado
+                tipo de informação.
+            </p>
+
+
+            <div class="cards">
+
+
+                <div class="card">
+
+                    <span class="badge">
+                        INTEGER
+                    </span>
+
+                    <h3>
+                        Números inteiros
+                    </h3>
+
+                    <p>
+                        Utilizado para valores inteiros,
+                        como IDs e quantidades.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <span class="badge">
+                        VARCHAR
+                    </span>
+
+                    <h3>
+                        Texto
+                    </h3>
+
+                    <p>
+                        Utilizado para textos com tamanho
+                        definido.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <span class="badge">
+                        DATE
+                    </span>
+
+                    <h3>
+                        Data
+                    </h3>
+
+                    <p>
+                        Utilizado para armazenar datas.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <span class="badge">
+                        BOOLEAN
+                    </span>
+
+                    <h3>
+                        Verdadeiro ou falso
+                    </h3>
+
+                    <p>
+                        Utilizado para valores booleanos.
+                    </p>
+
+                </div>
+
+
+            </div>
+
+
+            <p>
+                Os tipos disponíveis e seus comportamentos podem
+                variar conforme o SGBD.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             INSERT
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Inserindo dados
+            </h2>
+
+            <p>
+                Depois de criar uma tabela, podemos adicionar
+                registros utilizando <strong>INSERT</strong>.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">INSERT INTO</span> clientes
+    (id, nome, email)
+
+<span class="sql-keyword">VALUES</span>
+    (1, <span class="sql-string">'Ana Silva'</span>, <span class="sql-string">'ana@email.com'</span>);</code></pre>
+
+
+            <p>
+                Podemos inserir outro cliente:
+            </p>
+
+
+            <pre><code><span class="sql-keyword">INSERT INTO</span> clientes
+    (id, nome, email)
+
+<span class="sql-keyword">VALUES</span>
+    (2, <span class="sql-string">'João Santos'</span>, <span class="sql-string">'joao@email.com'</span>);</code></pre>
+
+
+            <div class="highlight">
+
+                <strong>O que aconteceu?</strong>
+
+                <p>
+                    Criamos um novo registro na tabela
+                    <strong>clientes</strong>.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             VISUALIZANDO DADOS
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Visualizando os dados
+            </h2>
+
+            <p>
+                Agora podemos utilizar <strong>SELECT</strong>
+                para consultar os registros.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span> *
+<span class="sql-keyword">FROM</span> clientes;</code></pre>
+
+
+            <p>
+                O símbolo <strong>*</strong> significa que queremos
+                selecionar todas as colunas.
+            </p>
+
+
+            <p>
+                O resultado poderia ser semelhante a:
+            </p>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>id</th>
+                            <th>nome</th>
+                            <th>email</th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>
+                                1
+                            </td>
+
+                            <td>
+                                Ana Silva
+                            </td>
+
+                            <td>
+                                ana@email.com
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                2
+                            </td>
+
+                            <td>
+                                João Santos
+                            </td>
+
+                            <td>
+                                joao@email.com
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             SELECT COLUNAS
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Escolhendo as colunas
+            </h2>
+
+            <p>
+                Não precisamos consultar todas as colunas.
+            </p>
+
+
+            <p>
+                Podemos escolher apenas as informações desejadas:
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span> nome, email
+<span class="sql-keyword">FROM</span> clientes;</code></pre>
+
+
+            <p>
+                Nesse caso, o resultado terá somente:
+            </p>
+
+
+            <div class="highlight">
+
+                <p>
+                    <strong>nome</strong>
+                </p>
+
+                <p>
+                    <strong>email</strong>
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             WHERE
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Filtrando resultados com WHERE
+            </h2>
+
+            <p>
+                O comando <strong>WHERE</strong> permite definir
+                uma condição para a consulta.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span> *
+<span class="sql-keyword">FROM</span> clientes
+<span class="sql-keyword">WHERE</span> id = 1;</code></pre>
+
+
+            <p>
+                Essa consulta procura o cliente cujo
+                <strong>id</strong> seja igual a 1.
+            </p>
+
+
+            <p>
+                Também podemos filtrar pelo nome:
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span> *
+<span class="sql-keyword">FROM</span> clientes
+<span class="sql-keyword">WHERE</span> nome = <span class="sql-string">'Ana Silva'</span>;</code></pre>
+
+        </section>
+
+
+        <!-- =====================================================
+             OPERADORES
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Operadores básicos
+            </h2>
+
+            <p>
+                Podemos utilizar operadores para construir
+                condições.
+            </p>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Operador</th>
+                            <th>Significado</th>
+                            <th>Exemplo</th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>
+                                =
+                            </td>
+
+                            <td>
+                                Igual
+                            </td>
+
+                            <td>
+                                id = 1
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                &gt;
+                            </td>
+
+                            <td>
+                                Maior que
+                            </td>
+
+                            <td>
+                                preco &gt; 100
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                &lt;
+                            </td>
+
+                            <td>
+                                Menor que
+                            </td>
+
+                            <td>
+                                preco &lt; 100
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                &gt;=
+                            </td>
+
+                            <td>
+                                Maior ou igual
+                            </td>
+
+                            <td>
+                                idade &gt;= 18
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                &lt;=
+                            </td>
+
+                            <td>
+                                Menor ou igual
+                            </td>
+
+                            <td>
+                                preco &lt;= 50
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                &lt;&gt;
+                            </td>
+
+                            <td>
+                                Diferente
+                            </td>
+
+                            <td>
+                                status &lt;&gt; 'cancelado'
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             UPDATE
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Atualizando dados
+            </h2>
+
+            <p>
+                Para alterar um registro existente, utilizamos
+                <strong>UPDATE</strong>.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">UPDATE</span> clientes
+<span class="sql-keyword">SET</span> email = <span class="sql-string">'ana.silva@email.com'</span>
+<span class="sql-keyword">WHERE</span> id = 1;</code></pre>
+
+
+            <div class="highlight">
+
+                <strong>Cuidado com o WHERE!</strong>
+
+                <p>
+                    O <strong>WHERE</strong> define quais registros
+                    serão alterados.
+                </p>
+
+                <p>
+                    Um UPDATE sem uma condição adequada pode
+                    alterar muitos registros de uma só vez.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             DELETE
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Excluindo dados
+            </h2>
+
+            <p>
+                Para excluir registros, utilizamos
+                <strong>DELETE</strong>.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">DELETE FROM</span> clientes
+<span class="sql-keyword">WHERE</span> id = 2;</code></pre>
+
+
+            <div class="highlight">
+
+                <strong>Atenção!</strong>
+
+                <p>
+                    Assim como no UPDATE, o WHERE é extremamente
+                    importante para controlar quais registros
+                    serão excluídos.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             CRUD
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                SQL e CRUD
+            </h2>
+
+            <p>
+                Os comandos que aprendemos podem ser relacionados
+                às operações fundamentais do CRUD.
+            </p>
+
+
+            <div class="cards">
+
+
+                <div class="card crud-card create">
+
+                    <h3>
+                        🟢 Create
+                    </h3>
+
+                    <p>
+                        INSERT
+                    </p>
+
+                    <p>
+                        Adiciona dados.
+                    </p>
+
+                </div>
+
+
+                <div class="card crud-card read">
+
+                    <h3>
+                        🔵 Read
+                    </h3>
+
+                    <p>
+                        SELECT
+                    </p>
+
+                    <p>
+                        Consulta dados.
+                    </p>
+
+                </div>
+
+
+                <div class="card crud-card update">
+
+                    <h3>
+                        🟡 Update
+                    </h3>
+
+                    <p>
+                        UPDATE
+                    </p>
+
+                    <p>
+                        Altera dados.
+                    </p>
+
+                </div>
+
+
+                <div class="card crud-card delete">
+
+                    <h3>
+                        🔴 Delete
+                    </h3>
+
+                    <p>
+                        DELETE
+                    </p>
+
+                    <p>
+                        Exclui dados.
+                    </p>
+
+                </div>
+
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             EXEMPLO COMPLETO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Exemplo completo
+            </h2>
+
+            <p>
+                Vamos juntar os conceitos aprendidos.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">CREATE TABLE</span> produtos (
+
+    id <span class="sql-keyword">INTEGER PRIMARY KEY</span>,
+
+    nome <span class="sql-keyword">VARCHAR</span>(100),
+
+    preco <span class="sql-keyword">DECIMAL</span>(10, 2)
+
+);
+
+
+<span class="sql-keyword">INSERT INTO</span> produtos
+    (id, nome, preco)
+
+<span class="sql-keyword">VALUES</span>
+    (1, <span class="sql-string">'Notebook'</span>, 3500.00);
+
+
+<span class="sql-keyword">INSERT INTO</span> produtos
+    (id, nome, preco)
+
+<span class="sql-keyword">VALUES</span>
+    (2, <span class="sql-string">'Mouse'</span>, 80.00);
+
+
+<span class="sql-keyword">SELECT</span> *
+<span class="sql-keyword">FROM</span> produtos;</code></pre>
+
+
+            <p>
+                Nesse exemplo:
+            </p>
+
+
+            <ul>
+
+                <li>
+                    criamos uma tabela;
+                </li>
+
+                <li>
+                    definimos suas colunas;
+                </li>
+
+                <li>
+                    definimos uma chave primária;
+                </li>
+
+                <li>
+                    inserimos dois produtos;
+                </li>
+
+                <li>
+                    consultamos os dados.
+                </li>
+
+            </ul>
+
+        </section>
+
+
+        <!-- =====================================================
+             FLUXO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                O fluxo que você está aprendendo
+            </h2>
+
+
+            <div class="highlight">
+
+                <p>
+                    👨‍💻 <strong>Aplicação</strong>
+                </p>
+
+                <p>
+                    ↓
+                </p>
+
+                <p>
+                    🔤 <strong>SQL</strong>
+                </p>
+
+                <p>
+                    ↓
+                </p>
+
+                <p>
+                    ⚙️ <strong>SGBD</strong>
+                </p>
+
+                <p>
+                    ↓
+                </p>
+
+                <p>
+                    🗄️ <strong>Banco de dados</strong>
+                </p>
+
+            </div>
+
+
+            <p>
+                Uma aplicação pode enviar comandos ao SGBD.
+                O SGBD interpreta esses comandos e realiza
+                as operações solicitadas sobre os dados.
+            </p>
+
+
+            <p>
+                Em uma aplicação real, normalmente não digitamos
+                SQL diretamente toda vez que o usuário realiza
+                uma ação. O código da aplicação pode gerar ou
+                executar consultas SQL por meio de uma biblioteca,
+                driver ou outra camada de acesso a dados.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             EXERCÍCIO 1
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🧪 Exercício 1 — Criando uma tabela
+            </h2>
+
+            <p>
+                Crie uma tabela chamada <strong>alunos</strong>
+                contendo:
+            </p>
+
+
+            <ul>
+
+                <li>
+                    id;
+                </li>
+
+                <li>
+                    nome;
+                </li>
+
+                <li>
+                    email;
+                </li>
+
+                <li>
+                    idade.
+                </li>
+
+            </ul>
+
+
+            <p>
+                Uma possível solução seria:
+            </p>
+
+
+            <pre><code><span class="sql-keyword">CREATE TABLE</span> alunos (
+
+    id <span class="sql-keyword">INTEGER PRIMARY KEY</span>,
+
+    nome <span class="sql-keyword">VARCHAR</span>(100),
+
+    email <span class="sql-keyword">VARCHAR</span>(150),
+
+    idade <span class="sql-keyword">INTEGER</span>
+
+);</code></pre>
+
+        </section>
+
+
+        <!-- =====================================================
+             EXERCÍCIO 2
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🧪 Exercício 2 — Inserindo alunos
+            </h2>
+
+            <p>
+                Insira pelo menos três alunos.
+            </p>
+
+
+            <p>
+                Exemplo:
+            </p>
+
+
+            <pre><code><span class="sql-keyword">INSERT INTO</span> alunos
+    (id, nome, email, idade)
+
+<span class="sql-keyword">VALUES</span>
+    (1, <span class="sql-string">'Ana'</span>, <span class="sql-string">'ana@email.com'</span>, 20);
+
+
+<span class="sql-keyword">INSERT INTO</span> alunos
+    (id, nome, email, idade)
+
+<span class="sql-keyword">VALUES</span>
+    (2, <span class="sql-string">'João'</span>, <span class="sql-string">'joao@email.com'</span>, 22);
+
+
+<span class="sql-keyword">INSERT INTO</span> alunos
+    (id, nome, email, idade)
+
+<span class="sql-keyword">VALUES</span>
+    (3, <span class="sql-string">'Maria'</span>, <span class="sql-string">'maria@email.com'</span>, 19);</code></pre>
+
+        </section>
+
+
+        <!-- =====================================================
+             EXERCÍCIO 3
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🧪 Exercício 3 — Consultando
+            </h2>
+
+            <p>
+                Escreva uma consulta que mostre todos os alunos.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span> *
+<span class="sql-keyword">FROM</span> alunos;</code></pre>
+
+
+            <p>
+                Agora consulte somente o nome e o e-mail:
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span> nome, email
+<span class="sql-keyword">FROM</span> alunos;</code></pre>
+
+
+            <p>
+                Por fim, consulte somente alunos com idade
+                maior ou igual a 20 anos:
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span> *
+<span class="sql-keyword">FROM</span> alunos
+<span class="sql-keyword">WHERE</span> idade &gt;= 20;</code></pre>
+
+        </section>
+
+
+        <!-- =====================================================
+             DESAFIO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🎯 Desafio da aula
+            </h2>
+
+            <p>
+                Agora tente criar uma pequena estrutura para
+                uma loja.
+            </p>
+
+
+            <p>
+                Crie uma tabela chamada
+                <strong>produtos</strong> com:
+            </p>
+
+
+            <ul>
+
+                <li>
+                    id;
+                </li>
+
+                <li>
+                    nome;
+                </li>
+
+                <li>
+                    preco;
+                </li>
+
+                <li>
+                    estoque.
+                </li>
+
+            </ul>
+
+
+            <p>
+                Depois:
+            </p>
+
+
+            <ol>
+
+                <li>
+                    Crie a tabela.
+                </li>
+
+                <li>
+                    Insira pelo menos três produtos.
+                </li>
+
+                <li>
+                    Consulte todos os produtos.
+                </li>
+
+                <li>
+                    Consulte somente nome e preço.
+                </li>
+
+                <li>
+                    Consulte produtos com preço maior que 100.
+                </li>
+
+                <li>
+                    Atualize o preço de um produto.
+                </li>
+
+                <li>
+                    Exclua um produto.
+                </li>
+
+            </ol>
+
+
+            <div class="highlight">
+
+                <strong>Dica:</strong>
+
+                <p>
+                    Tente escrever os comandos sozinho antes
+                    de consultar uma solução.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             RESUMO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Resumindo
+            </h2>
+
+
+            <div class="highlight">
+
+                <p>
+                    🔤 <strong>SQL</strong> é uma linguagem utilizada
+                    para trabalhar com dados e estruturas em SGBDs
+                    que suportam SQL.
+                </p>
+
+                <p>
+                    🏗️ <strong>CREATE TABLE</strong> cria uma tabela.
+                </p>
+
+                <p>
+                    ➕ <strong>INSERT</strong> adiciona registros.
+                </p>
+
+                <p>
+                    🔎 <strong>SELECT</strong> consulta dados.
+                </p>
+
+                <p>
+                    ✏️ <strong>UPDATE</strong> altera registros.
+                </p>
+
+                <p>
+                    🗑️ <strong>DELETE</strong> remove registros.
+                </p>
+
+                <p>
+                    🔎 <strong>WHERE</strong> permite filtrar
+                    registros de acordo com uma condição.
+                </p>
+
+                <p>
+                    🔑 <strong>PRIMARY KEY</strong> define a chave
+                    primária de uma tabela.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             CHECKPOINT
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🧠 Você entendeu?
+            </h2>
+
+
+            <p>
+                Antes de avançar, tente responder:
+            </p>
+
+
+            <ul>
+
+                <li>
+                    O que significa SQL?
+                </li>
+
+                <li>
+                    Qual é a diferença entre SQL e SGBD?
+                </li>
+
+                <li>
+                    Para que serve CREATE TABLE?
+                </li>
+
+                <li>
+                    Para que serve INSERT?
+                </li>
+
+                <li>
+                    Para que serve SELECT?
+                </li>
+
+                <li>
+                    Qual é a função do WHERE?
+                </li>
+
+                <li>
+                    Qual é a função de uma PRIMARY KEY?
+                </li>
+
+                <li>
+                    Por que devemos ter cuidado ao utilizar
+                    UPDATE e DELETE?
+                </li>
+
+            </ul>
+
+        </section>
+
+
+        <!-- =====================================================
+             PRÓXIMA AULA
+        ====================================================== -->
+
+        <section class="cta">
+
+            <h2>
+                Aula 5 concluída!
+            </h2>
+
+            <p>
+                Você já deu os primeiros passos com SQL:
+                criou tabelas, inseriu dados e realizou
+                suas primeiras consultas.
+            </p>
+
+            <p>
+                Na próxima aula, vamos aprofundar o
+                <strong>SELECT</strong> e aprender a construir
+                consultas mais úteis utilizando filtros,
+                ordenação e outros recursos.
+            </p>
+
+
+            <a
+                href="./6.html"
+                class="cta-button">
+
+                Aula 6 →
+
+            </a>
+
+        </section>
+
+
+    </main>
+
+
+    <!-- =====================================================
+         FOOTER
+    ====================================================== -->
+
+    <footer>
+
+        <p>
+            Guia de Banco de Dados
+        </p>
+
+        <p>
+            Aula 5 • Primeiros passos com SQL
+        </p>
+
+    </footer>
+
+
+    <!-- =====================================================
+         JAVASCRIPT — DARK / LIGHT MODE
+    ====================================================== -->
+
+    <script src="./script.js"></script>
+
+</body>
+
+</html>

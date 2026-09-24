@@ -1,0 +1,1685 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="./style.css">
+
+    <link rel="icon" type="image/png" href="./assets/images/logo.png">
+
+    <title>Aula 20 — Consultas e Filtros no MongoDB</title>
+
+</head>
+
+<body>
+
+
+    <!-- =====================================================
+         HEADER
+    ====================================================== -->
+
+    <header>
+
+        <button
+            class="theme-toggle"
+            id="themeToggle"
+            type="button"
+            aria-label="Alternar tema">
+
+            <span class="theme-icon" id="themeIcon">
+                ☀️
+            </span>
+
+            <span class="theme-label" id="themeLabel">
+                Modo claro
+            </span>
+
+        </button>
+
+
+        <div class="header-content">
+
+            <span class="eyebrow">
+                AULA 20 • MONGODB
+            </span>
+
+            <h1>
+                Consultas e Filtros no MongoDB
+            </h1>
+
+            <p>
+                Aprenda a encontrar exatamente os documentos que
+                precisa utilizando filtros, operadores, projeções,
+                ordenação e limite de resultados.
+            </p>
+
+        </div>
+
+    </header>
+
+
+    <!-- =====================================================
+         CONTEÚDO
+    ====================================================== -->
+
+    <main>
+
+
+        <!-- =====================================================
+             OBJETIVOS
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🎯 Objetivos da aula
+            </h2>
+
+            <p>
+                Na aula anterior aprendemos o CRUD e vimos que
+                <strong>find()</strong> é utilizado para consultar
+                documentos.
+            </p>
+
+            <p>
+                Agora vamos aprender a controlar melhor essas
+                consultas.
+            </p>
+
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <div class="icon">
+                        🔎
+                    </div>
+
+                    <h3>
+                        Filtros
+                    </h3>
+
+                    <p>
+                        Encontrar documentos que atendem a uma condição.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        ⚖️
+                    </div>
+
+                    <h3>
+                        Operadores
+                    </h3>
+
+                    <p>
+                        Comparar valores utilizando operadores do MongoDB.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        👁️
+                    </div>
+
+                    <h3>
+                        Projeção
+                    </h3>
+
+                    <p>
+                        Escolher quais campos serão exibidos.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        ↕️
+                    </div>
+
+                    <h3>
+                        Ordenação
+                    </h3>
+
+                    <p>
+                        Organizar os resultados da consulta.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             REVISÃO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🔄 Relembrando o find()
+            </h2>
+
+            <p>
+                Na aula anterior utilizamos:
+            </p>
+
+
+            <pre><code>db.alunos.find()</code></pre>
+
+
+            <p>
+                Sem nenhum filtro, o MongoDB pode retornar os
+                documentos da coleção.
+            </p>
+
+
+            <p>
+                Podemos adicionar um filtro:
+            </p>
+
+
+            <pre><code>db.alunos.find({
+
+    curso: "Computação"
+
+})</code></pre>
+
+
+            <div class="highlight">
+
+                <strong>
+                    A ideia principal:
+                </strong>
+
+                <p>
+                    O primeiro argumento do <strong>find()</strong>
+                    representa o filtro utilizado para selecionar
+                    os documentos.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             DADOS DE EXEMPLO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🗃️ Dados que vamos utilizar
+            </h2>
+
+            <p>
+                Para facilitar os exemplos, imagine que temos uma
+                coleção chamada <strong>produtos</strong> com
+                documentos semelhantes aos seguintes:
+            </p>
+
+
+            <pre><code>{
+    nome: "Notebook",
+    categoria: "Eletrônicos",
+    preco: 3500,
+    estoque: 10
+}
+
+{
+    nome: "Mouse",
+    categoria: "Acessórios",
+    preco: 120,
+    estoque: 50
+}
+
+{
+    nome: "Teclado",
+    categoria: "Acessórios",
+    preco: 250,
+    estoque: 30
+}
+
+{
+    nome: "Monitor",
+    categoria: "Eletrônicos",
+    preco: 1500,
+    estoque: 15
+}</code></pre>
+
+
+            <p>
+                Esses dados serão utilizados nos próximos exemplos.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             FILTRO EXATO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🔎 Filtro por valor exato
+            </h2>
+
+            <p>
+                Podemos procurar documentos que possuem um
+                determinado valor.
+            </p>
+
+
+            <pre><code>db.produtos.find({
+
+    categoria: "Eletrônicos"
+
+})</code></pre>
+
+
+            <p>
+                Nesse caso, estamos procurando produtos cuja categoria
+                seja exatamente <strong>Eletrônicos</strong>.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>
+                    Pense assim:
+                </strong>
+
+                <p>
+                    "Encontre os produtos onde categoria seja igual
+                    a Eletrônicos."
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             OPERADORES DE COMPARAÇÃO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                ⚖️ Operadores de comparação
+            </h2>
+
+            <p>
+                O MongoDB possui operadores especiais para realizar
+                comparações.
+            </p>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Operador
+                            </th>
+
+                            <th>
+                                Significado
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>
+                                $gt
+                            </td>
+
+                            <td>
+                                Maior que
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                $gte
+                            </td>
+
+                            <td>
+                                Maior ou igual
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                $lt
+                            </td>
+
+                            <td>
+                                Menor que
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                $lte
+                            </td>
+
+                            <td>
+                                Menor ou igual
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                $eq
+                            </td>
+
+                            <td>
+                                Igual
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                $ne
+                            </td>
+
+                            <td>
+                                Diferente
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             GT
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                📈 $gt — Maior que
+            </h2>
+
+            <p>
+                O operador <strong>$gt</strong> significa
+                <strong>greater than</strong>, ou seja,
+                "maior que".
+            </p>
+
+
+            <p>
+                Vamos procurar produtos com preço maior que 1000:
+            </p>
+
+
+            <pre><code>db.produtos.find({
+
+    preco: {
+        $gt: 1000
+    }
+
+})</code></pre>
+
+
+            <p>
+                Nesse exemplo serão encontrados produtos cujo
+                preço seja superior a 1000.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             GTE
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                📈 $gte — Maior ou igual
+            </h2>
+
+            <p>
+                O operador <strong>$gte</strong> significa
+                <strong>greater than or equal</strong>.
+            </p>
+
+
+            <pre><code>db.produtos.find({
+
+    preco: {
+        $gte: 1000
+    }
+
+})</code></pre>
+
+
+            <p>
+                Agora produtos com preço exatamente igual a 1000
+                também serão considerados.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             LT E LTE
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                📉 $lt e $lte
+            </h2>
+
+            <p>
+                Podemos fazer o contrário utilizando
+                <strong>$lt</strong> e <strong>$lte</strong>.
+            </p>
+
+
+            <h3>
+                Menor que
+            </h3>
+
+
+            <pre><code>db.produtos.find({
+
+    preco: {
+        $lt: 500
+    }
+
+})</code></pre>
+
+
+            <h3>
+                Menor ou igual
+            </h3>
+
+
+            <pre><code>db.produtos.find({
+
+    preco: {
+        $lte: 500
+    }
+
+})</code></pre>
+
+        </section>
+
+
+        <!-- =====================================================
+             NE
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🚫 $ne — Diferente
+            </h2>
+
+            <p>
+                O operador <strong>$ne</strong> significa
+                <strong>not equal</strong>.
+            </p>
+
+
+            <p>
+                Podemos procurar produtos que não pertencem
+                a uma determinada categoria.
+            </p>
+
+
+            <pre><code>db.produtos.find({
+
+    categoria: {
+        $ne: "Eletrônicos"
+    }
+
+})</code></pre>
+
+        </section>
+
+
+        <!-- =====================================================
+             IN
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                📋 $in — Entre várias opções
+            </h2>
+
+            <p>
+                O operador <strong>$in</strong> permite procurar
+                documentos cujo valor esteja dentro de uma lista
+                de possibilidades.
+            </p>
+
+
+            <pre><code>db.produtos.find({
+
+    categoria: {
+        $in: [
+            "Eletrônicos",
+            "Acessórios"
+        ]
+    }
+
+})</code></pre>
+
+
+            <p>
+                Nesse caso, serão encontrados produtos que pertençam
+                a qualquer uma das categorias informadas.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             NIN
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🚫 $nin — Fora de várias opções
+            </h2>
+
+            <p>
+                O operador <strong>$nin</strong> faz o contrário
+                do <strong>$in</strong>.
+            </p>
+
+
+            <pre><code>db.produtos.find({
+
+    categoria: {
+        $nin: [
+            "Eletrônicos",
+            "Acessórios"
+        ]
+    }
+
+})</code></pre>
+
+
+            <p>
+                Nesse exemplo procuramos documentos cuja categoria
+                não esteja nessa lista.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             AND
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🔗 Combinando condições
+            </h2>
+
+            <p>
+                Podemos utilizar mais de uma condição no mesmo filtro.
+            </p>
+
+
+            <p>
+                Por exemplo:
+            </p>
+
+
+            <pre><code>db.produtos.find({
+
+    categoria: "Eletrônicos",
+
+    preco: {
+        $gt: 1000
+    }
+
+})</code></pre>
+
+
+            <p>
+                Aqui estamos procurando produtos que:
+            </p>
+
+
+            <ul>
+
+                <li>
+                    pertençam à categoria Eletrônicos;
+                </li>
+
+                <li>
+                    tenham preço maior que 1000.
+                </li>
+
+            </ul>
+
+
+            <div class="highlight">
+
+                <strong>
+                    Na prática:
+                </strong>
+
+                <p>
+                    Quando várias condições são colocadas no mesmo
+                    documento de filtro, elas normalmente precisam
+                    ser satisfeitas simultaneamente.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             OR
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🔀 $or — Uma condição ou outra
+            </h2>
+
+            <p>
+                Quando queremos encontrar documentos que satisfaçam
+                uma condição <strong>ou</strong> outra, podemos
+                utilizar <strong>$or</strong>.
+            </p>
+
+
+            <pre><code>db.produtos.find({
+
+    $or: [
+
+        {
+            categoria: "Eletrônicos"
+        },
+
+        {
+            preco: {
+                $lt: 200
+            }
+        }
+
+    ]
+
+})</code></pre>
+
+
+            <p>
+                O resultado pode conter produtos que sejam eletrônicos
+                ou produtos cujo preço seja menor que 200.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             NOT
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🚫 $not
+            </h2>
+
+            <p>
+                O operador <strong>$not</strong> permite negar
+                uma condição de comparação.
+            </p>
+
+
+            <pre><code>db.produtos.find({
+
+    preco: {
+        $not: {
+            $gt: 1000
+        }
+    }
+
+})</code></pre>
+
+
+            <p>
+                Esse exemplo procura valores que não satisfaçam
+                a condição de serem maiores que 1000.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             PROJEÇÃO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                👁️ Projeção — Escolhendo os campos
+            </h2>
+
+            <p>
+                Imagine que um documento possui vários campos,
+                mas queremos visualizar apenas alguns deles.
+            </p>
+
+
+            <p>
+                Podemos utilizar uma <strong>projeção</strong>.
+            </p>
+
+
+            <pre><code>db.produtos.find(
+
+    {},
+
+    {
+        nome: 1,
+        preco: 1
+    }
+
+)</code></pre>
+
+
+            <p>
+                Nesse exemplo estamos solicitando que
+                <strong>nome</strong> e <strong>preco</strong>
+                sejam exibidos.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>
+                    Regra geral:
+                </strong>
+
+                <p>
+                    O valor <strong>1</strong> indica inclusão do campo.
+                </p>
+
+                <p>
+                    O valor <strong>0</strong> indica exclusão do campo.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             EXCLUIR CAMPO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                👁️ Excluindo campos da projeção
+            </h2>
+
+            <p>
+                Também podemos dizer quais campos não queremos
+                visualizar.
+            </p>
+
+
+            <pre><code>db.produtos.find(
+
+    {},
+
+    {
+        estoque: 0
+    }
+
+)</code></pre>
+
+
+            <p>
+                Nesse caso, o campo <strong>estoque</strong>
+                não será exibido na projeção.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>
+                    Atenção:
+                </strong>
+
+                <p>
+                    Em uma projeção, não devemos misturar livremente
+                    inclusão e exclusão de campos. A principal exceção
+                    é o campo <strong>_id</strong>.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             ID
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🆔 E o campo _id?
+            </h2>
+
+            <p>
+                Por padrão, o MongoDB inclui o campo
+                <strong>_id</strong> nos documentos retornados.
+            </p>
+
+
+            <p>
+                Podemos removê-lo da projeção:
+            </p>
+
+
+            <pre><code>db.produtos.find(
+
+    {},
+
+    {
+        _id: 0,
+        nome: 1,
+        preco: 1
+    }
+
+)</code></pre>
+
+
+            <p>
+                Assim teremos apenas os campos
+                <strong>nome</strong> e <strong>preco</strong>
+                no resultado.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             SORT
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                ↕️ Ordenando resultados
+            </h2>
+
+            <p>
+                Podemos utilizar <strong>sort()</strong> para
+                ordenar os resultados.
+            </p>
+
+
+            <h3>
+                Ordem crescente
+            </h3>
+
+
+            <pre><code>db.produtos
+    .find()
+    .sort({
+        preco: 1
+    })</code></pre>
+
+
+            <p>
+                O valor <strong>1</strong> representa ordem crescente.
+            </p>
+
+
+            <h3>
+                Ordem decrescente
+            </h3>
+
+
+            <pre><code>db.produtos
+    .find()
+    .sort({
+        preco: -1
+    })</code></pre>
+
+
+            <p>
+                O valor <strong>-1</strong> representa ordem decrescente.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             LIMIT
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🔢 Limitando resultados
+            </h2>
+
+            <p>
+                O método <strong>limit()</strong> permite definir
+                quantos documentos queremos receber.
+            </p>
+
+
+            <pre><code>db.produtos
+    .find()
+    .limit(2)</code></pre>
+
+
+            <p>
+                Nesse exemplo estamos solicitando no máximo
+                dois documentos.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             COMBINANDO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🔥 Combinando filtros, ordenação e limite
+            </h2>
+
+            <p>
+                Podemos combinar diferentes métodos para construir
+                consultas mais específicas.
+            </p>
+
+
+            <pre><code>db.produtos
+    .find({
+        categoria: "Eletrônicos",
+        preco: {
+            $gt: 1000
+        }
+    })
+    .sort({
+        preco: -1
+    })
+    .limit(5)</code></pre>
+
+
+            <p>
+                Essa consulta:
+            </p>
+
+
+            <ul>
+
+                <li>
+                    procura produtos eletrônicos;
+                </li>
+
+                <li>
+                    cujo preço seja maior que 1000;
+                </li>
+
+                <li>
+                    ordena pelo preço do maior para o menor;
+                </li>
+
+                <li>
+                    retorna no máximo cinco documentos.
+                </li>
+
+            </ul>
+
+        </section>
+
+
+        <!-- =====================================================
+             COUNT
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🔢 Contando documentos
+            </h2>
+
+            <p>
+                Podemos utilizar <strong>countDocuments()</strong>
+                para contar quantos documentos correspondem
+                a determinado filtro.
+            </p>
+
+
+            <pre><code>db.produtos.countDocuments({
+
+    categoria: "Eletrônicos"
+
+})</code></pre>
+
+
+            <p>
+                O resultado será a quantidade de documentos que
+                satisfazem a condição.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             COMPARAÇÃO SQL
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🔄 MongoDB × SQL
+            </h2>
+
+            <p>
+                Como você já estudou SQL, podemos relacionar alguns
+                conceitos para facilitar a compreensão.
+            </p>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                SQL
+                            </th>
+
+                            <th>
+                                MongoDB
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>
+                                SELECT *
+                            </td>
+
+                            <td>
+                                find()
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                WHERE
+                            </td>
+
+                            <td>
+                                Filtro do find()
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                ORDER BY
+                            </td>
+
+                            <td>
+                                sort()
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                LIMIT
+                            </td>
+
+                            <td>
+                                limit()
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                COUNT()
+                            </td>
+
+                            <td>
+                                countDocuments()
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+            <div class="highlight">
+
+                <strong>
+                    Importante:
+                </strong>
+
+                <p>
+                    Essa comparação ajuda a entender conceitos
+                    semelhantes, mas MongoDB e bancos relacionais
+                    possuem modelos de dados diferentes.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             EXEMPLO PRÁTICO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🧪 Exemplo prático
+            </h2>
+
+            <p>
+                Imagine uma loja virtual com milhares de produtos.
+                Queremos encontrar os cinco produtos eletrônicos
+                mais caros.
+            </p>
+
+
+            <pre><code>db.produtos
+    .find({
+        categoria: "Eletrônicos"
+    })
+    .sort({
+        preco: -1
+    })
+    .limit(5)</code></pre>
+
+
+            <p>
+                Observe como construímos a consulta passo a passo:
+            </p>
+
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <h3>
+                        1️⃣ find()
+                    </h3>
+
+                    <p>
+                        Define quais documentos queremos encontrar.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        2️⃣ sort()
+                    </h3>
+
+                    <p>
+                        Define a ordem dos resultados.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        3️⃣ limit()
+                    </h3>
+
+                    <p>
+                        Limita a quantidade de documentos retornados.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             ERROS
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                ⚠️ Erros comuns
+            </h2>
+
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <h3>
+                        ❌ Confundir $gt com $gte
+                    </h3>
+
+                    <p>
+                        $gt significa maior que, enquanto $gte
+                        significa maior ou igual.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        ❌ Esquecer o filtro
+                    </h3>
+
+                    <p>
+                        Um find() sem filtro pode retornar muitos
+                        documentos.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        ❌ Confundir 1 e -1 no sort()
+                    </h3>
+
+                    <p>
+                        1 representa crescente e -1 representa
+                        decrescente.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        ❌ Misturar projeções incorretamente
+                    </h3>
+
+                    <p>
+                        Inclusão e exclusão de campos possuem regras
+                        específicas.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             CHECKPOINT
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🧠 Checkpoint
+            </h2>
+
+            <p>
+                Tente responder antes de continuar.
+            </p>
+
+
+            <ol>
+
+                <li>
+                    Para que serve o método find()?
+                </li>
+
+                <li>
+                    Qual é a função de um filtro?
+                </li>
+
+                <li>
+                    O que significa o operador $gt?
+                </li>
+
+                <li>
+                    Qual a diferença entre $gt e $gte?
+                </li>
+
+                <li>
+                    Para que serve $in?
+                </li>
+
+                <li>
+                    Qual a diferença entre $and e $or?
+                </li>
+
+                <li>
+                    O que é uma projeção?
+                </li>
+
+                <li>
+                    Para que serve sort()?
+                </li>
+
+                <li>
+                    Qual a diferença entre sort(1) e sort(-1)?
+                </li>
+
+                <li>
+                    Para que serve limit()?
+                </li>
+
+            </ol>
+
+        </section>
+
+
+        <!-- =====================================================
+             DESAFIO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🧪 Desafio da aula
+            </h2>
+
+            <p>
+                Utilize uma coleção chamada
+                <strong>produtos</strong>.
+            </p>
+
+
+            <p>
+                Crie consultas para resolver os seguintes problemas:
+            </p>
+
+
+            <ol>
+
+                <li>
+                    Encontrar todos os produtos da categoria
+                    "Eletrônicos".
+                </li>
+
+                <li>
+                    Encontrar produtos com preço maior que 1000.
+                </li>
+
+                <li>
+                    Encontrar produtos com preço menor ou igual a 500.
+                </li>
+
+                <li>
+                    Encontrar produtos das categorias
+                    "Eletrônicos" ou "Acessórios".
+                </li>
+
+                <li>
+                    Encontrar produtos com estoque maior que 20.
+                </li>
+
+                <li>
+                    Mostrar apenas nome e preço dos produtos.
+                </li>
+
+                <li>
+                    Ordenar os produtos pelo preço do maior para
+                    o menor.
+                </li>
+
+                <li>
+                    Mostrar somente os três produtos mais caros.
+                </li>
+
+                <li>
+                    Contar quantos produtos pertencem à categoria
+                    "Acessórios".
+                </li>
+
+                <li>
+                    Criar uma consulta que combine filtro,
+                    ordenação e limite.
+                </li>
+
+            </ol>
+
+
+            <div class="highlight">
+
+                <strong>
+                    Desafio extra:
+                </strong>
+
+                <p>
+                    Tente escrever as consultas sem consultar
+                    os exemplos anteriores.
+                </p>
+
+                <p>
+                    Depois compare sua solução com os conceitos
+                    apresentados na aula.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             RESUMO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                📝 Resumindo
+            </h2>
+
+
+            <div class="highlight">
+
+                <p>
+                    <strong>find()</strong> é utilizado para consultar
+                    documentos.
+                </p>
+
+                <p>
+                    Filtros permitem encontrar documentos que atendem
+                    a determinadas condições.
+                </p>
+
+                <p>
+                    Operadores como <strong>$gt, $gte, $lt, $lte,
+                    $ne, $in e $nin</strong> permitem realizar
+                    comparações.
+                </p>
+
+                <p>
+                    <strong>$or</strong> permite trabalhar com
+                    condições alternativas.
+                </p>
+
+                <p>
+                    Projeções permitem controlar quais campos
+                    aparecem no resultado.
+                </p>
+
+                <p>
+                    <strong>sort()</strong> organiza os resultados.
+                </p>
+
+                <p>
+                    <strong>limit()</strong> limita a quantidade
+                    de documentos retornados.
+                </p>
+
+                <p>
+                    <strong>countDocuments()</strong> permite contar
+                    documentos que correspondem a um filtro.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             PRÓXIMA AULA
+        ====================================================== -->
+
+        <section class="cta">
+
+            <h2>
+                🚀 Próxima aula: Operadores e consultas avançadas
+            </h2>
+
+            <p>
+                Agora que você já sabe consultar documentos,
+                podemos avançar para consultas mais poderosas.
+            </p>
+
+            <p>
+                Na próxima aula vamos trabalhar com arrays,
+                documentos aninhados, operadores lógicos e
+                consultas em estruturas mais complexas.
+            </p>
+
+
+            <a
+                href="./21.html"
+                class="cta-button">
+
+                Aula 21 — Consultas Avançadas →
+
+            </a>
+
+        </section>
+
+
+    </main>
+
+
+    <!-- =====================================================
+         FOOTER
+    ====================================================== -->
+
+    <footer>
+
+        <p>
+            Guia de Banco de Dados
+        </p>
+
+        <p>
+            Aula 20 • Consultas e Filtros no MongoDB
+        </p>
+
+    </footer>
+
+
+    <!-- =====================================================
+         JAVASCRIPT — DARK / LIGHT MODE
+    ====================================================== -->
+
+    <script src="./script.js"></script>
+
+</body>
+
+</html>

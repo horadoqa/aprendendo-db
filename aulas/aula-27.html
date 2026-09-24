@@ -1,0 +1,2055 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="./style.css">
+
+    <link rel="icon" type="image/png" href="./assets/images/logo.png">
+
+    <title>Aula 27 — Aggregation Pipeline: Operadores e Consultas na Prática</title>
+
+</head>
+
+<body>
+
+
+    <!-- =====================================================
+       HEADER
+    ====================================================== -->
+
+    <header>
+
+        <button class="theme-toggle" id="themeToggle" type="button" aria-label="Alternar tema">
+
+            <span class="theme-icon" id="themeIcon">
+                ☀️
+            </span>
+
+            <span class="theme-label" id="themeLabel">
+                Modo claro
+            </span>
+
+        </button>
+
+
+        <div class="header-content">
+
+            <span class="eyebrow">
+                AULA 27 • MONGODB
+            </span>
+
+            <h1>
+                Aggregation Pipeline: Operadores e Consultas na Prática
+            </h1>
+
+            <p>
+                Agora que você já conhece o conceito de Aggregation Pipeline,
+                vamos utilizar os principais operadores para criar consultas,
+                cálculos, agrupamentos e relatórios no MongoDB.
+            </p>
+
+        </div>
+
+    </header>
+
+
+    <!-- =====================================================
+       CONTEÚDO
+    ====================================================== -->
+
+    <main>
+
+
+        <!-- =====================================================
+           OBJETIVOS
+        ====================================================== -->
+
+        <section>
+
+            <h2>🎯 Objetivos da aula</h2>
+
+            <p>
+                Na Aula 26 aprendemos o conceito de
+                <strong>Aggregation Pipeline</strong> e entendemos
+                que uma consulta pode ser formada por várias etapas.
+            </p>
+
+            <p>
+                Nesta aula vamos colocar esse conhecimento em prática.
+            </p>
+
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <div class="icon">
+                        🔎
+                    </div>
+
+                    <h3>
+                        Filtrar
+                    </h3>
+
+                    <p>
+                        Utilizar <strong>$match</strong> para selecionar
+                        documentos.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        📋
+                    </div>
+
+                    <h3>
+                        Projetar
+                    </h3>
+
+                    <p>
+                        Utilizar <strong>$project</strong> para controlar
+                        os campos retornados.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        📊
+                    </div>
+
+                    <h3>
+                        Agrupar
+                    </h3>
+
+                    <p>
+                        Utilizar <strong>$group</strong> para criar
+                        estatísticas.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        ↕️
+                    </div>
+
+                    <h3>
+                        Ordenar
+                    </h3>
+
+                    <p>
+                        Utilizar <strong>$sort</strong> para organizar
+                        os resultados.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           DATASET
+        ====================================================== -->
+
+        <section>
+
+            <h2>🛒 Dataset da aula</h2>
+
+            <p>
+                Para praticar os operadores, vamos trabalhar com uma
+                coleção chamada <strong>vendas</strong>.
+            </p>
+
+            <p>
+                Cada documento representa uma venda realizada por
+                um cliente.
+            </p>
+
+
+            <pre><code>{
+    _id: 1,
+
+    cliente: "Ana",
+
+    produto: "Notebook",
+
+    categoria: "Eletrônicos",
+
+    cidade: "Rio de Janeiro",
+
+    quantidade: 1,
+
+    valor: 4500,
+
+    status: "concluida"
+}
+
+
+{
+    _id: 2,
+
+    cliente: "João",
+
+    produto: "Mouse",
+
+    categoria: "Eletrônicos",
+
+    cidade: "São Paulo",
+
+    quantidade: 2,
+
+    valor: 150,
+
+    status: "concluida"
+}
+
+
+{
+    _id: 3,
+
+    cliente: "Maria",
+
+    produto: "Teclado",
+
+    categoria: "Eletrônicos",
+
+    cidade: "Rio de Janeiro",
+
+    quantidade: 1,
+
+    valor: 300,
+
+    status: "pendente"
+}
+
+
+{
+    _id: 4,
+
+    cliente: "Carlos",
+
+    produto: "Monitor",
+
+    categoria: "Eletrônicos",
+
+    cidade: "Belo Horizonte",
+
+    quantidade: 2,
+
+    valor: 1200,
+
+    status: "concluida"
+}</code></pre>
+
+        </section>
+
+
+        <!-- =====================================================
+           MATCH
+        ====================================================== -->
+
+        <section>
+
+            <h2>🔎 1. $match — filtrando documentos</h2>
+
+            <p>
+                O <strong>$match</strong> é utilizado para selecionar
+                somente os documentos que atendem a uma determinada
+                condição.
+            </p>
+
+            <p>
+                Por exemplo, queremos apenas as vendas concluídas:
+            </p>
+
+
+            <pre><code>db.vendas.aggregate([
+
+    {
+        $match: {
+            status: "concluida"
+        }
+    }
+
+])</code></pre>
+
+
+            <p>
+                O MongoDB continuará o pipeline somente com os documentos
+                cujo campo <strong>status</strong> seja
+                <strong>"concluida"</strong>.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>
+                    Pense no $match como um filtro.
+                </strong>
+
+                <p>
+                    Ele reduz o conjunto de documentos que será processado
+                    pelas próximas etapas.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           OPERADORES DE COMPARAÇÃO
+        ====================================================== -->
+
+        <section>
+
+            <h2>🔢 2. $match com operadores de comparação</h2>
+
+            <p>
+                Podemos utilizar operadores para fazer comparações.
+            </p>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Operador
+                            </th>
+
+                            <th>
+                                Significado
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>
+                                $gt
+                            </td>
+
+                            <td>
+                                Maior que
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                $gte
+                            </td>
+
+                            <td>
+                                Maior ou igual
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                $lt
+                            </td>
+
+                            <td>
+                                Menor que
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                $lte
+                            </td>
+
+                            <td>
+                                Menor ou igual
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                $eq
+                            </td>
+
+                            <td>
+                                Igual
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                $ne
+                            </td>
+
+                            <td>
+                                Diferente
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+            <h3>
+                Exemplo
+            </h3>
+
+            <p>
+                Encontrar vendas com valor superior a R$ 1.000:
+            </p>
+
+
+            <pre><code>db.vendas.aggregate([
+
+    {
+        $match: {
+
+            valor: {
+                $gt: 1000
+            }
+
+        }
+    }
+
+])</code></pre>
+
+        </section>
+
+
+        <!-- =====================================================
+           MATCH COM AND
+        ====================================================== -->
+
+        <section>
+
+            <h2>🧩 3. Combinando condições</h2>
+
+            <p>
+                Podemos combinar diferentes condições dentro de um
+                mesmo filtro.
+            </p>
+
+            <p>
+                Por exemplo:
+            </p>
+
+            <ul>
+
+                <li>
+                    Venda concluída
+                </li>
+
+                <li>
+                    Valor superior a R$ 1.000
+                </li>
+
+            </ul>
+
+
+            <pre><code>db.vendas.aggregate([
+
+    {
+        $match: {
+
+            status: "concluida",
+
+            valor: {
+                $gt: 1000
+            }
+
+        }
+    }
+
+])</code></pre>
+
+
+            <p>
+                Nesse caso, o documento precisa atender às duas condições.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+           OR
+        ====================================================== -->
+
+        <section>
+
+            <h2>🔀 4. Utilizando $or</h2>
+
+            <p>
+                O operador <strong>$or</strong> permite trabalhar
+                com condições alternativas.
+            </p>
+
+            <p>
+                Queremos encontrar vendas realizadas no
+                Rio de Janeiro ou em São Paulo:
+            </p>
+
+
+            <pre><code>db.vendas.aggregate([
+
+    {
+        $match: {
+
+            $or: [
+
+                {
+                    cidade: "Rio de Janeiro"
+                },
+
+                {
+                    cidade: "São Paulo"
+                }
+
+            ]
+
+        }
+    }
+
+])</code></pre>
+
+        </section>
+
+
+        <!-- =====================================================
+           PROJECT
+        ====================================================== -->
+
+        <section>
+
+            <h2>📋 5. $project — escolhendo os campos</h2>
+
+            <p>
+                O <strong>$project</strong> permite controlar quais
+                campos serão apresentados no resultado.
+            </p>
+
+
+            <p>
+                Imagine que queremos mostrar somente:
+            </p>
+
+            <ul>
+
+                <li>
+                    Cliente
+                </li>
+
+                <li>
+                    Produto
+                </li>
+
+                <li>
+                    Valor
+                </li>
+
+            </ul>
+
+
+            <pre><code>db.vendas.aggregate([
+
+    {
+        $project: {
+
+            cliente: 1,
+
+            produto: 1,
+
+            valor: 1
+
+        }
+    }
+
+])</code></pre>
+
+
+            <div class="highlight">
+
+                <strong>
+                    1 significa incluir o campo.
+                </strong>
+
+                <p>
+                    Podemos utilizar o <strong>0</strong> para excluir
+                    campos, respeitando as regras de projeção do MongoDB.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           PROJECT CALCULO
+        ====================================================== -->
+
+        <section>
+
+            <h2>🧮 6. Criando cálculos com $project</h2>
+
+            <p>
+                O <strong>$project</strong> também pode criar novos
+                campos calculados.
+            </p>
+
+            <p>
+                Imagine que o campo <strong>valor</strong> representa
+                o preço unitário.
+            </p>
+
+            <p>
+                Podemos calcular o valor total da venda:
+            </p>
+
+
+            <pre><code>db.vendas.aggregate([
+
+    {
+        $project: {
+
+            cliente: 1,
+
+            produto: 1,
+
+            quantidade: 1,
+
+            valor: 1,
+
+            total: {
+                $multiply: [
+                    "$quantidade",
+                    "$valor"
+                ]
+            }
+
+        }
+    }
+
+])</code></pre>
+
+
+            <p>
+                O operador <strong>$multiply</strong> realiza
+                uma multiplicação.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+           ADD FIELDS
+        ====================================================== -->
+
+        <section>
+
+            <h2>➕ 7. $set — adicionando campos</h2>
+
+            <p>
+                O estágio <strong>$set</strong> pode ser utilizado
+                para adicionar ou modificar campos durante o pipeline.
+            </p>
+
+
+            <pre><code>db.vendas.aggregate([
+
+    {
+        $set: {
+
+            total: {
+                $multiply: [
+                    "$quantidade",
+                    "$valor"
+                ]
+            }
+
+        }
+    }
+
+])</code></pre>
+
+
+            <p>
+                O documento continuará com seus campos originais,
+                mas terá também o campo <strong>total</strong>.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+           SORT
+        ====================================================== -->
+
+        <section>
+
+            <h2>↕️ 8. $sort — ordenando resultados</h2>
+
+            <p>
+                O <strong>$sort</strong> permite organizar os documentos.
+            </p>
+
+
+            <p>
+                Para ordenar do menor para o maior:
+            </p>
+
+
+            <pre><code>db.vendas.aggregate([
+
+    {
+        $sort: {
+            valor: 1
+        }
+    }
+
+])</code></pre>
+
+
+            <p>
+                Para ordenar do maior para o menor:
+            </p>
+
+
+            <pre><code>db.vendas.aggregate([
+
+    {
+        $sort: {
+            valor: -1
+        }
+    }
+
+])</code></pre>
+
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <h3>
+                        1
+                    </h3>
+
+                    <p>
+                        Crescente.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        -1
+                    </h3>
+
+                    <p>
+                        Decrescente.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           LIMIT
+        ====================================================== -->
+
+        <section>
+
+            <h2>✋ 9. $limit — limitando resultados</h2>
+
+            <p>
+                O <strong>$limit</strong> limita a quantidade de
+                documentos que continuará no pipeline.
+            </p>
+
+
+            <p>
+                Por exemplo, queremos somente as três maiores vendas:
+            </p>
+
+
+            <pre><code>db.vendas.aggregate([
+
+    {
+        $sort: {
+            valor: -1
+        }
+    },
+
+    {
+        $limit: 3
+    }
+
+])</code></pre>
+
+
+            <div class="highlight">
+
+                <strong>
+                    $sort + $limit
+                </strong>
+
+                <p>
+                    Essa combinação é bastante útil para criar rankings,
+                    como "os 5 produtos mais vendidos" ou
+                    "os 10 maiores pedidos".
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           GROUP
+        ====================================================== -->
+
+        <section>
+
+            <h2>📊 10. $group — agrupando documentos</h2>
+
+            <p>
+                O <strong>$group</strong> permite transformar vários
+                documentos em grupos e realizar cálculos sobre eles.
+            </p>
+
+
+            <p>
+                Por exemplo, queremos saber quanto foi vendido
+                em cada cidade.
+            </p>
+
+
+            <pre><code>db.vendas.aggregate([
+
+    {
+        $group: {
+
+            _id: "$cidade",
+
+            totalVendas: {
+                $sum: "$valor"
+            }
+
+        }
+    }
+
+])</code></pre>
+
+
+            <p>
+                O campo <strong>_id</strong> determina como os documentos
+                serão agrupados.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+           SUM
+        ====================================================== -->
+
+        <section>
+
+            <h2>➕ 11. $sum — somando valores</h2>
+
+            <p>
+                O <strong>$sum</strong> permite calcular uma soma.
+            </p>
+
+
+            <pre><code>db.vendas.aggregate([
+
+    {
+        $group: {
+
+            _id: "$categoria",
+
+            faturamento: {
+                $sum: "$valor"
+            }
+
+        }
+    }
+
+])</code></pre>
+
+
+            <p>
+                O resultado será um grupo para cada categoria.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+           COUNT
+        ====================================================== -->
+
+        <section>
+
+            <h2>🔢 12. Contando documentos com $sum</h2>
+
+            <p>
+                Uma técnica comum é utilizar
+                <strong>$sum: 1</strong> para contar documentos.
+            </p>
+
+
+            <pre><code>db.vendas.aggregate([
+
+    {
+        $group: {
+
+            _id: "$cidade",
+
+            quantidadeVendas: {
+                $sum: 1
+            }
+
+        }
+    }
+
+])</code></pre>
+
+
+            <p>
+                Para cada documento pertencente ao grupo,
+                o MongoDB adiciona <strong>1</strong>.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+           AVG
+        ====================================================== -->
+
+        <section>
+
+            <h2>📐 13. $avg — calculando médias</h2>
+
+            <p>
+                O operador <strong>$avg</strong> calcula a média
+                dos valores.
+            </p>
+
+
+            <pre><code>db.vendas.aggregate([
+
+    {
+        $group: {
+
+            _id: "$categoria",
+
+            valorMedio: {
+                $avg: "$valor"
+            }
+
+        }
+    }
+
+])</code></pre>
+
+
+            <p>
+                Podemos utilizar isso para descobrir, por exemplo,
+                o valor médio das vendas por categoria.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+           MIN MAX
+        ====================================================== -->
+
+        <section>
+
+            <h2>📈 14. $min e $max</h2>
+
+            <p>
+                Também podemos encontrar o menor e o maior valor
+                dentro de cada grupo.
+            </p>
+
+
+            <pre><code>db.vendas.aggregate([
+
+    {
+        $group: {
+
+            _id: "$categoria",
+
+            menorVenda: {
+                $min: "$valor"
+            },
+
+            maiorVenda: {
+                $max: "$valor"
+            }
+
+        }
+    }
+
+])</code></pre>
+
+        </section>
+
+
+        <!-- =====================================================
+           COUNT DOCUMENTS
+        ====================================================== -->
+
+        <section>
+
+            <h2>🔢 15. Contando documentos após um filtro</h2>
+
+            <p>
+                Podemos combinar <strong>$match</strong> e
+                <strong>$group</strong>.
+            </p>
+
+
+            <p>
+                Exemplo: descobrir quantas vendas concluídas existem.
+            </p>
+
+
+            <pre><code>db.vendas.aggregate([
+
+    {
+        $match: {
+            status: "concluida"
+        }
+    },
+
+    {
+        $group: {
+
+            _id: null,
+
+            quantidade: {
+                $sum: 1
+            }
+
+        }
+    }
+
+])</code></pre>
+
+        </section>
+
+
+        <!-- =====================================================
+           PIPELINE COMPOSTO
+        ====================================================== -->
+
+        <section>
+
+            <h2>🔥 16. Criando um Pipeline completo</h2>
+
+            <p>
+                Agora vamos combinar vários operadores.
+            </p>
+
+
+            <p>
+                O objetivo será:
+            </p>
+
+
+            <ol>
+
+                <li>
+                    Considerar somente vendas concluídas.
+                </li>
+
+                <li>
+                    Calcular o valor total de cada venda.
+                </li>
+
+                <li>
+                    Agrupar as vendas por cidade.
+                </li>
+
+                <li>
+                    Calcular o faturamento de cada cidade.
+                </li>
+
+                <li>
+                    Ordenar as cidades pelo maior faturamento.
+                </li>
+
+            </ol>
+
+
+            <pre><code>db.vendas.aggregate([
+
+    {
+        $match: {
+            status: "concluida"
+        }
+    },
+
+    {
+        $set: {
+
+            total: {
+                $multiply: [
+                    "$quantidade",
+                    "$valor"
+                ]
+            }
+
+        }
+    },
+
+    {
+        $group: {
+
+            _id: "$cidade",
+
+            faturamento: {
+                $sum: "$total"
+            }
+
+        }
+    },
+
+    {
+        $sort: {
+            faturamento: -1
+        }
+    }
+
+])</code></pre>
+
+
+            <div class="highlight">
+
+                <strong>
+                    Observe a sequência:
+                </strong>
+
+                <p>
+                    <strong>$match</strong> →
+                    <strong>$set</strong> →
+                    <strong>$group</strong> →
+                    <strong>$sort</strong>
+                </p>
+
+                <p>
+                    Cada etapa recebe o resultado produzido pela etapa
+                    anterior.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           LOOKUP
+        ====================================================== -->
+
+        <section>
+
+            <h2>🔗 17. $lookup — relacionando coleções</h2>
+
+            <p>
+                O <strong>$lookup</strong> permite combinar documentos
+                de coleções diferentes durante uma agregação.
+            </p>
+
+
+            <p>
+                Imagine duas coleções:
+            </p>
+
+
+            <pre><code>clientes
+
+{
+    _id: 101,
+    nome: "Ana"
+}</code></pre>
+
+
+            <p>
+                E:
+            </p>
+
+
+            <pre><code>vendas
+
+{
+    clienteId: 101,
+    produto: "Notebook",
+    valor: 4500
+}</code></pre>
+
+
+            <p>
+                Podemos utilizar:
+            </p>
+
+
+            <pre><code>db.vendas.aggregate([
+
+    {
+        $lookup: {
+
+            from: "clientes",
+
+            localField: "clienteId",
+
+            foreignField: "_id",
+
+            as: "cliente"
+
+        }
+    }
+
+])</code></pre>
+
+
+            <p>
+                O resultado incluirá um novo campo chamado
+                <strong>cliente</strong> contendo os documentos
+                correspondentes encontrados na coleção
+                <strong>clientes</strong>.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+           UNWIND
+        ====================================================== -->
+
+        <section>
+
+            <h2>📦 18. $unwind — trabalhando com arrays</h2>
+
+            <p>
+                O <strong>$unwind</strong> é utilizado quando temos
+                um campo que contém um array.
+            </p>
+
+
+            <p>
+                Imagine um pedido:
+            </p>
+
+
+            <pre><code>{
+    pedido: 1001,
+
+    itens: [
+
+        {
+            produto: "Notebook",
+            quantidade: 1
+        },
+
+        {
+            produto: "Mouse",
+            quantidade: 2
+        },
+
+        {
+            produto: "Teclado",
+            quantidade: 1
+        }
+
+    ]
+}</code></pre>
+
+
+            <p>
+                Podemos utilizar:
+            </p>
+
+
+            <pre><code>db.pedidos.aggregate([
+
+    {
+        $unwind: "$itens"
+    }
+
+])</code></pre>
+
+
+            <p>
+                Cada elemento do array será processado separadamente
+                pelas próximas etapas do pipeline.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+           EXEMPLO UNWIND + GROUP
+        ====================================================== -->
+
+        <section>
+
+            <h2>🛍️ 19. $unwind + $group</h2>
+
+            <p>
+                Podemos combinar os dois operadores para descobrir
+                quais produtos foram mais vendidos.
+            </p>
+
+
+            <pre><code>db.pedidos.aggregate([
+
+    {
+        $unwind: "$itens"
+    },
+
+    {
+        $group: {
+
+            _id: "$itens.produto",
+
+            quantidadeVendida: {
+                $sum: "$itens.quantidade"
+            }
+
+        }
+    },
+
+    {
+        $sort: {
+            quantidadeVendida: -1
+        }
+    }
+
+])</code></pre>
+
+
+            <p>
+                Esse tipo de consulta é muito comum em relatórios
+                de vendas.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+           PIPELINE PARA RANKING
+        ====================================================== -->
+
+        <section>
+
+            <h2>🏆 20. Criando um ranking</h2>
+
+            <p>
+                Uma aplicação pode precisar mostrar os produtos
+                mais vendidos.
+            </p>
+
+
+            <p>
+                Podemos combinar:
+            </p>
+
+
+            <ul>
+
+                <li>
+                    $unwind
+                </li>
+
+                <li>
+                    $group
+                </li>
+
+                <li>
+                    $sort
+                </li>
+
+                <li>
+                    $limit
+                </li>
+
+            </ul>
+
+
+            <pre><code>db.pedidos.aggregate([
+
+    {
+        $unwind: "$itens"
+    },
+
+    {
+        $group: {
+
+            _id: "$itens.produto",
+
+            quantidade: {
+                $sum: "$itens.quantidade"
+            }
+
+        }
+    },
+
+    {
+        $sort: {
+            quantidade: -1
+        }
+    },
+
+    {
+        $limit: 5
+    }
+
+])</code></pre>
+
+
+            <div class="highlight">
+
+                <strong>
+                    Resultado:
+                </strong>
+
+                <p>
+                    Os cinco produtos com maior quantidade vendida.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           ORDEM DOS ESTÁGIOS
+        ====================================================== -->
+
+        <section>
+
+            <h2>⚠️ 21. A ordem dos estágios importa</h2>
+
+            <p>
+                Um dos pontos mais importantes do Aggregation Pipeline
+                é entender que cada estágio trabalha com o resultado
+                do estágio anterior.
+            </p>
+
+
+            <p>
+                Por exemplo:
+            </p>
+
+
+            <pre><code>$match
+   ↓
+$group
+   ↓
+$sort</code></pre>
+
+
+            <p>
+                não é necessariamente equivalente a:
+            </p>
+
+
+            <pre><code>$group
+   ↓
+$match
+   ↓
+$sort</code></pre>
+
+
+            <div class="highlight">
+
+                <strong>
+                    Regra prática:
+                </strong>
+
+                <p>
+                    Quando possível, filtre os documentos desnecessários
+                    nas primeiras etapas do pipeline.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           RELATÓRIOS
+        ====================================================== -->
+
+        <section>
+
+            <h2>📊 22. O Aggregation Pipeline em aplicações reais</h2>
+
+            <p>
+                O Aggregation Pipeline é especialmente útil para
+                gerar informações que não estão armazenadas diretamente
+                em um único documento.
+            </p>
+
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <div class="icon">
+                        💰
+                    </div>
+
+                    <h3>
+                        Faturamento
+                    </h3>
+
+                    <p>
+                        Calcular o total vendido por período,
+                        cidade ou categoria.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🏆
+                    </div>
+
+                    <h3>
+                        Rankings
+                    </h3>
+
+                    <p>
+                        Descobrir produtos, clientes ou vendedores
+                        com maior desempenho.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        📈
+                    </div>
+
+                    <h3>
+                        Estatísticas
+                    </h3>
+
+                    <p>
+                        Calcular médias, mínimos, máximos e totais.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        📊
+                    </div>
+
+                    <h3>
+                        Dashboards
+                    </h3>
+
+                    <p>
+                        Preparar dados para gráficos e indicadores.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           TABELA OPERADORES
+        ====================================================== -->
+
+        <section>
+
+            <h2>📚 23. Operadores estudados</h2>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Operador
+                            </th>
+
+                            <th>
+                                Função
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>
+                                $match
+                            </td>
+
+                            <td>
+                                Filtra documentos.
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                $project
+                            </td>
+
+                            <td>
+                                Seleciona e transforma campos.
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                $set
+                            </td>
+
+                            <td>
+                                Adiciona ou modifica campos.
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                $group
+                            </td>
+
+                            <td>
+                                Agrupa documentos.
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                $sort
+                            </td>
+
+                            <td>
+                                Ordena os resultados.
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                $limit
+                            </td>
+
+                            <td>
+                                Limita a quantidade de documentos.
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                $lookup
+                            </td>
+
+                            <td>
+                                Combina dados de outra coleção.
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                $unwind
+                            </td>
+
+                            <td>
+                                Desmembra elementos de arrays.
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           CHECKPOINT
+        ====================================================== -->
+
+        <section>
+
+            <h2>🧠 Checkpoint</h2>
+
+            <p>
+                Antes de continuar para a próxima aula,
+                tente responder:
+            </p>
+
+
+            <ol>
+
+                <li>
+                    Para que serve o $match?
+                </li>
+
+                <li>
+                    Qual é a diferença entre $match e $project?
+                </li>
+
+                <li>
+                    Para que serve o $group?
+                </li>
+
+                <li>
+                    Como podemos calcular uma soma utilizando $sum?
+                </li>
+
+                <li>
+                    Como contar documentos utilizando $sum?
+                </li>
+
+                <li>
+                    Para que serve o $avg?
+                </li>
+
+                <li>
+                    Qual é a diferença entre $sort: 1 e $sort: -1?
+                </li>
+
+                <li>
+                    Para que serve o $limit?
+                </li>
+
+                <li>
+                    Para que serve o $lookup?
+                </li>
+
+                <li>
+                    Para que serve o $unwind?
+                </li>
+
+                <li>
+                    Por que a ordem dos estágios do pipeline importa?
+                </li>
+
+            </ol>
+
+        </section>
+
+
+        <!-- =====================================================
+           DESAFIO
+        ====================================================== -->
+
+        <section>
+
+            <h2>🧪 Desafio da aula</h2>
+
+            <p>
+                Considere a coleção <strong>vendas</strong>.
+            </p>
+
+
+            <p>
+                Crie Aggregation Pipelines para responder às seguintes
+                perguntas:
+            </p>
+
+
+            <ol>
+
+                <li>
+                    Qual é o valor total de todas as vendas concluídas?
+                </li>
+
+                <li>
+                    Quantas vendas foram concluídas?
+                </li>
+
+                <li>
+                    Qual é o valor médio das vendas?
+                </li>
+
+                <li>
+                    Qual foi a maior venda?
+                </li>
+
+                <li>
+                    Qual foi a menor venda?
+                </li>
+
+                <li>
+                    Quanto foi vendido em cada cidade?
+                </li>
+
+                <li>
+                    Quantas vendas foram realizadas em cada cidade?
+                </li>
+
+                <li>
+                    Qual cidade possui o maior faturamento?
+                </li>
+
+                <li>
+                    Quais são as três maiores vendas?
+                </li>
+
+                <li>
+                    Qual categoria possui o maior faturamento?
+                </li>
+
+            </ol>
+
+
+            <div class="highlight">
+
+                <strong>
+                    Desafio extra 🚀
+                </strong>
+
+                <p>
+                    Crie um pipeline que mostre as três cidades com
+                    maior faturamento, exibindo:
+                </p>
+
+                <ul>
+
+                    <li>
+                        Cidade
+                    </li>
+
+                    <li>
+                        Faturamento
+                    </li>
+
+                    <li>
+                        Quantidade de vendas
+                    </li>
+
+                    <li>
+                        Valor médio das vendas
+                    </li>
+
+                </ul>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           RESUMO
+        ====================================================== -->
+
+        <section>
+
+            <h2>📝 Resumindo</h2>
+
+
+            <div class="highlight">
+
+                <p>
+                    A <strong>Aggregation Pipeline</strong> permite
+                    transformar e analisar documentos utilizando
+                    uma sequência de etapas.
+                </p>
+
+                <p>
+                    O <strong>$match</strong> filtra documentos.
+                </p>
+
+                <p>
+                    O <strong>$project</strong> controla os campos
+                    retornados e pode criar expressões.
+                </p>
+
+                <p>
+                    O <strong>$set</strong> permite adicionar ou
+                    modificar campos durante o processamento.
+                </p>
+
+                <p>
+                    O <strong>$group</strong> permite criar agrupamentos
+                    e calcular estatísticas.
+                </p>
+
+                <p>
+                    O <strong>$sort</strong> organiza os resultados.
+                </p>
+
+                <p>
+                    O <strong>$limit</strong> limita a quantidade
+                    de documentos.
+                </p>
+
+                <p>
+                    O <strong>$lookup</strong> permite combinar dados
+                    de diferentes coleções.
+                </p>
+
+                <p>
+                    O <strong>$unwind</strong> permite trabalhar
+                    individualmente com elementos de arrays.
+                </p>
+
+                <p>
+                    Combinando esses operadores, podemos construir
+                    consultas capazes de gerar relatórios e métricas
+                    complexas a partir dos documentos armazenados.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           CTA
+        ====================================================== -->
+
+        <section class="cta">
+
+            <h2>
+                🚀 Próxima aula: Índices no MongoDB
+            </h2>
+
+            <p>
+                Agora que você já consegue consultar, transformar,
+                agrupar e analisar documentos, o próximo passo é
+                entender como melhorar o desempenho dessas consultas.
+            </p>
+
+            <p>
+                Na próxima aula vamos estudar
+                <strong>índices</strong>, como eles funcionam,
+                quando utilizá-los e como analisar o desempenho
+                das consultas.
+            </p>
+
+
+            <a href="./28.html" class="cta-button">
+                Aula 28 →
+            </a>
+
+        </section>
+
+
+    </main>
+
+
+    <!-- =====================================================
+       FOOTER
+    ====================================================== -->
+
+    <footer>
+
+        <p>
+            Guia de Banco de Dados
+        </p>
+
+        <p>
+            Aula 27 • Aggregation Pipeline na Prática
+        </p>
+
+    </footer>
+
+
+    <!-- =====================================================
+       JAVASCRIPT — DARK / LIGHT MODE
+    ====================================================== -->
+
+    <script src="./script.js"></script>
+
+</body>
+
+</html>

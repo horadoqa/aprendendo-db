@@ -1,0 +1,1944 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="./style.css">
+
+    <link rel="icon" type="image/png" href="./assets/images/logo.png">
+
+    <title>Aula 11 — Views, Functions, Procedures e Triggers</title>
+
+</head>
+
+<body>
+
+
+    <!-- =====================================================
+         HEADER
+    ====================================================== -->
+
+    <header>
+
+        <button
+            class="theme-toggle"
+            id="themeToggle"
+            type="button"
+            aria-label="Alternar tema">
+
+            <span class="theme-icon" id="themeIcon">
+                ☀️
+            </span>
+
+            <span class="theme-label" id="themeLabel">
+                Modo claro
+            </span>
+
+        </button>
+
+
+        <div class="header-content">
+
+            <span class="eyebrow">
+                AULA 11 • RECURSOS PROGRAMÁVEIS
+            </span>
+
+            <h1>
+                Views, Functions, Procedures e Triggers
+            </h1>
+
+            <p>
+                Aprenda como criar consultas reutilizáveis, executar
+                lógica no banco de dados e reagir automaticamente
+                a alterações nos dados.
+            </p>
+
+        </div>
+
+    </header>
+
+
+    <!-- =====================================================
+         CONTEÚDO
+    ====================================================== -->
+
+    <main>
+
+
+        <!-- =====================================================
+             OBJETIVOS
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Objetivos da aula
+            </h2>
+
+            <p>
+                Até aqui aprendemos a consultar, inserir, atualizar,
+                excluir e analisar dados utilizando SQL.
+            </p>
+
+            <p>
+                Agora vamos conhecer recursos que permitem colocar
+                parte da lógica diretamente no banco de dados.
+            </p>
+
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <div class="icon">
+                        👁️
+                    </div>
+
+                    <h3>
+                        Views
+                    </h3>
+
+                    <p>
+                        Criar consultas reutilizáveis que podem ser
+                        tratadas como tabelas.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        ⚙️
+                    </div>
+
+                    <h3>
+                        Functions
+                    </h3>
+
+                    <p>
+                        Criar funções que recebem valores e retornam
+                        resultados.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        ▶️
+                    </div>
+
+                    <h3>
+                        Procedures
+                    </h3>
+
+                    <p>
+                        Encapsular uma sequência de operações
+                        executadas no banco.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        ⚡
+                    </div>
+
+                    <h3>
+                        Triggers
+                    </h3>
+
+                    <p>
+                        Executar ações automaticamente quando
+                        determinados eventos acontecem.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             VISÃO GERAL
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                O que vamos aprender?
+            </h2>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Recurso</th>
+                            <th>Ideia principal</th>
+                            <th>Execução</th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>
+                                View
+                            </td>
+
+                            <td>
+                                Consulta reutilizável
+                            </td>
+
+                            <td>
+                                Quando consultada
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Function
+                            </td>
+
+                            <td>
+                                Executar uma lógica e retornar um valor
+                            </td>
+
+                            <td>
+                                Quando chamada
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Procedure
+                            </td>
+
+                            <td>
+                                Executar uma sequência de operações
+                            </td>
+
+                            <td>
+                                Quando chamada
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Trigger
+                            </td>
+
+                            <td>
+                                Reagir automaticamente a um evento
+                            </td>
+
+                            <td>
+                                Automaticamente
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             VIEW
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                O que é uma View?
+            </h2>
+
+            <p>
+                Uma <strong>View</strong> é uma consulta SQL armazenada
+                no banco de dados que pode ser utilizada posteriormente
+                como se fosse uma tabela virtual.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>Em termos simples:</strong>
+
+                <p>
+                    Uma View permite dar um nome a uma consulta
+                    que você pretende reutilizar.
+                </p>
+
+            </div>
+
+
+            <p>
+                Imagine que frequentemente precisamos consultar
+                clientes ativos.
+            </p>
+
+
+            <p>
+                Poderíamos escrever:
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span>
+
+    id,
+    nome,
+    email
+
+<span class="sql-keyword">FROM</span> clientes
+
+<span class="sql-keyword">WHERE</span> ativo = <span class="sql-number">true</span>;</code></pre>
+
+
+            <p>
+                Em vez de repetir essa consulta várias vezes,
+                podemos criar uma View.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             CRIANDO VIEW
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Criando uma View
+            </h2>
+
+
+            <pre><code><span class="sql-keyword">CREATE VIEW</span> clientes_ativos <span class="sql-keyword">AS</span>
+
+<span class="sql-keyword">SELECT</span>
+
+    id,
+    nome,
+    email
+
+<span class="sql-keyword">FROM</span> clientes
+
+<span class="sql-keyword">WHERE</span> ativo = <span class="sql-number">true</span>;</code></pre>
+
+
+            <p>
+                Depois podemos consultar a View:
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span> *
+
+<span class="sql-keyword">FROM</span> clientes_ativos;</code></pre>
+
+
+            <div class="highlight">
+
+                <p>
+                    A aplicação pode consultar
+                    <strong>clientes_ativos</strong> sem precisar
+                    repetir toda a lógica da consulta original.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             VIEW COM JOIN
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                View com JOIN
+            </h2>
+
+            <p>
+                Views também são úteis para esconder consultas
+                mais complexas.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">CREATE VIEW</span> resumo_pedidos <span class="sql-keyword">AS</span>
+
+<span class="sql-keyword">SELECT</span>
+
+    p.id <span class="sql-keyword">AS</span> pedido_id,
+
+    c.nome <span class="sql-keyword">AS</span> cliente,
+
+    p.total,
+
+    p.data_pedido
+
+<span class="sql-keyword">FROM</span> pedidos p
+
+<span class="sql-keyword">JOIN</span> clientes c
+
+    <span class="sql-keyword">ON</span> c.id = p.cliente_id;</code></pre>
+
+
+            <p>
+                Depois:
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span> *
+
+<span class="sql-keyword">FROM</span> resumo_pedidos
+
+<span class="sql-keyword">ORDER BY</span> total <span class="sql-keyword">DESC</span>;</code></pre>
+
+
+            <p>
+                Dessa forma, a consulta complexa fica encapsulada
+                dentro da View.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             VANTAGENS VIEW
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Quando utilizar Views?
+            </h2>
+
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <div class="icon">
+                        ♻️
+                    </div>
+
+                    <h3>
+                        Reutilização
+                    </h3>
+
+                    <p>
+                        Evitar repetir consultas complexas.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🧹
+                    </div>
+
+                    <h3>
+                        Simplicidade
+                    </h3>
+
+                    <p>
+                        Esconder detalhes de consultas complexas.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🔐
+                    </div>
+
+                    <h3>
+                        Segurança
+                    </h3>
+
+                    <p>
+                        Expor somente determinadas colunas ou registros,
+                        conforme a configuração de permissões.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        📊
+                    </div>
+
+                    <h3>
+                        Relatórios
+                    </h3>
+
+                    <p>
+                        Criar consultas padronizadas para análises.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             FUNCTION
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                O que é uma Function?
+            </h2>
+
+            <p>
+                Uma <strong>Function</strong> é uma função armazenada
+                no banco de dados que pode receber parâmetros,
+                executar uma lógica e retornar um resultado.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>Uma forma de pensar:</strong>
+
+                <p>
+                    Uma Function é parecida com uma função existente
+                    em uma linguagem de programação.
+                </p>
+
+                <p>
+                    Ela recebe uma entrada, executa uma lógica
+                    e produz uma saída.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             FUNCTION POSTGRESQL
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Exemplo de Function
+            </h2>
+
+            <p>
+                A sintaxe pode variar entre os SGBDs.
+                O exemplo abaixo utiliza PostgreSQL.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">CREATE FUNCTION</span> calcular_desconto(
+    valor <span class="sql-keyword">NUMERIC</span>
+)
+<span class="sql-keyword">RETURNS NUMERIC</span>
+<span class="sql-keyword">LANGUAGE SQL</span>
+<span class="sql-keyword">AS</span> $$
+
+    <span class="sql-keyword">SELECT</span> valor * <span class="sql-number">0.90</span>;
+
+$$;</code></pre>
+
+
+            <p>
+                Agora podemos utilizar a função:
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span>
+
+    calcular_desconto(<span class="sql-number">100</span>);</code></pre>
+
+
+            <p>
+                O resultado será:
+            </p>
+
+
+            <pre><code>90.00</code></pre>
+
+        </section>
+
+
+        <!-- =====================================================
+             FUNCTION COM TABELA
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Function consultando dados
+            </h2>
+
+            <p>
+                Uma Function também pode utilizar dados armazenados
+                no banco, dependendo do SGBD e da linguagem utilizada.
+            </p>
+
+
+            <p>
+                Por exemplo, podemos criar uma função que retorna
+                a quantidade de pedidos de um cliente.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">CREATE FUNCTION</span> quantidade_pedidos(
+    cliente <span class="sql-keyword">INTEGER</span>
+)
+<span class="sql-keyword">RETURNS INTEGER</span>
+<span class="sql-keyword">LANGUAGE SQL</span>
+<span class="sql-keyword">AS</span> $$
+
+    <span class="sql-keyword">SELECT COUNT</span>(*)
+
+    <span class="sql-keyword">FROM</span> pedidos
+
+    <span class="sql-keyword">WHERE</span> cliente_id = cliente;
+
+$$;</code></pre>
+
+
+            <p>
+                Utilização:
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span>
+
+    quantidade_pedidos(<span class="sql-number">10</span>);</code></pre>
+
+        </section>
+
+
+        <!-- =====================================================
+             PROCEDURE
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                O que é uma Stored Procedure?
+            </h2>
+
+            <p>
+                Uma <strong>Stored Procedure</strong> é um conjunto
+                de instruções armazenado no banco de dados que pode
+                ser executado através de um comando.
+            </p>
+
+
+            <p>
+                Procedures são úteis quando precisamos encapsular
+                uma sequência de operações.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>Diferença conceitual:</strong>
+
+                <p>
+                    Uma Function normalmente é utilizada para produzir
+                    um resultado.
+                </p>
+
+                <p>
+                    Uma Procedure é frequentemente utilizada para
+                    executar uma sequência de operações.
+                </p>
+
+                <p>
+                    A forma exata de trabalhar com cada uma depende
+                    do SGBD.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             PROCEDURE POSTGRESQL
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Exemplo de Procedure
+            </h2>
+
+            <p>
+                No PostgreSQL podemos criar uma procedure utilizando
+                <strong>CREATE PROCEDURE</strong>.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">CREATE PROCEDURE</span> atualizar_status_pedido(
+    pedido <span class="sql-keyword">INTEGER</span>,
+    novo_status <span class="sql-keyword">TEXT</span>
+)
+<span class="sql-keyword">LANGUAGE SQL</span>
+<span class="sql-keyword">AS</span> $$
+
+    <span class="sql-keyword">UPDATE</span> pedidos
+
+    <span class="sql-keyword">SET</span>
+        status = novo_status
+
+    <span class="sql-keyword">WHERE</span>
+        id = pedido;
+
+$$;</code></pre>
+
+
+            <p>
+                Para executar:
+            </p>
+
+
+            <pre><code><span class="sql-keyword">CALL</span> atualizar_status_pedido(
+    <span class="sql-number">10</span>,
+    <span class="sql-string">'enviado'</span>
+);</code></pre>
+
+        </section>
+
+
+        <!-- =====================================================
+             FUNCTION VS PROCEDURE
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Function × Procedure
+            </h2>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Característica</th>
+                            <th>Function</th>
+                            <th>Procedure</th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>
+                                Pode receber parâmetros
+                            </td>
+
+                            <td>
+                                Sim
+                            </td>
+
+                            <td>
+                                Sim
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Pode retornar resultado
+                            </td>
+
+                            <td>
+                                Sim
+                            </td>
+
+                            <td>
+                                Depende do SGBD e da forma utilizada
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Pode executar operações
+                            </td>
+
+                            <td>
+                                Sim
+                            </td>
+
+                            <td>
+                                Sim
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Utilização típica
+                            </td>
+
+                            <td>
+                                Cálculos e resultados
+                            </td>
+
+                            <td>
+                                Sequência de operações
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Execução
+                            </td>
+
+                            <td>
+                                Pode ser chamada em expressões,
+                                conforme o SGBD
+                            </td>
+
+                            <td>
+                                Normalmente através de CALL
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+            <div class="highlight">
+
+                <p>
+                    <strong>Importante:</strong>
+                </p>
+
+                <p>
+                    Function e Procedure não possuem exatamente
+                    o mesmo comportamento em todos os SGBDs.
+                    Sempre consulte a documentação do banco utilizado.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             TRIGGER
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                O que é um Trigger?
+            </h2>
+
+            <p>
+                Um <strong>Trigger</strong>, ou gatilho, é um mecanismo
+                que permite executar uma ação automaticamente quando
+                determinado evento acontece em uma tabela ou outro
+                objeto do banco, conforme os recursos do SGBD.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>Em termos simples:</strong>
+
+                <p>
+                    Você não precisa chamar o Trigger diretamente.
+                </p>
+
+                <p>
+                    O banco dispara o Trigger quando o evento
+                    configurado acontece.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             EVENTOS TRIGGER
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Quando um Trigger pode ser executado?
+            </h2>
+
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <div class="icon">
+                        ➕
+                    </div>
+
+                    <h3>
+                        INSERT
+                    </h3>
+
+                    <p>
+                        Quando um novo registro é inserido.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        ✏️
+                    </div>
+
+                    <h3>
+                        UPDATE
+                    </h3>
+
+                    <p>
+                        Quando um registro é atualizado.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🗑️
+                    </div>
+
+                    <h3>
+                        DELETE
+                    </h3>
+
+                    <p>
+                        Quando um registro é excluído.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             AUDITORIA
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Exemplo: auditoria
+            </h2>
+
+            <p>
+                Imagine que uma empresa precisa registrar quando
+                determinado registro foi alterado.
+            </p>
+
+
+            <p>
+                Poderíamos ter uma tabela:
+            </p>
+
+
+            <pre><code>auditoria
+
+id
+tabela
+operacao
+data_evento</code></pre>
+
+
+            <p>
+                Um Trigger poderia ser utilizado para registrar
+                automaticamente determinadas alterações.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>Exemplos de utilização:</strong>
+
+                <ul>
+
+                    <li>
+                        Auditoria de alterações.
+                    </li>
+
+                    <li>
+                        Registro automático de eventos.
+                    </li>
+
+                    <li>
+                        Atualização de informações derivadas.
+                    </li>
+
+                    <li>
+                        Aplicação de determinadas regras.
+                    </li>
+
+                </ul>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             TRIGGER POSTGRESQL
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Exemplo de Trigger no PostgreSQL
+            </h2>
+
+            <p>
+                No PostgreSQL, normalmente criamos primeiro uma função
+                que será executada pelo Trigger.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">CREATE FUNCTION</span> registrar_data_atualizacao()
+
+<span class="sql-keyword">RETURNS TRIGGER</span>
+
+<span class="sql-keyword">LANGUAGE</span> plpgsql
+
+<span class="sql-keyword">AS</span> $$
+
+<span class="sql-keyword">BEGIN</span>
+
+    <span class="sql-keyword">NEW</span>.atualizado_em = CURRENT_TIMESTAMP;
+
+    <span class="sql-keyword">RETURN NEW</span>;
+
+<span class="sql-keyword">END</span>;
+
+$$;</code></pre>
+
+
+            <p>
+                Depois criamos o Trigger:
+            </p>
+
+
+            <pre><code><span class="sql-keyword">CREATE TRIGGER</span> atualizar_data
+
+<span class="sql-keyword">BEFORE UPDATE ON</span> clientes
+
+<span class="sql-keyword">FOR EACH ROW</span>
+
+<span class="sql-keyword">EXECUTE FUNCTION</span>
+registrar_data_atualizacao();</code></pre>
+
+
+            <p>
+                A partir desse momento, quando um cliente for
+                atualizado, a função poderá atualizar automaticamente
+                o campo <strong>atualizado_em</strong>.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             BEFORE E AFTER
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                BEFORE e AFTER
+            </h2>
+
+            <p>
+                Alguns SGBDs permitem definir se o Trigger deve
+                acontecer antes ou depois do evento.
+            </p>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Momento</th>
+                            <th>Significado</th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>
+                                BEFORE
+                            </td>
+
+                            <td>
+                                Executa antes da operação.
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                AFTER
+                            </td>
+
+                            <td>
+                                Executa depois da operação.
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                INSTEAD OF
+                            </td>
+
+                            <td>
+                                Substitui a operação em contextos
+                                suportados pelo SGBD.
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             NEW E OLD
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                NEW e OLD
+            </h2>
+
+            <p>
+                Em sistemas que utilizam esses conceitos em Triggers,
+                <strong>NEW</strong> e <strong>OLD</strong> permitem
+                trabalhar com os valores relacionados à operação.
+            </p>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Referência</th>
+                            <th>Representa</th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>
+                                NEW
+                            </td>
+
+                            <td>
+                                Novo valor do registro.
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                OLD
+                            </td>
+
+                            <td>
+                                Valor anterior do registro.
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+            <p>
+                Isso é especialmente útil para auditoria e comparação
+                entre valores antigos e novos.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             CUIDADOS
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                ⚠️ Cuidado com Triggers
+            </h2>
+
+            <p>
+                Triggers são poderosos, mas também podem tornar
+                o comportamento do sistema mais difícil de entender
+                quando utilizados em excesso.
+            </p>
+
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <div class="icon">
+                        🕵️
+                    </div>
+
+                    <h3>
+                        Comportamento oculto
+                    </h3>
+
+                    <p>
+                        Uma operação pode disparar outras ações
+                        automaticamente.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🔄
+                    </div>
+
+                    <h3>
+                        Dependências
+                    </h3>
+
+                    <p>
+                        Triggers podem depender de outras funções
+                        e tabelas.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🐛
+                    </div>
+
+                    <h3>
+                        Debug
+                    </h3>
+
+                    <p>
+                        Problemas podem ser mais difíceis de rastrear.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        ⚡
+                    </div>
+
+                    <h3>
+                        Desempenho
+                    </h3>
+
+                    <p>
+                        Uma grande quantidade de operações automáticas
+                        pode afetar o desempenho.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             COMPARAÇÃO GERAL
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                View × Function × Procedure × Trigger
+            </h2>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Recurso</th>
+                            <th>Principal objetivo</th>
+                            <th>Como é executado?</th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>
+                                View
+                            </td>
+
+                            <td>
+                                Reutilizar uma consulta.
+                            </td>
+
+                            <td>
+                                Consultando a View.
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Function
+                            </td>
+
+                            <td>
+                                Executar lógica e produzir resultado.
+                            </td>
+
+                            <td>
+                                Chamando a função.
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Procedure
+                            </td>
+
+                            <td>
+                                Executar uma sequência de operações.
+                            </td>
+
+                            <td>
+                                Chamando a procedure.
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Trigger
+                            </td>
+
+                            <td>
+                                Reagir a eventos.
+                            </td>
+
+                            <td>
+                                Automaticamente.
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             EXERCÍCIO 1
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🧪 Exercício 1 — Criando uma View
+            </h2>
+
+            <p>
+                Crie uma View chamada
+                <strong>clientes_ativos</strong> que mostre:
+            </p>
+
+
+            <ul>
+
+                <li>
+                    ID do cliente.
+                </li>
+
+                <li>
+                    Nome.
+                </li>
+
+                <li>
+                    E-mail.
+                </li>
+
+            </ul>
+
+
+            <p>
+                A View deve retornar somente clientes ativos.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             EXERCÍCIO 2
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🧪 Exercício 2 — Function
+            </h2>
+
+            <p>
+                Crie uma Function que receba um valor de produto
+                e retorne o valor com 10% de desconto.
+            </p>
+
+
+            <p>
+                Teste com:
+            </p>
+
+
+            <pre><code><span class="sql-number">200</span></code></pre>
+
+
+            <p>
+                Qual será o resultado?
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             EXERCÍCIO 3
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🧪 Exercício 3 — Procedure
+            </h2>
+
+            <p>
+                Imagine uma tabela <strong>pedidos</strong> com
+                uma coluna <strong>status</strong>.
+            </p>
+
+
+            <p>
+                Crie uma Procedure que receba:
+            </p>
+
+
+            <ul>
+
+                <li>
+                    ID do pedido.
+                </li>
+
+                <li>
+                    Novo status.
+                </li>
+
+            </ul>
+
+
+            <p>
+                A Procedure deverá atualizar o status do pedido.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             EXERCÍCIO 4
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🧪 Exercício 4 — Trigger
+            </h2>
+
+            <p>
+                Imagine que a tabela
+                <strong>clientes</strong> possui:
+            </p>
+
+
+            <pre><code>id
+nome
+email
+atualizado_em</code></pre>
+
+
+            <p>
+                Crie um Trigger que atualize automaticamente
+                <strong>atualizado_em</strong> quando um cliente
+                for alterado.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             DESAFIO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🎯 Desafio da aula
+            </h2>
+
+            <p>
+                Crie uma pequena estrutura para controlar pedidos
+                utilizando os recursos estudados.
+            </p>
+
+
+            <p>
+                O sistema deverá possuir:
+            </p>
+
+
+            <ul>
+
+                <li>
+                    Uma View com o resumo dos pedidos.
+                </li>
+
+                <li>
+                    Uma Function para calcular desconto.
+                </li>
+
+                <li>
+                    Uma Procedure para atualizar o status.
+                </li>
+
+                <li>
+                    Um Trigger para registrar a data de atualização.
+                </li>
+
+            </ul>
+
+
+            <div class="highlight">
+
+                <strong>Dica:</strong>
+
+                <p>
+                    Não tente criar tudo de uma vez.
+                </p>
+
+                <p>
+                    Primeiro faça a View funcionar.
+                    Depois crie a Function.
+                    Em seguida a Procedure.
+                    Por último, implemente o Trigger.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             BOAS PRÁTICAS
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Boas práticas
+            </h2>
+
+
+            <ul>
+
+                <li>
+                    Use nomes claros para Views, Functions,
+                    Procedures e Triggers.
+                </li>
+
+                <li>
+                    Evite colocar lógica desnecessariamente complexa
+                    dentro do banco.
+                </li>
+
+                <li>
+                    Documente regras importantes.
+                </li>
+
+                <li>
+                    Tenha cuidado com Triggers encadeados.
+                </li>
+
+                <li>
+                    Considere o impacto de cada recurso no desempenho.
+                </li>
+
+                <li>
+                    Conheça as particularidades do SGBD utilizado.
+                </li>
+
+            </ul>
+
+        </section>
+
+
+        <!-- =====================================================
+             MAPA MENTAL
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🧠 Mapa mental da aula
+            </h2>
+
+
+            <div class="highlight">
+
+                <p>
+                    <strong>VIEW</strong>
+                    → consulta reutilizável.
+                </p>
+
+                <p>
+                    <strong>FUNCTION</strong>
+                    → recebe parâmetros e produz um resultado,
+                    conforme a definição da função.
+                </p>
+
+                <p>
+                    <strong>PROCEDURE</strong>
+                    → executa uma sequência de operações.
+                </p>
+
+                <p>
+                    <strong>TRIGGER</strong>
+                    → reage automaticamente a eventos.
+                </p>
+
+                <p>
+                    <strong>BEFORE</strong>
+                    → antes da operação.
+                </p>
+
+                <p>
+                    <strong>AFTER</strong>
+                    → depois da operação.
+                </p>
+
+                <p>
+                    <strong>NEW</strong>
+                    → novo estado do registro, quando suportado.
+                </p>
+
+                <p>
+                    <strong>OLD</strong>
+                    → estado anterior do registro, quando suportado.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             RESUMO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Resumindo
+            </h2>
+
+
+            <div class="highlight">
+
+                <p>
+                    Uma <strong>View</strong> é uma consulta armazenada
+                    que pode ser reutilizada como uma tabela virtual.
+                </p>
+
+                <p>
+                    Uma <strong>Function</strong> encapsula uma lógica
+                    que pode receber parâmetros e retornar resultados.
+                </p>
+
+                <p>
+                    Uma <strong>Procedure</strong> encapsula uma sequência
+                    de operações que pode ser executada sob demanda.
+                </p>
+
+                <p>
+                    Um <strong>Trigger</strong> permite executar
+                    determinadas ações automaticamente em resposta
+                    a eventos.
+                </p>
+
+                <p>
+                    Esses recursos fazem parte da programação de banco
+                    de dados e podem variar de sintaxe e comportamento
+                    entre diferentes SGBDs.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             CHECKPOINT
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🧠 Você entendeu?
+            </h2>
+
+            <p>
+                Antes de avançar, tente responder:
+            </p>
+
+
+            <ul>
+
+                <li>
+                    O que é uma View?
+                </li>
+
+                <li>
+                    Qual a vantagem de criar uma View?
+                </li>
+
+                <li>
+                    O que é uma Function?
+                </li>
+
+                <li>
+                    Qual a diferença conceitual entre Function e Procedure?
+                </li>
+
+                <li>
+                    O que é um Trigger?
+                </li>
+
+                <li>
+                    Qual a diferença entre BEFORE e AFTER?
+                </li>
+
+                <li>
+                    O que representam NEW e OLD em contextos de Trigger?
+                </li>
+
+                <li>
+                    Por que devemos ter cuidado com Triggers?
+                </li>
+
+            </ul>
+
+        </section>
+
+
+        <!-- =====================================================
+             PRÓXIMA AULA
+        ====================================================== -->
+
+        <section class="cta">
+
+            <h2>
+                Aula 11 concluída!
+            </h2>
+
+            <p>
+                Agora você conhece os principais recursos programáveis
+                encontrados em bancos de dados relacionais.
+            </p>
+
+            <p>
+                Na próxima aula, vamos entrar em um dos assuntos mais
+                importantes para aplicações reais:
+                <strong>transações, ACID, COMMIT, ROLLBACK e controle
+                de concorrência</strong>.
+            </p>
+
+
+            <a
+                href="./12.html"
+                class="cta-button">
+
+                Aula 12 →
+
+            </a>
+
+        </section>
+
+
+    </main>
+
+
+    <!-- =====================================================
+         FOOTER
+    ====================================================== -->
+
+    <footer>
+
+        <p>
+            Guia de Banco de Dados
+        </p>
+
+        <p>
+            Aula 11 • Views, Functions, Procedures e Triggers
+        </p>
+
+    </footer>
+
+
+    <!-- =====================================================
+         JAVASCRIPT — DARK / LIGHT MODE
+    ====================================================== -->
+
+    <script src="./script.js"></script>
+
+</body>
+
+</html>

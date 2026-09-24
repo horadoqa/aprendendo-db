@@ -1,0 +1,1536 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="icon" type="image/png" href="../assets/images/logo.png">
+
+    <title>Aula 3 — Banco de Dados Relacional</title>
+</head>
+
+<body>
+
+    <header>
+
+        <button class="theme-toggle" id="themeToggle" type="button" aria-label="Alternar tema">
+
+            <span class="theme-icon" id="themeIcon">
+                ☀️
+            </span>
+
+            <span class="theme-label" id="themeLabel">
+                Modo claro
+            </span>
+
+        </button>
+
+        <div class="header-content">
+
+            <span class="eyebrow">
+                AULA 3 • FUNDAMENTOS DE BANCO DE DADOS
+            </span>
+
+            <h1>
+                Banco de Dados Relacional
+            </h1>
+
+            <p>
+                Entenda como os bancos relacionais organizam informações
+                utilizando tabelas, colunas, registros e relacionamentos.
+            </p>
+
+        </div>
+
+    </header>
+
+
+    <main>
+
+
+        <!-- =====================================================
+             OBJETIVOS
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Objetivos da aula
+            </h2>
+
+            <p>
+                Na Aula 2, vimos como uma aplicação se comunica com
+                um SGBD e como o SGBD gerencia o acesso aos dados.
+            </p>
+
+            <p>
+                Agora vamos entender como os dados podem ser
+                organizados dentro de um banco de dados relacional.
+            </p>
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <div class="icon">
+                        📊
+                    </div>
+
+                    <h3>
+                        Tabelas
+                    </h3>
+
+                    <p>
+                        Entender como os dados são organizados
+                        em tabelas.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🧱
+                    </div>
+
+                    <h3>
+                        Colunas
+                    </h3>
+
+                    <p>
+                        Entender como cada coluna representa
+                        um atributo.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        📝
+                    </div>
+
+                    <h3>
+                        Registros
+                    </h3>
+
+                    <p>
+                        Entender como cada linha representa
+                        um registro.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🔑
+                    </div>
+
+                    <h3>
+                        Chaves
+                    </h3>
+
+                    <p>
+                        Conhecer o conceito de chave primária
+                        e sua importância.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             REVISÃO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Relembrando as aulas anteriores
+            </h2>
+
+            <p>
+                Até aqui, já conhecemos alguns conceitos fundamentais.
+            </p>
+
+            <div class="highlight">
+
+                <p>
+                    🗄️ <strong>Banco de Dados</strong>
+                    → conjunto organizado de dados armazenados.
+                </p>
+
+                <p>
+                    ⚙️ <strong>SGBD</strong>
+                    → software responsável por gerenciar
+                    o banco de dados.
+                </p>
+
+                <p>
+                    💻 <strong>Aplicação</strong>
+                    → sistema que utiliza o SGBD para trabalhar
+                    com os dados.
+                </p>
+
+                <p>
+                    🔤 <strong>SQL</strong>
+                    → linguagem utilizada para trabalhar
+                    com bancos relacionais.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             O QUE É RELACIONAL
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                O que é um Banco de Dados Relacional?
+            </h2>
+
+            <p>
+                Um <strong>banco de dados relacional</strong> organiza
+                os dados principalmente em estruturas chamadas
+                <strong>tabelas</strong>.
+            </p>
+
+            <p>
+                Essas tabelas podem representar diferentes entidades
+                de um sistema, como clientes, produtos, pedidos
+                e funcionários.
+            </p>
+
+            <div class="highlight">
+
+                <strong>Ideia principal:</strong>
+
+                <p>
+                    Um banco relacional organiza os dados em tabelas
+                    e permite estabelecer relações entre essas tabelas.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             TABELA
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                O que é uma tabela?
+            </h2>
+
+            <p>
+                Uma tabela é uma estrutura utilizada para organizar
+                informações relacionadas a um determinado assunto.
+            </p>
+
+            <p>
+                Por exemplo, podemos ter uma tabela chamada
+                <strong>clientes</strong>.
+            </p>
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>ID</th>
+                            <th>Nome</th>
+                            <th>E-mail</th>
+                            <th>Cidade</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>1</td>
+                            <td>Ana Silva</td>
+                            <td>ana@email.com</td>
+                            <td>Rio de Janeiro</td>
+
+                        </tr>
+
+                        <tr>
+
+                            <td>2</td>
+                            <td>João Santos</td>
+                            <td>joao@email.com</td>
+                            <td>São Paulo</td>
+
+                        </tr>
+
+                        <tr>
+
+                            <td>3</td>
+                            <td>Maria Oliveira</td>
+                            <td>maria@email.com</td>
+                            <td>Belo Horizonte</td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            <p style="margin-top: 20px;">
+
+                Essa tabela representa informações sobre clientes.
+                Cada cliente possui seus próprios valores.
+
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             COLUNAS
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                O que são colunas?
+            </h2>
+
+            <p>
+                As <strong>colunas</strong> representam os atributos
+                ou características que queremos armazenar.
+            </p>
+
+            <p>
+                Na tabela de clientes, por exemplo:
+            </p>
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <div class="icon">
+                        🆔
+                    </div>
+
+                    <h3>
+                        ID
+                    </h3>
+
+                    <p>
+                        Identifica o cliente.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        👤
+                    </div>
+
+                    <h3>
+                        Nome
+                    </h3>
+
+                    <p>
+                        Armazena o nome do cliente.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        📧
+                    </div>
+
+                    <h3>
+                        E-mail
+                    </h3>
+
+                    <p>
+                        Armazena o endereço de e-mail.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        📍
+                    </div>
+
+                    <h3>
+                        Cidade
+                    </h3>
+
+                    <p>
+                        Armazena a cidade do cliente.
+                    </p>
+
+                </div>
+
+            </div>
+
+            <div class="highlight">
+
+                <strong>Regra mental:</strong>
+
+                <p>
+                    Coluna = característica que queremos armazenar.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             REGISTROS
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                O que são registros?
+            </h2>
+
+            <p>
+                Um <strong>registro</strong> representa uma ocorrência
+                armazenada em uma tabela.
+            </p>
+
+            <p>
+                Em uma tabela de clientes, cada registro pode
+                representar um cliente.
+            </p>
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>ID</th>
+                            <th>Nome</th>
+                            <th>E-mail</th>
+                            <th>Cidade</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>1</td>
+                            <td>Ana Silva</td>
+                            <td>ana@email.com</td>
+                            <td>Rio de Janeiro</td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            <div class="highlight">
+
+                <p>
+                    A linha acima representa <strong>um registro</strong>
+                    da tabela clientes.
+                </p>
+
+                <p>
+                    Nesse caso, o registro representa a cliente
+                    Ana Silva.
+                </p>
+
+            </div>
+
+            <p>
+                Em uma explicação introdutória, também é comum utilizar
+                o termo <strong>linha</strong> como sinônimo de registro.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             RESUMO TABELA
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Tabela, coluna e registro
+            </h2>
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Conceito</th>
+                            <th>Significado</th>
+                            <th>Exemplo</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>
+                                Tabela
+                            </td>
+
+                            <td>
+                                Estrutura que organiza os dados.
+                            </td>
+
+                            <td>
+                                clientes
+                            </td>
+
+                        </tr>
+
+                        <tr>
+
+                            <td>
+                                Coluna
+                            </td>
+
+                            <td>
+                                Atributo armazenado.
+                            </td>
+
+                            <td>
+                                nome
+                            </td>
+
+                        </tr>
+
+                        <tr>
+
+                            <td>
+                                Registro
+                            </td>
+
+                            <td>
+                                Uma ocorrência armazenada.
+                            </td>
+
+                            <td>
+                                Ana Silva
+                            </td>
+
+                        </tr>
+
+                        <tr>
+
+                            <td>
+                                Valor
+                            </td>
+
+                            <td>
+                                Dado armazenado em uma coluna
+                                de um registro.
+                            </td>
+
+                            <td>
+                                Rio de Janeiro
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             CHAVE PRIMÁRIA
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                O que é uma chave primária?
+            </h2>
+
+            <p>
+                A <strong>chave primária</strong>, ou
+                <strong>Primary Key (PK)</strong>, é utilizada para
+                identificar de maneira única cada registro de uma tabela.
+            </p>
+
+            <p>
+                Na nossa tabela de clientes, podemos utilizar a coluna
+                <strong>ID</strong> como chave primária.
+            </p>
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>ID</th>
+                            <th>Nome</th>
+                            <th>E-mail</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>1</td>
+                            <td>Ana Silva</td>
+                            <td>ana@email.com</td>
+
+                        </tr>
+
+                        <tr>
+
+                            <td>2</td>
+                            <td>João Santos</td>
+                            <td>joao@email.com</td>
+
+                        </tr>
+
+                        <tr>
+
+                            <td>3</td>
+                            <td>Maria Oliveira</td>
+                            <td>maria@email.com</td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            <div class="highlight">
+
+                <strong>Por que isso é importante?</strong>
+
+                <p>
+                    Se quisermos localizar o cliente de ID 2,
+                    sabemos exatamente qual registro estamos procurando.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             CARACTERÍSTICAS PK
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Características de uma chave primária
+            </h2>
+
+            <p>
+                Uma chave primária deve permitir identificar
+                inequivocamente cada registro da tabela.
+            </p>
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <div class="icon">
+                        1️⃣
+                    </div>
+
+                    <h3>
+                        Identificação
+                    </h3>
+
+                    <p>
+                        Identifica um registro dentro da tabela.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🚫
+                    </div>
+
+                    <h3>
+                        Unicidade
+                    </h3>
+
+                    <p>
+                        Não deve existir mais de um registro
+                        com a mesma chave primária.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🎯
+                    </div>
+
+                    <h3>
+                        Precisão
+                    </h3>
+
+                    <p>
+                        Permite identificar exatamente o registro
+                        desejado.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             RELACIONAMENTOS
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Por que criar várias tabelas?
+            </h2>
+
+            <p>
+                Um sistema normalmente precisa armazenar diferentes
+                tipos de informações.
+            </p>
+
+            <p>
+                Uma loja, por exemplo, pode ter:
+            </p>
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <div class="icon">
+                        👥
+                    </div>
+
+                    <h3>
+                        clientes
+                    </h3>
+
+                    <p>
+                        Informações dos clientes.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        📦
+                    </div>
+
+                    <h3>
+                        produtos
+                    </h3>
+
+                    <p>
+                        Informações dos produtos.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🛒
+                    </div>
+
+                    <h3>
+                        pedidos
+                    </h3>
+
+                    <p>
+                        Informações dos pedidos.
+                    </p>
+
+                </div>
+
+            </div>
+
+            <p>
+                Essas informações estão relacionadas entre si.
+                Um cliente pode realizar vários pedidos, por exemplo.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             CHAVE ESTRANGEIRA
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                O que é uma chave estrangeira?
+            </h2>
+
+            <p>
+                Uma <strong>chave estrangeira</strong>, ou
+                <strong>Foreign Key (FK)</strong>, é utilizada para
+                estabelecer uma relação entre tabelas.
+            </p>
+
+            <p>
+                Imagine que temos estas duas tabelas:
+            </p>
+
+            <h3>
+                Tabela clientes
+            </h3>
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>ID</th>
+                            <th>Nome</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>1</td>
+                            <td>Ana Silva</td>
+
+                        </tr>
+
+                        <tr>
+
+                            <td>2</td>
+                            <td>João Santos</td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+            <h3>
+                Tabela pedidos
+            </h3>
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>ID</th>
+                            <th>cliente_id</th>
+                            <th>valor</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>101</td>
+                            <td>1</td>
+                            <td>250,00</td>
+
+                        </tr>
+
+                        <tr>
+
+                            <td>102</td>
+                            <td>1</td>
+                            <td>150,00</td>
+
+                        </tr>
+
+                        <tr>
+
+                            <td>103</td>
+                            <td>2</td>
+                            <td>320,00</td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            <div class="highlight">
+
+                <p>
+                    A coluna <strong>cliente_id</strong> da tabela
+                    pedidos pode funcionar como uma
+                    <strong>chave estrangeira</strong> que referencia
+                    o <strong>ID</strong> da tabela clientes.
+                </p>
+
+                <p>
+                    Dessa forma, conseguimos representar que um
+                    pedido pertence a determinado cliente.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             RELACIONAMENTO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Como as tabelas se relacionam?
+            </h2>
+
+            <p>
+                Podemos visualizar o exemplo anterior de maneira
+                simplificada:
+            </p>
+
+            <div class="highlight">
+
+                <p>
+                    👤 <strong>Cliente</strong>
+                </p>
+
+                <p>
+                    ↓
+                </p>
+
+                <p>
+                    🛒 <strong>Pedidos</strong>
+                </p>
+
+                <p>
+                    Um cliente pode possuir vários pedidos.
+                </p>
+
+            </div>
+
+            <p>
+                Esse tipo de relação é chamado de
+                <strong>um para muitos (1:N)</strong>.
+            </p>
+
+            <p>
+                Os diferentes tipos de relacionamento serão estudados
+                com mais detalhes em uma aula específica.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             SQL CREATE TABLE
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Como isso aparece no SQL?
+            </h2>
+
+            <p>
+                Uma tabela pode ser criada utilizando SQL.
+            </p>
+
+            <pre><code><span class="sql-keyword">CREATE TABLE</span> clientes (
+    id <span class="sql-keyword">INTEGER PRIMARY KEY</span>,
+    nome <span class="sql-keyword">VARCHAR</span>(100),
+    email <span class="sql-keyword">VARCHAR</span>(150),
+    cidade <span class="sql-keyword">VARCHAR</span>(100)
+);</code></pre>
+
+            <p>
+                Nesse exemplo:
+            </p>
+
+            <ul>
+
+                <li>
+                    <strong>clientes</strong> é o nome da tabela.
+                </li>
+
+                <li>
+                    <strong>id</strong> é uma coluna utilizada
+                    como chave primária.
+                </li>
+
+                <li>
+                    <strong>nome</strong> armazena o nome do cliente.
+                </li>
+
+                <li>
+                    <strong>email</strong> armazena o e-mail.
+                </li>
+
+                <li>
+                    <strong>cidade</strong> armazena a cidade.
+                </li>
+
+            </ul>
+
+        </section>
+
+
+        <!-- =====================================================
+             TIPOS DE DADOS
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                O que são tipos de dados?
+            </h2>
+
+            <p>
+                Cada coluna normalmente possui um tipo de dado
+                definido para indicar quais valores podem ser
+                armazenados nela.
+            </p>
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Tipo</th>
+                            <th>Exemplo</th>
+                            <th>Uso</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>
+                                INTEGER
+                            </td>
+
+                            <td>
+                                10
+                            </td>
+
+                            <td>
+                                Números inteiros.
+                            </td>
+
+                        </tr>
+
+                        <tr>
+
+                            <td>
+                                VARCHAR
+                            </td>
+
+                            <td>
+                                "Ana"
+                            </td>
+
+                            <td>
+                                Textos.
+                            </td>
+
+                        </tr>
+
+                        <tr>
+
+                            <td>
+                                DATE
+                            </td>
+
+                            <td>
+                                2026-01-20
+                            </td>
+
+                            <td>
+                                Datas.
+                            </td>
+
+                        </tr>
+
+                        <tr>
+
+                            <td>
+                                BOOLEAN
+                            </td>
+
+                            <td>
+                                TRUE
+                            </td>
+
+                            <td>
+                                Valores verdadeiro/falso.
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            <p>
+                Os tipos disponíveis e seus detalhes podem variar
+                de acordo com o SGBD utilizado.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             EXEMPLO COMPLETO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Montando um pequeno banco de dados
+            </h2>
+
+            <p>
+                Imagine uma pequena loja virtual.
+            </p>
+
+            <p>
+                Podemos começar identificando algumas entidades:
+            </p>
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <div class="icon">
+                        👤
+                    </div>
+
+                    <h3>
+                        Clientes
+                    </h3>
+
+                    <p>
+                        Quem compra na loja.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        📦
+                    </div>
+
+                    <h3>
+                        Produtos
+                    </h3>
+
+                    <p>
+                        O que a loja vende.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🛒
+                    </div>
+
+                    <h3>
+                        Pedidos
+                    </h3>
+
+                    <p>
+                        Compras realizadas pelos clientes.
+                    </p>
+
+                </div>
+
+            </div>
+
+            <p>
+                Essas entidades podem ser representadas por tabelas
+                diferentes e relacionadas por meio de chaves.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             ATENÇÃO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                ⚠️ Uma diferença importante
+            </h2>
+
+            <div class="highlight">
+
+                <p>
+                    <strong>Tabela não é banco de dados.</strong>
+                </p>
+
+                <p>
+                    Uma tabela é apenas uma das estruturas utilizadas
+                    para organizar dados dentro de um banco de dados
+                    relacional.
+                </p>
+
+                <p>
+                    Um banco de dados pode possuir várias tabelas,
+                    além de outros objetos e estruturas.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             BANCO X TABELA
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Banco de dados × tabela
+            </h2>
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Conceito</th>
+                            <th>Exemplo</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>
+                                Banco de dados
+                            </td>
+
+                            <td>
+                                loja_virtual
+                            </td>
+
+                        </tr>
+
+                        <tr>
+
+                            <td>
+                                Tabela
+                            </td>
+
+                            <td>
+                                clientes
+                            </td>
+
+                        </tr>
+
+                        <tr>
+
+                            <td>
+                                Coluna
+                            </td>
+
+                            <td>
+                                nome
+                            </td>
+
+                        </tr>
+
+                        <tr>
+
+                            <td>
+                                Registro
+                            </td>
+
+                            <td>
+                                Ana Silva
+                            </td>
+
+                        </tr>
+
+                        <tr>
+
+                            <td>
+                                Valor
+                            </td>
+
+                            <td>
+                                "Ana Silva"
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             RESUMO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Resumindo
+            </h2>
+
+            <div class="highlight">
+
+                <p>
+                    📊 Um <strong>banco de dados relacional</strong>
+                    organiza dados principalmente utilizando tabelas.
+                </p>
+
+                <p>
+                    📋 Uma <strong>tabela</strong> representa um conjunto
+                    de informações relacionadas.
+                </p>
+
+                <p>
+                    🧱 Uma <strong>coluna</strong> representa um atributo.
+                </p>
+
+                <p>
+                    📝 Um <strong>registro</strong> representa uma
+                    ocorrência armazenada.
+                </p>
+
+                <p>
+                    🔑 Uma <strong>chave primária</strong> identifica
+                    de forma única um registro.
+                </p>
+
+                <p>
+                    🔗 Uma <strong>chave estrangeira</strong> pode ser
+                    utilizada para relacionar tabelas.
+                </p>
+
+                <p>
+                    🔤 O <strong>SQL</strong> pode ser utilizado para
+                    criar e manipular essas estruturas.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             CHECKPOINT
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🧠 Você entendeu?
+            </h2>
+
+            <p>
+                Antes de avançar, tente responder:
+            </p>
+
+            <ul>
+
+                <li>
+                    O que é uma tabela?
+                </li>
+
+                <li>
+                    Qual é a diferença entre coluna e registro?
+                </li>
+
+                <li>
+                    O que é uma chave primária?
+                </li>
+
+                <li>
+                    Para que serve uma chave estrangeira?
+                </li>
+
+                <li>
+                    Por que um banco de dados pode possuir várias tabelas?
+                </li>
+
+                <li>
+                    O que significa dizer que duas tabelas estão relacionadas?
+                </li>
+
+                <li>
+                    Qual é a diferença entre banco de dados e tabela?
+                </li>
+
+            </ul>
+
+        </section>
+
+
+        <!-- =====================================================
+             CTA
+        ====================================================== -->
+
+        <section class="cta">
+
+            <h2>
+                Aula 3 concluída!
+            </h2>
+
+            <p>
+                Agora você já conhece a estrutura básica de um banco
+                de dados relacional: tabelas, colunas, registros,
+                chaves e relacionamentos.
+            </p>
+
+            <a href="./aula-4.html" class="cta-button">
+                Aula 4 →
+            </a>
+
+        </section>
+
+    </main>
+
+
+    <!-- =====================================================
+       FOOTER
+    ====================================================== -->
+
+    <footer>
+
+        <p>
+            Guia de Banco de Dados
+        </p>
+
+        <p>
+            Aula 3 • Banco de Dados Relacional
+        </p>
+
+    </footer>
+
+
+    <!-- =====================================================
+       JAVASCRIPT — DARK / LIGHT MODE
+    ====================================================== -->
+
+    <script src="../assets/js/script.js"></script>
+
+</body>
+
+</html>

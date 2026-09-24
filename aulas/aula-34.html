@@ -1,0 +1,1430 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="./style.css">
+
+    <link rel="icon" type="image/png" href="./assets/images/logo.png">
+
+    <title>Aula 34 — SQL Analítico com DuckDB e Parquet</title>
+
+</head>
+
+<body>
+
+
+    <!-- =====================================================
+       HEADER
+    ====================================================== -->
+
+    <header>
+
+        <button class="theme-toggle" id="themeToggle" type="button" aria-label="Alternar tema">
+
+            <span class="theme-icon" id="themeIcon">
+                ☀️
+            </span>
+
+            <span class="theme-label" id="themeLabel">
+                Modo claro
+            </span>
+
+        </button>
+
+
+        <div class="header-content">
+
+            <span class="eyebrow">
+                AULA 34 • SQL ANALÍTICO
+            </span>
+
+            <h1>
+                SQL Analítico com DuckDB e Parquet
+            </h1>
+
+            <p>
+                Aprenda a transformar grandes volumes de dados em
+                informações úteis utilizando consultas analíticas com SQL.
+            </p>
+
+        </div>
+
+    </header>
+
+
+    <!-- =====================================================
+       CONTEÚDO
+    ====================================================== -->
+
+    <main>
+
+
+        <!-- =====================================================
+           OBJETIVOS
+        ====================================================== -->
+
+        <section>
+
+            <h2>🎯 Objetivos da aula</h2>
+
+            <p>
+                Na aula anterior aprendemos a consultar arquivos
+                <strong>Parquet</strong> utilizando o
+                <strong>DuckDB</strong>.
+            </p>
+
+            <p>
+                Agora vamos avançar para consultas mais próximas
+                de um cenário real de análise de dados.
+            </p>
+
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <div class="icon">
+                        📊
+                    </div>
+
+                    <h3>
+                        Agregações
+                    </h3>
+
+                    <p>
+                        Utilizar AVG, MIN, MAX, SUM e COUNT.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🔎
+                    </div>
+
+                    <h3>
+                        Filtros
+                    </h3>
+
+                    <p>
+                        Trabalhar com WHERE e HAVING.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🧠
+                    </div>
+
+                    <h3>
+                        CASE
+                    </h3>
+
+                    <p>
+                        Criar classificações dentro das consultas.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        📅
+                    </div>
+
+                    <h3>
+                        Datas
+                    </h3>
+
+                    <p>
+                        Analisar dados por períodos.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           CENÁRIO
+        ====================================================== -->
+
+        <section>
+
+            <h2>🏪 Nosso cenário</h2>
+
+            <p>
+                Imagine que uma empresa possui milhões de registros
+                de vendas armazenados em arquivos Parquet.
+            </p>
+
+
+            <pre><code>
+vendas/
+├── vendas_2024.parquet
+├── vendas_2025.parquet
+└── vendas_2026.parquet
+            </code></pre>
+
+
+            <p>
+                Cada registro possui informações como:
+            </p>
+
+
+            <pre><code>
+id
+cliente_id
+produto
+categoria
+cidade
+quantidade
+preco
+data
+            </code></pre>
+
+
+            <p>
+                Nosso objetivo é utilizar SQL para descobrir
+                informações sobre essas vendas.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+           COUNT
+        ====================================================== -->
+
+        <section>
+
+            <h2>🔢 COUNT</h2>
+
+            <p>
+                O <strong>COUNT</strong> permite contar registros.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span>
+    <span class="sql-keyword">COUNT</span>(*) <span class="sql-keyword">AS</span> total_vendas
+<span class="sql-keyword">FROM</span> <span class="sql-string">'vendas/*.parquet'</span>;</code></pre>
+
+
+            <p>
+                Podemos também contar valores de uma determinada coluna:
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span>
+    <span class="sql-keyword">COUNT</span>(cliente_id) <span class="sql-keyword">AS</span> clientes
+<span class="sql-keyword">FROM</span> <span class="sql-string">'vendas/*.parquet'</span>;</code></pre>
+
+
+            <div class="highlight">
+
+                <strong>
+                    Atenção:
+                </strong>
+
+                <p>
+                    <code>COUNT(*)</code> conta os registros,
+                    enquanto <code>COUNT(coluna)</code> normalmente
+                    ignora valores NULL daquela coluna.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           AVG
+        ====================================================== -->
+
+        <section>
+
+            <h2>📐 AVG — Média</h2>
+
+            <p>
+                O <strong>AVG</strong> calcula a média de uma coluna numérica.
+            </p>
+
+
+            <p>
+                Por exemplo, podemos descobrir o preço médio dos produtos:
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span>
+    <span class="sql-keyword">AVG</span>(preco) <span class="sql-keyword">AS</span> preco_medio
+<span class="sql-keyword">FROM</span> <span class="sql-string">'vendas.parquet'</span>;</code></pre>
+
+
+            <p>
+                Também podemos calcular a quantidade média de produtos
+                vendidos por registro:
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span>
+    <span class="sql-keyword">AVG</span>(quantidade) <span class="sql-keyword">AS</span> quantidade_media
+<span class="sql-keyword">FROM</span> <span class="sql-string">'vendas.parquet'</span>;</code></pre>
+
+        </section>
+
+
+        <!-- =====================================================
+           MIN MAX
+        ====================================================== -->
+
+        <section>
+
+            <h2>⬆️⬇️ MIN e MAX</h2>
+
+            <p>
+                Podemos descobrir o menor e o maior valor de uma coluna.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span>
+    <span class="sql-keyword">MIN</span>(preco) <span class="sql-keyword">AS</span> menor_preco,
+    <span class="sql-keyword">MAX</span>(preco) <span class="sql-keyword">AS</span> maior_preco
+<span class="sql-keyword">FROM</span> <span class="sql-string">'vendas.parquet'</span>;</code></pre>
+
+
+            <p>
+                Isso pode ser útil para identificar a faixa de preços
+                existente nos dados.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+           VÁRIAS AGREGAÇÕES
+        ====================================================== -->
+
+        <section>
+
+            <h2>🧮 Várias agregações na mesma consulta</h2>
+
+            <p>
+                Podemos utilizar várias funções de agregação
+                ao mesmo tempo.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span>
+
+    <span class="sql-keyword">COUNT</span>(*) <span class="sql-keyword">AS</span> total_vendas,
+
+    <span class="sql-keyword">SUM</span>(quantidade * preco) <span class="sql-keyword">AS</span> faturamento,
+
+    <span class="sql-keyword">AVG</span>(preco) <span class="sql-keyword">AS</span> preco_medio,
+
+    <span class="sql-keyword">MIN</span>(preco) <span class="sql-keyword">AS</span> menor_preco,
+
+    <span class="sql-keyword">MAX</span>(preco) <span class="sql-keyword">AS</span> maior_preco
+
+<span class="sql-keyword">FROM</span> <span class="sql-string">'vendas.parquet'</span>;</code></pre>
+
+
+            <p>
+                Uma única consulta pode gerar um pequeno
+                resumo estatístico dos dados.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+           GROUP BY
+        ====================================================== -->
+
+        <section>
+
+            <h2>📊 GROUP BY</h2>
+
+            <p>
+                O <strong>GROUP BY</strong> permite realizar agregações
+                separadamente para cada grupo.
+            </p>
+
+
+            <p>
+                Por exemplo, podemos calcular o faturamento por categoria:
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span>
+
+    categoria,
+
+    <span class="sql-keyword">SUM</span>(quantidade * preco) <span class="sql-keyword">AS</span> faturamento
+
+<span class="sql-keyword">FROM</span> <span class="sql-string">'vendas.parquet'</span>
+
+<span class="sql-keyword">GROUP BY</span> categoria;</code></pre>
+
+
+            <p>
+                O resultado poderia ser:
+            </p>
+
+
+            <pre><code>
+categoria        faturamento
+----------------------------
+Eletrônicos      12500000
+Informática       9800000
+Celulares        15300000
+Móveis             7200000
+            </code></pre>
+
+        </section>
+
+
+        <!-- =====================================================
+           GROUP BY MULTIPLO
+        ====================================================== -->
+
+        <section>
+
+            <h2>🧩 Agrupando por mais de uma coluna</h2>
+
+            <p>
+                Também podemos agrupar por várias colunas.
+            </p>
+
+
+            <p>
+                Por exemplo:
+                <strong>categoria + cidade</strong>.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span>
+
+    categoria,
+
+    cidade,
+
+    <span class="sql-keyword">SUM</span>(quantidade * preco) <span class="sql-keyword">AS</span> faturamento
+
+<span class="sql-keyword">FROM</span> <span class="sql-string">'vendas.parquet'</span>
+
+<span class="sql-keyword">GROUP BY</span>
+    categoria,
+    cidade;</code></pre>
+
+
+            <p>
+                Agora teremos um resultado para cada combinação
+                de categoria e cidade.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+           HAVING
+        ====================================================== -->
+
+        <section>
+
+            <h2>🔍 HAVING</h2>
+
+            <p>
+                Existe uma diferença importante entre
+                <strong>WHERE</strong> e <strong>HAVING</strong>.
+            </p>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Comando
+                            </th>
+
+                            <th>
+                                Utilização
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>
+                                WHERE
+                            </td>
+
+                            <td>
+                                Filtra registros antes da agregação.
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                HAVING
+                            </td>
+
+                            <td>
+                                Filtra grupos depois da agregação.
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+            <p>
+                Exemplo:
+                queremos apenas categorias cujo faturamento
+                seja maior que 10 milhões.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span>
+
+    categoria,
+
+    <span class="sql-keyword">SUM</span>(quantidade * preco) <span class="sql-keyword">AS</span> faturamento
+
+<span class="sql-keyword">FROM</span> <span class="sql-string">'vendas.parquet'</span>
+
+<span class="sql-keyword">GROUP BY</span> categoria
+
+<span class="sql-keyword">HAVING</span>
+    <span class="sql-keyword">SUM</span>(quantidade * preco) > 10000000;</code></pre>
+
+        </section>
+
+
+        <!-- =====================================================
+           WHERE + GROUP BY + HAVING
+        ====================================================== -->
+
+        <section>
+
+            <h2>🔥 WHERE + GROUP BY + HAVING</h2>
+
+            <p>
+                Podemos combinar as três operações.
+            </p>
+
+
+            <p>
+                Exemplo:
+                analisar apenas vendas de São Paulo,
+                agrupar por categoria e manter apenas categorias
+                com faturamento superior a 1 milhão.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span>
+
+    categoria,
+
+    <span class="sql-keyword">SUM</span>(quantidade * preco) <span class="sql-keyword">AS</span> faturamento
+
+<span class="sql-keyword">FROM</span> <span class="sql-string">'vendas.parquet'</span>
+
+<span class="sql-keyword">WHERE</span>
+    cidade = <span class="sql-string">'São Paulo'</span>
+
+<span class="sql-keyword">GROUP BY</span>
+    categoria
+
+<span class="sql-keyword">HAVING</span>
+    <span class="sql-keyword">SUM</span>(quantidade * preco) > 1000000
+
+<span class="sql-keyword">ORDER BY</span>
+    faturamento <span class="sql-keyword">DESC</span>;</code></pre>
+
+        </section>
+
+
+        <!-- =====================================================
+           CASE
+        ====================================================== -->
+
+        <section>
+
+            <h2>🧠 CASE</h2>
+
+            <p>
+                O <strong>CASE</strong> permite criar regras
+                condicionais dentro de uma consulta SQL.
+            </p>
+
+
+            <p>
+                Imagine que queremos classificar os produtos
+                pelo preço.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span>
+
+    produto,
+
+    preco,
+
+    <span class="sql-keyword">CASE</span>
+
+        <span class="sql-keyword">WHEN</span> preco &lt; 100
+            <span class="sql-keyword">THEN</span> <span class="sql-string">'Barato'</span>
+
+        <span class="sql-keyword">WHEN</span> preco &lt; 1000
+            <span class="sql-keyword">THEN</span> <span class="sql-string">'Médio'</span>
+
+        <span class="sql-keyword">ELSE</span>
+            <span class="sql-string">'Caro'</span>
+
+    <span class="sql-keyword">END</span> <span class="sql-keyword">AS</span> faixa_preco
+
+<span class="sql-keyword">FROM</span> <span class="sql-string">'vendas.parquet'</span>;</code></pre>
+
+
+            <p>
+                O SQL passa a criar uma nova classificação
+                com base no valor do preço.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+           CASE COM AGREGAÇÃO
+        ====================================================== -->
+
+        <section>
+
+            <h2>📊 CASE + agregação</h2>
+
+            <p>
+                O CASE também pode ser utilizado em análises.
+            </p>
+
+
+            <p>
+                Por exemplo, podemos classificar clientes
+                de acordo com o valor de suas compras.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span>
+
+    cliente_id,
+
+    <span class="sql-keyword">SUM</span>(quantidade * preco) <span class="sql-keyword">AS</span> total_compras,
+
+    <span class="sql-keyword">CASE</span>
+
+        <span class="sql-keyword">WHEN</span>
+            <span class="sql-keyword">SUM</span>(quantidade * preco) &gt;= 10000
+            <span class="sql-keyword">THEN</span> <span class="sql-string">'VIP'</span>
+
+        <span class="sql-keyword">WHEN</span>
+            <span class="sql-keyword">SUM</span>(quantidade * preco) &gt;= 5000
+            <span class="sql-keyword">THEN</span> <span class="sql-string">'Premium'</span>
+
+        <span class="sql-keyword">ELSE</span>
+            <span class="sql-string">'Regular'</span>
+
+    <span class="sql-keyword">END</span> <span class="sql-keyword">AS</span> categoria_cliente
+
+<span class="sql-keyword">FROM</span> <span class="sql-string">'vendas.parquet'</span>
+
+<span class="sql-keyword">GROUP BY</span>
+    cliente_id;</code></pre>
+
+        </section>
+
+
+        <!-- =====================================================
+           DATAS
+        ====================================================== -->
+
+        <section>
+
+            <h2>📅 Trabalhando com datas</h2>
+
+            <p>
+                Dados de vendas normalmente possuem uma coluna
+                representando a data da operação.
+            </p>
+
+
+            <p>
+                Podemos filtrar um determinado período:
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span> *
+
+<span class="sql-keyword">FROM</span> <span class="sql-string">'vendas.parquet'</span>
+
+<span class="sql-keyword">WHERE</span>
+    data &gt;= <span class="sql-string">'2026-01-01'</span>
+    <span class="sql-keyword">AND</span>
+    data &lt; <span class="sql-string">'2027-01-01'</span>;</code></pre>
+
+
+            <p>
+                Essa consulta representa as vendas realizadas
+                durante o ano de 2026.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+           ANÁLISE POR ANO
+        ====================================================== -->
+
+        <section>
+
+            <h2>📆 Analisando por ano</h2>
+
+            <p>
+                Podemos extrair informações de uma data e
+                agrupar os resultados.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span>
+
+    <span class="sql-keyword">YEAR</span>(data) <span class="sql-keyword">AS</span> ano,
+
+    <span class="sql-keyword">SUM</span>(quantidade * preco) <span class="sql-keyword">AS</span> faturamento
+
+<span class="sql-keyword">FROM</span> <span class="sql-string">'vendas.parquet'</span>
+
+<span class="sql-keyword">GROUP BY</span>
+    <span class="sql-keyword">YEAR</span>(data)
+
+<span class="sql-keyword">ORDER BY</span>
+    ano;</code></pre>
+
+        </section>
+
+
+        <!-- =====================================================
+           ANÁLISE POR MÊS
+        ====================================================== -->
+
+        <section>
+
+            <h2>📅 Analisando por mês</h2>
+
+            <p>
+                Podemos combinar ano e mês para criar uma análise
+                temporal.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span>
+
+    <span class="sql-keyword">YEAR</span>(data) <span class="sql-keyword">AS</span> ano,
+
+    <span class="sql-keyword">MONTH</span>(data) <span class="sql-keyword">AS</span> mes,
+
+    <span class="sql-keyword">SUM</span>(quantidade * preco) <span class="sql-keyword">AS</span> faturamento
+
+<span class="sql-keyword">FROM</span> <span class="sql-string">'vendas.parquet'</span>
+
+<span class="sql-keyword">GROUP BY</span>
+
+    <span class="sql-keyword">YEAR</span>(data),
+
+    <span class="sql-keyword">MONTH</span>(data)
+
+<span class="sql-keyword">ORDER BY</span>
+
+    ano,
+
+    mes;</code></pre>
+
+
+            <div class="highlight">
+
+                <strong>
+                    Esse tipo de consulta é muito comum em
+                    relatórios e dashboards.
+                </strong>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           MÉTRICAS
+        ====================================================== -->
+
+        <section>
+
+            <h2>📈 Criando métricas</h2>
+
+            <p>
+                Uma consulta SQL pode gerar várias métricas
+                ao mesmo tempo.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span>
+
+    <span class="sql-keyword">COUNT</span>(*) <span class="sql-keyword">AS</span> vendas,
+
+    <span class="sql-keyword">SUM</span>(quantidade) <span class="sql-keyword">AS</span> unidades,
+
+    <span class="sql-keyword">SUM</span>(quantidade * preco) <span class="sql-keyword">AS</span> faturamento,
+
+    <span class="sql-keyword">AVG</span>(preco) <span class="sql-keyword">AS</span> preco_medio,
+
+    <span class="sql-keyword">MIN</span>(preco) <span class="sql-keyword">AS</span> menor_preco,
+
+    <span class="sql-keyword">MAX</span>(preco) <span class="sql-keyword">AS</span> maior_preco
+
+<span class="sql-keyword">FROM</span> <span class="sql-string">'vendas.parquet'</span>;</code></pre>
+
+        </section>
+
+
+        <!-- =====================================================
+           DESCOBRINDO PRODUTOS
+        ====================================================== -->
+
+        <section>
+
+            <h2>🏆 Ranking de produtos</h2>
+
+            <p>
+                Podemos descobrir quais produtos geraram
+                mais faturamento.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span>
+
+    produto,
+
+    <span class="sql-keyword">SUM</span>(quantidade * preco) <span class="sql-keyword">AS</span> faturamento
+
+<span class="sql-keyword">FROM</span> <span class="sql-string">'vendas.parquet'</span>
+
+<span class="sql-keyword">GROUP BY</span>
+    produto
+
+<span class="sql-keyword">ORDER BY</span>
+    faturamento <span class="sql-keyword">DESC</span>
+
+<span class="sql-keyword">LIMIT</span> 10;</code></pre>
+
+
+            <p>
+                Assim podemos obter os 10 produtos com
+                maior faturamento.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+           CLIENTES
+        ====================================================== -->
+
+        <section>
+
+            <h2>👥 Analisando clientes</h2>
+
+            <p>
+                Podemos aplicar a mesma lógica para clientes.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span>
+
+    cliente_id,
+
+    <span class="sql-keyword">COUNT</span>(*) <span class="sql-keyword">AS</span> quantidade_compras,
+
+    <span class="sql-keyword">SUM</span>(quantidade * preco) <span class="sql-keyword">AS</span> total_gasto
+
+<span class="sql-keyword">FROM</span> <span class="sql-string">'vendas.parquet'</span>
+
+<span class="sql-keyword">GROUP BY</span>
+    cliente_id
+
+<span class="sql-keyword">ORDER BY</span>
+    total_gasto <span class="sql-keyword">DESC</span>
+
+<span class="sql-keyword">LIMIT</span> 10;</code></pre>
+
+
+            <p>
+                Agora conseguimos identificar os clientes
+                que mais compraram.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+           CIDADE
+        ====================================================== -->
+
+        <section>
+
+            <h2>🌎 Analisando regiões</h2>
+
+            <p>
+                Também podemos comparar o desempenho
+                das diferentes cidades.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span>
+
+    cidade,
+
+    <span class="sql-keyword">COUNT</span>(*) <span class="sql-keyword">AS</span> vendas,
+
+    <span class="sql-keyword">SUM</span>(quantidade * preco) <span class="sql-keyword">AS</span> faturamento,
+
+    <span class="sql-keyword">AVG</span>(quantidade * preco) <span class="sql-keyword">AS</span> ticket_medio
+
+<span class="sql-keyword">FROM</span> <span class="sql-string">'vendas.parquet'</span>
+
+<span class="sql-keyword">GROUP BY</span>
+    cidade
+
+<span class="sql-keyword">ORDER BY</span>
+    faturamento <span class="sql-keyword">DESC</span>;</code></pre>
+
+
+            <p>
+                O resultado pode ser utilizado posteriormente
+                em gráficos e dashboards.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+           FLUXO DA CONSULTA
+        ====================================================== -->
+
+        <section>
+
+            <h2>🧠 Entendendo a lógica da consulta</h2>
+
+            <p>
+                Uma consulta analítica normalmente segue uma lógica
+                semelhante a esta:
+            </p>
+
+
+            <pre><code>
+FROM
+  ↓
+WHERE
+  ↓
+GROUP BY
+  ↓
+HAVING
+  ↓
+SELECT
+  ↓
+ORDER BY
+  ↓
+LIMIT
+            </code></pre>
+
+
+            <div class="highlight">
+
+                <p>
+                    <strong>FROM</strong> define a origem dos dados.
+                </p>
+
+                <p>
+                    <strong>WHERE</strong> filtra registros.
+                </p>
+
+                <p>
+                    <strong>GROUP BY</strong> cria grupos.
+                </p>
+
+                <p>
+                    <strong>HAVING</strong> filtra os grupos.
+                </p>
+
+                <p>
+                    <strong>SELECT</strong> define o resultado.
+                </p>
+
+                <p>
+                    <strong>ORDER BY</strong> organiza o resultado.
+                </p>
+
+                <p>
+                    <strong>LIMIT</strong> limita a quantidade retornada.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           DUCKDB + PARQUET
+        ====================================================== -->
+
+        <section>
+
+            <h2>🦆 Por que DuckDB + Parquet?</h2>
+
+            <p>
+                Essa combinação é especialmente interessante
+                para cenários analíticos.
+            </p>
+
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <div class="icon">
+                        ⚡
+                    </div>
+
+                    <h3>
+                        Processamento analítico
+                    </h3>
+
+                    <p>
+                        Consultas envolvendo grandes quantidades
+                        de dados.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        📦
+                    </div>
+
+                    <h3>
+                        Arquivos colunares
+                    </h3>
+
+                    <p>
+                        Parquet organiza os dados por colunas.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        💬
+                    </div>
+
+                    <h3>
+                        SQL
+                    </h3>
+
+                    <p>
+                        Podemos utilizar uma linguagem conhecida
+                        para realizar análises.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        📊
+                    </div>
+
+                    <h3>
+                        Analytics
+                    </h3>
+
+                    <p>
+                        Ideal para exploração e análise de dados.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           EXEMPLO COMPLETO
+        ====================================================== -->
+
+        <section>
+
+            <h2>🚀 Uma análise completa</h2>
+
+            <p>
+                Vamos juntar vários conceitos.
+            </p>
+
+
+            <p>
+                Queremos descobrir as categorias que geraram
+                mais de 1 milhão de faturamento em São Paulo.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span>
+
+    categoria,
+
+    <span class="sql-keyword">COUNT</span>(*) <span class="sql-keyword">AS</span> vendas,
+
+    <span class="sql-keyword">SUM</span>(quantidade) <span class="sql-keyword">AS</span> unidades,
+
+    <span class="sql-keyword">SUM</span>(quantidade * preco) <span class="sql-keyword">AS</span> faturamento,
+
+    <span class="sql-keyword">AVG</span>(preco) <span class="sql-keyword">AS</span> preco_medio
+
+<span class="sql-keyword">FROM</span> <span class="sql-string">'vendas/*.parquet'</span>
+
+<span class="sql-keyword">WHERE</span>
+
+    cidade = <span class="sql-string">'São Paulo'</span>
+
+<span class="sql-keyword">GROUP BY</span>
+
+    categoria
+
+<span class="sql-keyword">HAVING</span>
+
+    <span class="sql-keyword">SUM</span>(quantidade * preco) &gt; 1000000
+
+<span class="sql-keyword">ORDER BY</span>
+
+    faturamento <span class="sql-keyword">DESC</span>;</code></pre>
+
+
+            <p>
+                Essa consulta já se aproxima bastante
+                de uma análise real de negócio.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+           DESAFIO
+        ====================================================== -->
+
+        <section>
+
+            <h2>🧪 Desafio da aula</h2>
+
+            <p>
+                Considere novamente:
+            </p>
+
+
+            <pre><code>
+vendas.parquet
+            </code></pre>
+
+
+            <p>
+                Escreva consultas para descobrir:
+            </p>
+
+
+            <ol>
+
+                <li>
+                    Quantas vendas existem?
+                </li>
+
+                <li>
+                    Qual é o faturamento total?
+                </li>
+
+                <li>
+                    Qual é o preço médio?
+                </li>
+
+                <li>
+                    Qual é o produto mais caro?
+                </li>
+
+                <li>
+                    Qual é o produto mais barato?
+                </li>
+
+                <li>
+                    Qual é o faturamento por cidade?
+                </li>
+
+                <li>
+                    Qual é o faturamento por categoria?
+                </li>
+
+                <li>
+                    Quais categorias possuem faturamento acima de 5 milhões?
+                </li>
+
+                <li>
+                    Quais são os 10 produtos com maior faturamento?
+                </li>
+
+                <li>
+                    Qual cidade possui o maior faturamento?
+                </li>
+
+            </ol>
+
+
+            <div class="highlight">
+
+                <strong>
+                    🚀 Desafio extra
+                </strong>
+
+                <p>
+                    Crie uma consulta que apresente:
+                </p>
+
+
+                <pre><code>
+cidade
+vendas
+unidades
+faturamento
+ticket_medio
+                </code></pre>
+
+
+                <p>
+                    Ordenando as cidades pelo maior faturamento.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           RESUMO
+        ====================================================== -->
+
+        <section>
+
+            <h2>📝 Resumindo</h2>
+
+
+            <div class="highlight">
+
+                <p>
+                    <strong>COUNT</strong> conta registros.
+                </p>
+
+                <p>
+                    <strong>SUM</strong> soma valores.
+                </p>
+
+                <p>
+                    <strong>AVG</strong> calcula médias.
+                </p>
+
+                <p>
+                    <strong>MIN</strong> encontra o menor valor.
+                </p>
+
+                <p>
+                    <strong>MAX</strong> encontra o maior valor.
+                </p>
+
+                <p>
+                    <strong>GROUP BY</strong> cria agrupamentos.
+                </p>
+
+                <p>
+                    <strong>HAVING</strong> filtra grupos após a agregação.
+                </p>
+
+                <p>
+                    <strong>CASE</strong> permite criar classificações
+                    condicionais.
+                </p>
+
+                <p>
+                    Funções de data permitem analisar informações
+                    por períodos.
+                </p>
+
+                <p>
+                    DuckDB + Parquet permite utilizar SQL
+                    para análises sobre arquivos de dados.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           CHECKPOINT
+        ====================================================== -->
+
+        <section>
+
+            <h2>🧠 Checkpoint</h2>
+
+            <p>
+                Antes de avançar, tente explicar:
+            </p>
+
+
+            <ol>
+
+                <li>
+                    Qual é a diferença entre WHERE e HAVING?
+                </li>
+
+                <li>
+                    Para que serve GROUP BY?
+                </li>
+
+                <li>
+                    Qual a diferença entre COUNT, SUM e AVG?
+                </li>
+
+                <li>
+                    Para que podemos utilizar CASE?
+                </li>
+
+                <li>
+                    Como calcular o faturamento por categoria?
+                </li>
+
+                <li>
+                    Como descobrir os 10 produtos mais vendidos?
+                </li>
+
+                <li>
+                    Como analisar vendas por ano?
+                </li>
+
+                <li>
+                    Qual é o papel do DuckDB nessa arquitetura?
+                </li>
+
+                <li>
+                    Qual é o papel do Parquet?
+                </li>
+
+            </ol>
+
+        </section>
+
+
+        <!-- =====================================================
+           PRÓXIMA AULA
+        ====================================================== -->
+
+        <section class="cta">
+
+            <h2>
+                🚀 Próxima aula: Window Functions
+            </h2>
+
+            <p>
+                Na próxima aula vamos aprender um dos recursos
+                mais importantes do SQL analítico:
+                <strong>Window Functions</strong>.
+            </p>
+
+            <p>
+                Vamos descobrir como calcular rankings,
+                acumulados, médias móveis e outras métricas
+                sem perder as linhas individuais dos dados.
+            </p>
+
+
+            <a href="./35.html" class="cta-button">
+                Aula 35 →
+            </a>
+
+        </section>
+
+
+    </main>
+
+
+    <!-- =====================================================
+       FOOTER
+    ====================================================== -->
+
+    <footer>
+
+        <p>
+            Guia de Banco de Dados
+        </p>
+
+        <p>
+            Aula 34 • SQL Analítico com DuckDB e Parquet
+        </p>
+
+    </footer>
+
+
+    <!-- =====================================================
+       JAVASCRIPT — DARK / LIGHT MODE
+    ====================================================== -->
+
+    <script src="./script.js"></script>
+
+</body>
+
+</html>

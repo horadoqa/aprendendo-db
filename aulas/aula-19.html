@@ -1,0 +1,1608 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="./style.css">
+
+    <link rel="icon" type="image/png" href="./assets/images/logo.png">
+
+    <title>Aula 19 — CRUD no MongoDB</title>
+
+</head>
+
+<body>
+
+
+    <!-- =====================================================
+         HEADER
+    ====================================================== -->
+
+    <header>
+
+        <button
+            class="theme-toggle"
+            id="themeToggle"
+            type="button"
+            aria-label="Alternar tema">
+
+            <span class="theme-icon" id="themeIcon">
+                ☀️
+            </span>
+
+            <span class="theme-label" id="themeLabel">
+                Modo claro
+            </span>
+
+        </button>
+
+
+        <div class="header-content">
+
+            <span class="eyebrow">
+                AULA 19 • MONGODB
+            </span>
+
+            <h1>
+                CRUD no MongoDB
+            </h1>
+
+            <p>
+                Aprenda a criar, consultar, atualizar e excluir
+                documentos utilizando as operações fundamentais
+                do MongoDB.
+            </p>
+
+        </div>
+
+    </header>
+
+
+    <!-- =====================================================
+         CONTEÚDO
+    ====================================================== -->
+
+    <main>
+
+
+        <!-- =====================================================
+             OBJETIVOS
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🎯 Objetivos da aula
+            </h2>
+
+            <p>
+                Nesta aula vamos começar a manipular dados de verdade
+                no MongoDB utilizando as operações fundamentais
+                do <strong>CRUD</strong>.
+            </p>
+
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <div class="icon">
+                        🟢
+                    </div>
+
+                    <h3>
+                        Create
+                    </h3>
+
+                    <p>
+                        Inserir novos documentos em uma coleção.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🔵
+                    </div>
+
+                    <h3>
+                        Read
+                    </h3>
+
+                    <p>
+                        Consultar documentos armazenados.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🟡
+                    </div>
+
+                    <h3>
+                        Update
+                    </h3>
+
+                    <p>
+                        Alterar documentos existentes.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🔴
+                    </div>
+
+                    <h3>
+                        Delete
+                    </h3>
+
+                    <p>
+                        Excluir documentos.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             REVISÃO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🔄 Relembrando
+            </h2>
+
+            <p>
+                Nas aulas anteriores aprendemos que o MongoDB é um
+                <strong>SGBD NoSQL orientado a documentos</strong>.
+            </p>
+
+            <p>
+                Os dados são armazenados em documentos que ficam
+                organizados dentro de coleções.
+            </p>
+
+
+            <pre><code>MongoDB
+   │
+   └── Banco de dados
+          │
+          └── Coleção
+                 │
+                 ├── Documento
+                 ├── Documento
+                 └── Documento</code></pre>
+
+
+            <div class="highlight">
+
+                <strong>Agora vamos manipular esses documentos.</strong>
+
+                <p>
+                    Para isso utilizaremos o CRUD.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             O QUE É CRUD
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🔄 O que é CRUD?
+            </h2>
+
+            <p>
+                CRUD é uma sigla formada pelas quatro operações
+                fundamentais realizadas sobre dados:
+            </p>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Operação
+                            </th>
+
+                            <th>
+                                Significado
+                            </th>
+
+                            <th>
+                                Objetivo
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>
+                                Create
+                            </td>
+
+                            <td>
+                                Criar
+                            </td>
+
+                            <td>
+                                Inserir novos dados
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Read
+                            </td>
+
+                            <td>
+                                Ler
+                            </td>
+
+                            <td>
+                                Consultar dados
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Update
+                            </td>
+
+                            <td>
+                                Atualizar
+                            </td>
+
+                            <td>
+                                Modificar dados existentes
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Delete
+                            </td>
+
+                            <td>
+                                Excluir
+                            </td>
+
+                            <td>
+                                Remover dados
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             AMBIENTE
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                💻 Onde podemos executar os comandos?
+            </h2>
+
+            <p>
+                Os comandos desta aula podem ser executados utilizando
+                ferramentas como o <strong>mongosh</strong> ou o
+                ambiente de consulta do MongoDB Compass.
+            </p>
+
+            <p>
+                Também é possível executar operações MongoDB através
+                de aplicações utilizando drivers oficiais da linguagem
+                escolhida.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>Importante:</strong>
+
+                <p>
+                    Os exemplos desta aula utilizam a sintaxe do
+                    shell do MongoDB.
+                </p>
+
+                <p>
+                    Não estamos utilizando SQL.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             BANCO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🗄️ Selecionando um banco de dados
+            </h2>
+
+            <p>
+                Antes de trabalhar com uma coleção, podemos selecionar
+                o banco de dados que desejamos utilizar.
+            </p>
+
+
+            <pre><code>use escola</code></pre>
+
+
+            <p>
+                Nesse exemplo, estamos trabalhando com um banco
+                chamado <strong>escola</strong>.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>Uma observação importante:</strong>
+
+                <p>
+                    O comando <strong>use</strong> seleciona o banco
+                    para a sessão. O banco pode ser criado de forma
+                    efetiva quando dados forem armazenados nele.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             COLLECTION
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🗂️ Trabalhando com uma coleção
+            </h2>
+
+            <p>
+                Vamos imaginar que nosso banco possui uma coleção
+                chamada <strong>alunos</strong>.
+            </p>
+
+
+            <pre><code>db.alunos</code></pre>
+
+
+            <p>
+                O objeto <strong>db</strong> representa o banco de
+                dados atualmente selecionado.
+            </p>
+
+
+            <p>
+                Portanto:
+            </p>
+
+
+            <pre><code>db.alunos
+
+        │
+        └── coleção "alunos"</code></pre>
+
+        </section>
+
+
+        <!-- =====================================================
+             CREATE
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🟢 CREATE — Criando documentos
+            </h2>
+
+            <p>
+                A primeira operação do CRUD é o
+                <strong>Create</strong>.
+            </p>
+
+            <p>
+                No MongoDB podemos utilizar
+                <strong>insertOne()</strong> para inserir
+                um documento.
+            </p>
+
+
+            <pre><code>db.alunos.insertOne({
+
+    nome: "Ana Silva",
+
+    idade: 20,
+
+    curso: "Sistemas de Informação"
+
+})</code></pre>
+
+
+            <p>
+                Esse comando insere um documento na coleção
+                <strong>alunos</strong>.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>O MongoDB pode gerar automaticamente o _id.</strong>
+
+                <p>
+                    Caso não forneçamos um campo
+                    <strong>_id</strong>, o MongoDB normalmente
+                    gera um identificador único para o documento.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             INSERT MANY
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🟢 Inserindo vários documentos
+            </h2>
+
+            <p>
+                Quando precisamos inserir vários documentos de uma
+                vez, podemos utilizar <strong>insertMany()</strong>.
+            </p>
+
+
+            <pre><code>db.alunos.insertMany([
+
+    {
+        nome: "João Santos",
+        idade: 22,
+        curso: "Engenharia"
+    },
+
+    {
+        nome: "Maria Oliveira",
+        idade: 21,
+        curso: "Computação"
+    },
+
+    {
+        nome: "Carlos Souza",
+        idade: 24,
+        curso: "Sistemas de Informação"
+    }
+
+])</code></pre>
+
+
+            <p>
+                Agora três documentos foram enviados para a coleção.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             READ
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🔵 READ — Consultando documentos
+            </h2>
+
+            <p>
+                A segunda operação do CRUD é o
+                <strong>Read</strong>.
+            </p>
+
+            <p>
+                Para consultar documentos podemos utilizar
+                <strong>find()</strong>.
+            </p>
+
+
+            <pre><code>db.alunos.find()</code></pre>
+
+
+            <p>
+                Esse comando solicita os documentos encontrados
+                na coleção <strong>alunos</strong>.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>Leia como uma pergunta:</strong>
+
+                <p>
+                    "MongoDB, mostre os documentos da coleção alunos."
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             FIND ONE
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🔎 Consultando um único documento
+            </h2>
+
+            <p>
+                Quando queremos encontrar apenas um documento,
+                podemos utilizar <strong>findOne()</strong>.
+            </p>
+
+
+            <pre><code>db.alunos.findOne({
+
+    nome: "Ana Silva"
+
+})</code></pre>
+
+
+            <p>
+                O MongoDB procura um documento que corresponda
+                ao filtro informado.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             FILTRO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🔍 Consultando com filtro
+            </h2>
+
+            <p>
+                O <strong>find()</strong> também pode receber
+                um filtro.
+            </p>
+
+
+            <pre><code>db.alunos.find({
+
+    curso: "Computação"
+
+})</code></pre>
+
+
+            <p>
+                Nesse exemplo estamos procurando alunos cujo campo
+                <strong>curso</strong> possui o valor
+                <strong>Computação</strong>.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>Estrutura:</strong>
+
+                <pre><code>db.colecao.find({
+
+    campo: valor
+
+})</code></pre>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             UPDATE
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🟡 UPDATE — Atualizando documentos
+            </h2>
+
+            <p>
+                A terceira operação do CRUD é o
+                <strong>Update</strong>.
+            </p>
+
+            <p>
+                Para atualizar um documento podemos utilizar
+                <strong>updateOne()</strong>.
+            </p>
+
+
+            <pre><code>db.alunos.updateOne(
+
+    {
+        nome: "Ana Silva"
+    },
+
+    {
+        $set: {
+            idade: 21
+        }
+    }
+
+)</code></pre>
+
+
+            <p>
+                Nesse exemplo estamos procurando a aluna
+                <strong>Ana Silva</strong> e alterando sua idade
+                para <strong>21</strong>.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             SET
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🛠️ O operador $set
+            </h2>
+
+            <p>
+                O operador <strong>$set</strong> é utilizado para
+                definir ou alterar o valor de um campo.
+            </p>
+
+
+            <pre><code>db.alunos.updateOne(
+
+    { nome: "João Santos" },
+
+    {
+        $set: {
+            curso: "Ciência da Computação"
+        }
+    }
+
+)</code></pre>
+
+
+            <p>
+                O campo <strong>curso</strong> será atualizado.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>Uma ideia importante:</strong>
+
+                <p>
+                    O filtro determina <strong>qual documento</strong>
+                    será encontrado.
+                </p>
+
+                <p>
+                    O operador de atualização determina
+                    <strong>o que será alterado</strong>.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             UPDATE MANY
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🟡 Atualizando vários documentos
+            </h2>
+
+            <p>
+                Quando precisamos atualizar vários documentos,
+                podemos utilizar <strong>updateMany()</strong>.
+            </p>
+
+
+            <pre><code>db.alunos.updateMany(
+
+    {
+        curso: "Computação"
+    },
+
+    {
+        $set: {
+            ativo: true
+        }
+    }
+
+)</code></pre>
+
+
+            <p>
+                Nesse exemplo, todos os documentos que possuem
+                <strong>curso: "Computação"</strong> receberão
+                o campo <strong>ativo</strong> com valor
+                <strong>true</strong>.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>Cuidado!</strong>
+
+                <p>
+                    Operações como <strong>updateMany()</strong>
+                    podem alterar muitos documentos de uma vez.
+                </p>
+
+                <p>
+                    Sempre confira o filtro antes de executar
+                    uma alteração em dados importantes.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             DELETE
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🔴 DELETE — Excluindo documentos
+            </h2>
+
+            <p>
+                A quarta operação do CRUD é o
+                <strong>Delete</strong>.
+            </p>
+
+            <p>
+                Para excluir um documento podemos utilizar
+                <strong>deleteOne()</strong>.
+            </p>
+
+
+            <pre><code>db.alunos.deleteOne({
+
+    nome: "Carlos Souza"
+
+})</code></pre>
+
+
+            <p>
+                O MongoDB procura um documento correspondente
+                ao filtro e remove um documento.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>⚠️ Atenção:</strong>
+
+                <p>
+                    Exclusão de dados pode ser irreversível.
+                    Tenha cuidado principalmente em ambientes
+                    que contenham dados importantes.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             DELETE MANY
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🔴 Excluindo vários documentos
+            </h2>
+
+            <p>
+                Também existe o método
+                <strong>deleteMany()</strong>.
+            </p>
+
+
+            <pre><code>db.alunos.deleteMany({
+
+    ativo: false
+
+})</code></pre>
+
+
+            <p>
+                Nesse exemplo, os documentos que correspondem
+                ao filtro serão removidos.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>Cuidado redobrado:</strong>
+
+                <p>
+                    Um filtro muito amplo pode remover uma quantidade
+                    grande de documentos.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             RESUMO CRUD
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🧠 O CRUD completo
+            </h2>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                CRUD
+                            </th>
+
+                            <th>
+                                MongoDB
+                            </th>
+
+                            <th>
+                                Exemplo
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>
+                                Create
+                            </td>
+
+                            <td>
+                                insertOne()
+                            </td>
+
+                            <td>
+                                Inserir documento
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Read
+                            </td>
+
+                            <td>
+                                find()
+                            </td>
+
+                            <td>
+                                Consultar documentos
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Update
+                            </td>
+
+                            <td>
+                                updateOne()
+                            </td>
+
+                            <td>
+                                Alterar documento
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Delete
+                            </td>
+
+                            <td>
+                                deleteOne()
+                            </td>
+
+                            <td>
+                                Excluir documento
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             CRUD COMPLETO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🔥 Um exemplo completo
+            </h2>
+
+            <p>
+                Vamos imaginar que acabamos de criar uma coleção
+                chamada <strong>produtos</strong>.
+            </p>
+
+
+            <h3>
+                1. Criar
+            </h3>
+
+
+            <pre><code>db.produtos.insertOne({
+
+    nome: "Notebook",
+
+    preco: 3500,
+
+    estoque: 10
+
+})</code></pre>
+
+
+            <h3>
+                2. Consultar
+            </h3>
+
+
+            <pre><code>db.produtos.find()</code></pre>
+
+
+            <h3>
+                3. Atualizar
+            </h3>
+
+
+            <pre><code>db.produtos.updateOne(
+
+    {
+        nome: "Notebook"
+    },
+
+    {
+        $set: {
+            preco: 3300
+        }
+    }
+
+)</code></pre>
+
+
+            <h3>
+                4. Excluir
+            </h3>
+
+
+            <pre><code>db.produtos.deleteOne({
+
+    nome: "Notebook"
+
+})</code></pre>
+
+
+            <div class="highlight">
+
+                <strong>Perceba o ciclo:</strong>
+
+                <p>
+                    Criamos → consultamos → alteramos → excluímos.
+                </p>
+
+                <p>
+                    Esse é o ciclo básico de manipulação de dados
+                    conhecido como CRUD.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             COMPARAÇÃO SQL
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🔄 MongoDB × SQL
+            </h2>
+
+            <p>
+                Como você já estudou SQL, podemos comparar alguns
+                conceitos para facilitar a transição.
+            </p>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Operação
+                            </th>
+
+                            <th>
+                                SQL
+                            </th>
+
+                            <th>
+                                MongoDB
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>
+                                Criar
+                            </td>
+
+                            <td>
+                                INSERT
+                            </td>
+
+                            <td>
+                                insertOne()
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Consultar
+                            </td>
+
+                            <td>
+                                SELECT
+                            </td>
+
+                            <td>
+                                find()
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Atualizar
+                            </td>
+
+                            <td>
+                                UPDATE
+                            </td>
+
+                            <td>
+                                updateOne()
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Excluir
+                            </td>
+
+                            <td>
+                                DELETE
+                            </td>
+
+                            <td>
+                                deleteOne()
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+            <div class="highlight">
+
+                <strong>Importante:</strong>
+
+                <p>
+                    Essa tabela é uma comparação de operações,
+                    não significa que SQL e MongoDB funcionem
+                    da mesma maneira internamente.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             ERROS
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                ⚠️ Erros comuns
+            </h2>
+
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <h3>
+                        ❌ Confundir find() com findOne()
+                    </h3>
+
+                    <p>
+                        find() pode retornar vários documentos,
+                        enquanto findOne() retorna um documento
+                        que corresponda ao filtro.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        ❌ Atualizar sem filtro adequado
+                    </h3>
+
+                    <p>
+                        Sempre confira o filtro antes de executar
+                        uma atualização.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        ❌ Excluir sem conferir o filtro
+                    </h3>
+
+                    <p>
+                        Uma operação de exclusão pode remover
+                        dados importantes.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        ❌ Confundir $set com substituição
+                    </h3>
+
+                    <p>
+                        $set altera campos específicos. Substituir
+                        um documento inteiro é outra operação.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             CHECKPOINT
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🧠 Checkpoint
+            </h2>
+
+            <p>
+                Tente responder antes de continuar.
+            </p>
+
+
+            <ol>
+
+                <li>
+                    O que significa CRUD?
+                </li>
+
+                <li>
+                    Qual método utilizamos para inserir um documento?
+                </li>
+
+                <li>
+                    Qual método utilizamos para consultar documentos?
+                </li>
+
+                <li>
+                    Qual é a diferença entre find() e findOne()?
+                </li>
+
+                <li>
+                    Para que serve updateOne()?
+                </li>
+
+                <li>
+                    Para que serve o operador $set?
+                </li>
+
+                <li>
+                    Quando podemos utilizar updateMany()?
+                </li>
+
+                <li>
+                    Qual método pode ser utilizado para excluir
+                    um documento?
+                </li>
+
+                <li>
+                    Qual é o risco de utilizar um filtro muito amplo
+                    em updateMany() ou deleteMany()?
+                </li>
+
+                <li>
+                    Qual é a relação entre INSERT do SQL e
+                    insertOne() do MongoDB?
+                </li>
+
+            </ol>
+
+        </section>
+
+
+        <!-- =====================================================
+             DESAFIO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🧪 Desafio da aula
+            </h2>
+
+            <p>
+                Crie uma coleção chamada
+                <strong>livros</strong>.
+            </p>
+
+
+            <p>
+                Depois realize as quatro operações do CRUD.
+            </p>
+
+
+            <h3>
+                Etapa 1 — Create
+            </h3>
+
+            <p>
+                Insira pelo menos três livros contendo:
+            </p>
+
+
+            <ul>
+
+                <li>
+                    título
+                </li>
+
+                <li>
+                    autor
+                </li>
+
+                <li>
+                    ano
+                </li>
+
+                <li>
+                    categoria
+                </li>
+
+                <li>
+                    disponível
+                </li>
+
+            </ul>
+
+
+            <h3>
+                Etapa 2 — Read
+            </h3>
+
+            <p>
+                Consulte todos os livros.
+            </p>
+
+
+            <p>
+                Depois tente consultar apenas os livros
+                de uma determinada categoria.
+            </p>
+
+
+            <h3>
+                Etapa 3 — Update
+            </h3>
+
+            <p>
+                Escolha um livro e altere o campo
+                <strong>disponível</strong>.
+            </p>
+
+
+            <h3>
+                Etapa 4 — Delete
+            </h3>
+
+            <p>
+                Escolha um livro e remova-o da coleção.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>Desafio extra:</strong>
+
+                <p>
+                    Tente realizar todas as operações sem copiar
+                    os exemplos da aula.
+                </p>
+
+                <p>
+                    Use um tema diferente, como filmes, jogos,
+                    clientes, produtos ou cursos.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             RESUMO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                📝 Resumindo
+            </h2>
+
+
+            <div class="highlight">
+
+                <p>
+                    <strong>Create</strong> representa a criação
+                    de novos documentos.
+                </p>
+
+                <p>
+                    <strong>Read</strong> representa a consulta
+                    dos documentos.
+                </p>
+
+                <p>
+                    <strong>Update</strong> representa a alteração
+                    de documentos existentes.
+                </p>
+
+                <p>
+                    <strong>Delete</strong> representa a exclusão
+                    de documentos.
+                </p>
+
+                <p>
+                    No MongoDB, operações comuns incluem
+                    <strong>insertOne(), insertMany(), find(),
+                    findOne(), updateOne(), updateMany(),
+                    deleteOne() e deleteMany()</strong>.
+                </p>
+
+                <p>
+                    Filtros são fundamentais para determinar
+                    quais documentos serão encontrados,
+                    atualizados ou excluídos.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             PRÓXIMA AULA
+        ====================================================== -->
+
+        <section class="cta">
+
+            <h2>
+                🚀 Próxima aula: Consultas e filtros
+            </h2>
+
+            <p>
+                Agora que você conhece o CRUD, vamos aprofundar
+                a operação mais utilizada no dia a dia:
+                a consulta de documentos.
+            </p>
+
+            <p>
+                Na próxima aula vamos trabalhar com filtros,
+                operadores de comparação, projeções e ordenação.
+            </p>
+
+
+            <a
+                href="./20.html"
+                class="cta-button">
+
+                Aula 20 — Consultas e Filtros →
+
+            </a>
+
+        </section>
+
+
+    </main>
+
+
+    <!-- =====================================================
+         FOOTER
+    ====================================================== -->
+
+    <footer>
+
+        <p>
+            Guia de Banco de Dados
+        </p>
+
+        <p>
+            Aula 19 • CRUD no MongoDB
+        </p>
+
+    </footer>
+
+
+    <!-- =====================================================
+         JAVASCRIPT — DARK / LIGHT MODE
+    ====================================================== -->
+
+    <script src="./script.js"></script>
+
+</body>
+
+</html>

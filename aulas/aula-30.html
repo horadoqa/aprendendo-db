@@ -1,0 +1,1969 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="./style.css">
+
+    <link rel="icon" type="image/png" href="./assets/images/logo.png">
+
+    <title>Aula 30 — Segurança e Boas Práticas no MongoDB</title>
+
+</head>
+
+<body>
+
+
+    <!-- =====================================================
+       HEADER
+    ====================================================== -->
+
+    <header>
+
+        <button class="theme-toggle" id="themeToggle" type="button" aria-label="Alternar tema">
+
+            <span class="theme-icon" id="themeIcon">
+                ☀️
+            </span>
+
+            <span class="theme-label" id="themeLabel">
+                Modo claro
+            </span>
+
+        </button>
+
+
+        <div class="header-content">
+
+            <span class="eyebrow">
+                AULA 30 • MONGODB
+            </span>
+
+            <h1>
+                Segurança e Boas Práticas no MongoDB
+            </h1>
+
+            <p>
+                Aprenda os principais conceitos de segurança para proteger
+                seus bancos MongoDB e evitar problemas comuns em aplicações.
+            </p>
+
+        </div>
+
+    </header>
+
+
+    <!-- =====================================================
+       CONTEÚDO
+    ====================================================== -->
+
+    <main>
+
+
+        <!-- =====================================================
+           OBJETIVOS
+        ====================================================== -->
+
+        <section>
+
+            <h2>🎯 Objetivos da aula</h2>
+
+            <p>
+                Um banco de dados pode armazenar informações extremamente
+                importantes. Por isso, saber consultar e modificar dados
+                não é suficiente: também precisamos saber
+                <strong>protegê-los</strong>.
+            </p>
+
+            <p>
+                Nesta aula vamos conhecer os principais conceitos
+                relacionados à segurança no MongoDB.
+            </p>
+
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <div class="icon">
+                        🔐
+                    </div>
+
+                    <h3>
+                        Autenticação
+                    </h3>
+
+                    <p>
+                        Identificar quem está tentando acessar o banco.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🛡️
+                    </div>
+
+                    <h3>
+                        Autorização
+                    </h3>
+
+                    <p>
+                        Controlar o que cada usuário pode fazer.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🔑
+                    </div>
+
+                    <h3>
+                        Credenciais
+                    </h3>
+
+                    <p>
+                        Proteger usuários, senhas e informações sensíveis.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🌐
+                    </div>
+
+                    <h3>
+                        Rede
+                    </h3>
+
+                    <p>
+                        Controlar quem pode chegar até o servidor.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           SEGURANÇA
+        ====================================================== -->
+
+        <section>
+
+            <h2>🔐 O que significa segurança de banco de dados?</h2>
+
+            <p>
+                Segurança de banco de dados envolve proteger os dados
+                contra acessos, alterações ou operações que não deveriam
+                acontecer.
+            </p>
+
+            <p>
+                Podemos dividir o problema em algumas perguntas:
+            </p>
+
+
+            <div class="highlight">
+
+                <p>
+                    <strong>Quem pode entrar?</strong>
+                </p>
+
+                <p>
+                    <strong>O que essa pessoa pode fazer?</strong>
+                </p>
+
+                <p>
+                    <strong>Quais dados ela pode acessar?</strong>
+                </p>
+
+                <p>
+                    <strong>Como a comunicação será protegida?</strong>
+                </p>
+
+                <p>
+                    <strong>Como detectar e responder a problemas?</strong>
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           AUTENTICAÇÃO
+        ====================================================== -->
+
+        <section>
+
+            <h2>👤 Autenticação</h2>
+
+            <p>
+                <strong>Autenticação</strong> é o processo de verificar
+                a identidade de quem está tentando acessar um sistema.
+            </p>
+
+
+            <p>
+                Um exemplo simples:
+            </p>
+
+
+            <pre><code>Usuário:
+admin
+
+Senha:
+********</code></pre>
+
+
+            <p>
+                O sistema verifica as credenciais antes de permitir
+                o acesso.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>
+                    Autenticação responde:
+                </strong>
+
+                <p>
+                    "Quem é você?"
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           AUTORIZAÇÃO
+        ====================================================== -->
+
+        <section>
+
+            <h2>🛡️ Autorização</h2>
+
+            <p>
+                Depois de identificar o usuário, precisamos determinar
+                o que ele pode fazer.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>
+                    Autorização responde:
+                </strong>
+
+                <p>
+                    "O que você pode fazer?"
+                </p>
+
+            </div>
+
+
+            <p>
+                Por exemplo:
+            </p>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Usuário
+                            </th>
+
+                            <th>
+                                Pode consultar
+                            </th>
+
+                            <th>
+                                Pode inserir
+                            </th>
+
+                            <th>
+                                Pode excluir
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>
+                                Aplicação
+                            </td>
+
+                            <td>
+                                ✅
+                            </td>
+
+                            <td>
+                                ✅
+                            </td>
+
+                            <td>
+                                ❌
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Administrador
+                            </td>
+
+                            <td>
+                                ✅
+                            </td>
+
+                            <td>
+                                ✅
+                            </td>
+
+                            <td>
+                                ✅
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Relatórios
+                            </td>
+
+                            <td>
+                                ✅
+                            </td>
+
+                            <td>
+                                ❌
+                            </td>
+
+                            <td>
+                                ❌
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           AUTENTICAÇÃO VS AUTORIZAÇÃO
+        ====================================================== -->
+
+        <section>
+
+            <h2>⚖️ Autenticação x Autorização</h2>
+
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <div class="icon">
+                        👤
+                    </div>
+
+                    <h3>
+                        Autenticação
+                    </h3>
+
+                    <p>
+                        Verifica a identidade.
+                    </p>
+
+                    <p>
+                        <strong>
+                            "Quem é você?"
+                        </strong>
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🛡️
+                    </div>
+
+                    <h3>
+                        Autorização
+                    </h3>
+
+                    <p>
+                        Verifica as permissões.
+                    </p>
+
+                    <p>
+                        <strong>
+                            "O que você pode fazer?"
+                        </strong>
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           USERS
+        ====================================================== -->
+
+        <section>
+
+            <h2>👥 Usuários no MongoDB</h2>
+
+            <p>
+                O MongoDB possui um sistema de usuários e permissões
+                baseado em <strong>roles</strong>.
+            </p>
+
+            <p>
+                Um usuário pode receber determinadas funções que
+                definem quais operações ele pode executar.
+            </p>
+
+
+            <p>
+                Conceitualmente:
+            </p>
+
+
+            <pre><code>Usuário
+   │
+   ├── Role A
+   │
+   ├── Role B
+   │
+   └── Permissões</code></pre>
+
+
+            <p>
+                Isso permite separar responsabilidades e limitar
+                o acesso de cada usuário.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+           PRINCÍPIO DO MENOR PRIVILÉGIO
+        ====================================================== -->
+
+        <section>
+
+            <h2>🔒 Princípio do menor privilégio</h2>
+
+            <p>
+                Um dos conceitos mais importantes de segurança é o
+                <strong>princípio do menor privilégio</strong>.
+            </p>
+
+            <p>
+                A ideia é simples:
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>
+                    Um usuário ou aplicação deve possuir somente
+                    as permissões necessárias para realizar seu trabalho.
+                </strong>
+
+            </div>
+
+
+            <p>
+                Por exemplo, uma aplicação que somente precisa consultar
+                informações não deveria necessariamente possuir permissão
+                para excluir documentos.
+            </p>
+
+
+            <pre><code>Aplicação de relatórios
+
+READ
+  ↓
+Permitido
+
+INSERT
+  ↓
+Desnecessário
+
+DELETE
+  ↓
+Desnecessário</code></pre>
+
+        </section>
+
+
+        <!-- =====================================================
+           ADMIN VS APPLICATION
+        ====================================================== -->
+
+        <section>
+
+            <h2>👨‍💻 Usuário da aplicação ≠ administrador</h2>
+
+            <p>
+                Um erro comum é utilizar o mesmo usuário com permissões
+                administrativas para todas as operações da aplicação.
+            </p>
+
+
+            <p>
+                É melhor separar responsabilidades.
+            </p>
+
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <h3>
+                        👨‍💼 Administrador
+                    </h3>
+
+                    <p>
+                        Responsável por tarefas administrativas,
+                        configuração e manutenção.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        ⚙️ Aplicação
+                    </h3>
+
+                    <p>
+                        Usuário utilizado pela aplicação,
+                        com somente as permissões necessárias.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        📊 Relatórios
+                    </h3>
+
+                    <p>
+                        Usuário destinado a consultas e relatórios.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           SENHAS
+        ====================================================== -->
+
+        <section>
+
+            <h2>🔑 Senhas e credenciais</h2>
+
+            <p>
+                Credenciais de banco de dados são informações sensíveis.
+            </p>
+
+
+            <p>
+                Nunca devemos colocar uma senha diretamente no código
+                da aplicação.
+            </p>
+
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <h3>
+                        ❌ Evite
+                    </h3>
+
+                    <pre><code>const password =
+    "minhaSenha123";</code></pre>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        ✅ Prefira
+                    </h3>
+
+                    <pre><code>const password =
+    process.env.DB_PASSWORD;</code></pre>
+
+                </div>
+
+            </div>
+
+
+            <p>
+                Variáveis de ambiente e mecanismos apropriados de
+                gerenciamento de segredos ajudam a evitar que credenciais
+                sejam armazenadas diretamente no código-fonte.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+           .ENV
+        ====================================================== -->
+
+        <section>
+
+            <h2>📁 Variáveis de ambiente</h2>
+
+            <p>
+                Uma aplicação pode armazenar configurações sensíveis
+                em variáveis de ambiente.
+            </p>
+
+
+            <pre><code>DB_USER=app_user
+DB_PASSWORD=senha_segura
+DB_HOST=localhost
+DB_PORT=27017</code></pre>
+
+
+            <p>
+                E no código:
+            </p>
+
+
+            <pre><code>process.env.DB_USER
+process.env.DB_PASSWORD
+process.env.DB_HOST</code></pre>
+
+
+            <div class="highlight">
+
+                <strong>
+                    Importante:
+                </strong>
+
+                <p>
+                    O arquivo contendo credenciais locais não deve
+                    ser colocado no controle de versão de forma indevida.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           GITIGNORE
+        ====================================================== -->
+
+        <section>
+
+            <h2>🚫 Protegendo arquivos sensíveis</h2>
+
+            <p>
+                Em projetos que utilizam Git, arquivos com credenciais
+                locais normalmente devem ser ignorados.
+            </p>
+
+
+            <pre><code>.env
+
+.env.local
+
+.env.production</code></pre>
+
+
+            <p>
+                Um exemplo de configuração:
+            </p>
+
+
+            <pre><code># Arquivos de ambiente
+
+.env
+.env.local
+.env.*.local</code></pre>
+
+
+            <div class="highlight">
+
+                <strong>
+                    Atenção:
+                </strong>
+
+                <p>
+                    Colocar um arquivo no .gitignore não remove
+                    automaticamente um segredo que já foi publicado
+                    no histórico do repositório.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           CONEXÃO
+        ====================================================== -->
+
+        <section>
+
+            <h2>🔗 String de conexão</h2>
+
+            <p>
+                Aplicações normalmente utilizam uma string de conexão
+                para informar como acessar o MongoDB.
+            </p>
+
+
+            <pre><code>mongodb://usuario:senha@servidor:27017/meubanco</code></pre>
+
+
+            <p>
+                Em ambientes modernos, também é comum utilizar
+                configurações fornecidas pelo ambiente de execução
+                ou serviços de gerenciamento de segredos.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>
+                    Nunca compartilhe publicamente uma string de conexão
+                    que contenha credenciais reais.
+                </strong>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           TLS
+        ====================================================== -->
+
+        <section>
+
+            <h2>🔐 Comunicação segura</h2>
+
+            <p>
+                Quando dados trafegam entre a aplicação e o banco,
+                precisamos considerar a proteção dessa comunicação.
+            </p>
+
+
+            <p>
+                O MongoDB suporta conexões protegidas utilizando
+                <strong>TLS</strong>.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>
+                    TLS protege a comunicação durante o transporte.
+                </strong>
+
+                <p>
+                    Isso é diferente de controlar quem pode acessar
+                    o banco.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           REDE
+        ====================================================== -->
+
+        <section>
+
+            <h2>🌐 Segurança de rede</h2>
+
+            <p>
+                Segurança não depende somente de usuário e senha.
+            </p>
+
+            <p>
+                Também precisamos controlar quem consegue chegar
+                ao servidor MongoDB.
+            </p>
+
+
+            <pre><code>Internet
+    │
+    │
+    X
+    │
+Firewall
+    │
+    ↓
+Aplicação
+    │
+    ↓
+MongoDB</code></pre>
+
+
+            <p>
+                O objetivo é evitar que o banco fique desnecessariamente
+                exposto para qualquer origem.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+           EXPOSIÇÃO
+        ====================================================== -->
+
+        <section>
+
+            <h2>⚠️ Não exponha o banco desnecessariamente</h2>
+
+            <p>
+                Um erro grave de arquitetura é permitir que qualquer
+                pessoa na internet consiga acessar diretamente o banco.
+            </p>
+
+
+            <p>
+                Em uma arquitetura comum:
+            </p>
+
+
+            <pre><code>        INTERNET
+            │
+            ↓
+        FRONTEND
+            │
+            ↓
+       BACKEND / API
+            │
+            ↓
+        MONGODB</code></pre>
+
+
+            <p>
+                O cliente normalmente conversa com a API, e a API
+                conversa com o banco.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>
+                    O navegador do usuário não deve precisar conhecer
+                    as credenciais do banco.
+                </strong>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           API
+        ====================================================== -->
+
+        <section>
+
+            <h2>🏗️ Banco de dados e API</h2>
+
+            <p>
+                Uma aplicação web geralmente possui diferentes camadas.
+            </p>
+
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <div class="icon">
+                        🖥️
+                    </div>
+
+                    <h3>
+                        Frontend
+                    </h3>
+
+                    <p>
+                        Interface utilizada pelo usuário.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        ⚙️
+                    </div>
+
+                    <h3>
+                        Backend
+                    </h3>
+
+                    <p>
+                        Implementa regras de negócio e acessa o banco.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🗄️
+                    </div>
+
+                    <h3>
+                        MongoDB
+                    </h3>
+
+                    <p>
+                        Armazena os dados utilizados pela aplicação.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           SQL INJECTION / NOSQL INJECTION
+        ====================================================== -->
+
+        <section>
+
+            <h2>🚨 NoSQL Injection</h2>
+
+            <p>
+                Aplicações que recebem dados externos precisam validar
+                e tratar corretamente as entradas recebidas.
+            </p>
+
+
+            <p>
+                Não devemos assumir que o usuário sempre enviará
+                exatamente o formato esperado.
+            </p>
+
+
+            <pre><code>Usuário
+   ↓
+Dados externos
+   ↓
+Validação
+   ↓
+Regras da aplicação
+   ↓
+MongoDB</code></pre>
+
+
+            <p>
+                Uma aplicação vulnerável pode permitir que entradas
+                manipuladas alterem a lógica de uma consulta.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>
+                    Nunca confie cegamente nos dados recebidos
+                    do usuário.
+                </strong>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           VALIDAÇÃO
+        ====================================================== -->
+
+        <section>
+
+            <h2>✅ Validação de entrada</h2>
+
+            <p>
+                A aplicação deve verificar se os dados recebidos
+                possuem o formato esperado.
+            </p>
+
+
+            <p>
+                Por exemplo, se esperamos:
+            </p>
+
+
+            <pre><code>{
+    "email": "ana@email.com",
+    "idade": 25
+}</code></pre>
+
+
+            <p>
+                devemos validar:
+            </p>
+
+
+            <ul>
+
+                <li>
+                    Se email possui o formato esperado.
+                </li>
+
+                <li>
+                    Se idade possui o tipo correto.
+                </li>
+
+                <li>
+                    Se idade está dentro das regras do sistema.
+                </li>
+
+                <li>
+                    Se campos obrigatórios foram enviados.
+                </li>
+
+                <li>
+                    Se campos inesperados devem ser rejeitados.
+                </li>
+
+            </ul>
+
+        </section>
+
+
+        <!-- =====================================================
+           DADOS SENSÍVEIS
+        ====================================================== -->
+
+        <section>
+
+            <h2>🔏 Dados sensíveis</h2>
+
+            <p>
+                Alguns dados exigem cuidados adicionais.
+            </p>
+
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <h3>
+                        🔑 Senhas
+                    </h3>
+
+                    <p>
+                        Nunca devem ser armazenadas em texto puro.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        💳 Pagamentos
+                    </h3>
+
+                    <p>
+                        Podem envolver requisitos específicos
+                        de segurança e conformidade.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        👤 Dados pessoais
+                    </h3>
+
+                    <p>
+                        Devem ser tratados de acordo com as regras
+                        aplicáveis ao sistema e à legislação.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           SENHAS DE USUÁRIOS
+        ====================================================== -->
+
+        <section>
+
+            <h2>🔑 Como armazenar senhas de usuários?</h2>
+
+            <p>
+                Uma aplicação nunca deve armazenar a senha de um usuário
+                simplesmente como texto puro.
+            </p>
+
+
+            <p>
+                Em vez disso, normalmente utilizamos uma função de
+                <strong>hash de senha</strong> apropriada, como Argon2
+                ou bcrypt.
+            </p>
+
+
+            <pre><code>Senha informada
+      ↓
+Função de hash
+      ↓
+Hash armazenado</code></pre>
+
+
+            <p>
+                Quando o usuário tenta entrar novamente, a aplicação
+                verifica a senha utilizando o mecanismo apropriado.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>
+                    Hash de senha não é a mesma coisa que criptografia.
+                </strong>
+
+                <p>
+                    Hash é utilizado para representar a senha de forma
+                    que ela não precise ser armazenada diretamente.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           BACKUP
+        ====================================================== -->
+
+        <section>
+
+            <h2>💾 Backup</h2>
+
+            <p>
+                Segurança também significa estar preparado para
+                perda ou corrupção de dados.
+            </p>
+
+
+            <p>
+                Por isso, sistemas importantes precisam de uma estratégia
+                de backup adequada.
+            </p>
+
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <h3>
+                        💾 Backup
+                    </h3>
+
+                    <p>
+                        Cópia dos dados para recuperação.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        🔄 Recuperação
+                    </h3>
+
+                    <p>
+                        Processo para restaurar os dados.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        🧪 Teste
+                    </h3>
+
+                    <p>
+                        Verificar se o backup realmente pode ser restaurado.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="highlight">
+
+                <strong>
+                    Backup que nunca foi testado não deve ser considerado
+                    uma estratégia de recuperação comprovada.
+                </strong>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           LOGS
+        ====================================================== -->
+
+        <section>
+
+            <h2>📋 Logs e monitoramento</h2>
+
+            <p>
+                Segurança também envolve observar o comportamento
+                do sistema.
+            </p>
+
+
+            <p>
+                Dependendo da infraestrutura, podemos monitorar:
+            </p>
+
+
+            <ul>
+
+                <li>
+                    Tentativas de conexão.
+                </li>
+
+                <li>
+                    Erros.
+                </li>
+
+                <li>
+                    Operações lentas.
+                </li>
+
+                <li>
+                    Uso de recursos.
+                </li>
+
+                <li>
+                    Comportamentos inesperados.
+                </li>
+
+            </ul>
+
+
+            <p>
+                Logs e métricas podem ajudar a identificar problemas
+                e investigar incidentes.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+           PRODUÇÃO
+        ====================================================== -->
+
+        <section>
+
+            <h2>🚀 Desenvolvimento x Produção</h2>
+
+            <p>
+                O ambiente de desenvolvimento costuma ser mais simples.
+                Em produção, os requisitos de segurança são maiores.
+            </p>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Desenvolvimento
+                            </th>
+
+                            <th>
+                                Produção
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>
+                                Ambiente local
+                            </td>
+
+                            <td>
+                                Infraestrutura controlada
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Dados de teste
+                            </td>
+
+                            <td>
+                                Dados reais
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Configuração simplificada
+                            </td>
+
+                            <td>
+                                Segurança e monitoramento
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Credenciais locais
+                            </td>
+
+                            <td>
+                                Gerenciamento seguro de segredos
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           CHECKLIST
+        ====================================================== -->
+
+        <section>
+
+            <h2>✅ Checklist de segurança</h2>
+
+            <p>
+                Antes de colocar uma aplicação em produção,
+                podemos fazer uma verificação básica:
+            </p>
+
+
+            <ul>
+
+                <li>
+                    🔐 Autenticação está configurada.
+                </li>
+
+                <li>
+                    🛡️ Usuários possuem apenas as permissões necessárias.
+                </li>
+
+                <li>
+                    🔑 Credenciais não estão expostas no código.
+                </li>
+
+                <li>
+                    🌐 O banco não está desnecessariamente exposto.
+                </li>
+
+                <li>
+                    🔒 Comunicação segura está configurada quando necessária.
+                </li>
+
+                <li>
+                    🧪 Entradas externas são validadas.
+                </li>
+
+                <li>
+                    💾 Existe uma estratégia de backup.
+                </li>
+
+                <li>
+                    🔄 O processo de recuperação foi testado.
+                </li>
+
+                <li>
+                    📋 Logs e monitoramento estão disponíveis.
+                </li>
+
+                <li>
+                    🚫 Dados sensíveis não são registrados indevidamente
+                    nos logs.
+                </li>
+
+            </ul>
+
+        </section>
+
+
+        <!-- =====================================================
+           ARQUITETURA
+        ====================================================== -->
+
+        <section>
+
+            <h2>🏗️ Uma arquitetura mais segura</h2>
+
+
+            <pre><code>
+                    INTERNET
+                       │
+                       ↓
+               ┌──────────────┐
+               │   FRONTEND   │
+               └──────┬───────┘
+                      │
+                      ↓
+               ┌──────────────┐
+               │   BACKEND    │
+               │              │
+               │ Autenticação │
+               │ Validação    │
+               │ Regras       │
+               └──────┬───────┘
+                      │
+                conexão segura
+                      │
+                      ↓
+               ┌──────────────┐
+               │   MONGODB    │
+               │              │
+               │   Usuários   │
+               │   Roles      │
+               │   Dados      │
+               └──────────────┘
+            </code></pre>
+
+
+            <p>
+                Essa separação ajuda a manter as responsabilidades
+                organizadas e evita que o cliente precise acessar
+                diretamente o banco de dados.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+           ERROS COMUNS
+        ====================================================== -->
+
+        <section>
+
+            <h2>❌ Erros comuns</h2>
+
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <h3>
+                        1. Senha no código
+                    </h3>
+
+                    <p>
+                        Credenciais podem acabar expostas em repositórios.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        2. Usuário com privilégios excessivos
+                    </h3>
+
+                    <p>
+                        Aumenta o impacto de um possível comprometimento.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        3. Banco exposto
+                    </h3>
+
+                    <p>
+                        Aumenta desnecessariamente a superfície de ataque.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        4. Dados não validados
+                    </h3>
+
+                    <p>
+                        Pode permitir comportamentos inesperados
+                        na aplicação.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           RESUMO
+        ====================================================== -->
+
+        <section>
+
+            <h2>📝 Resumindo</h2>
+
+
+            <div class="highlight">
+
+                <p>
+                    <strong>Autenticação</strong> verifica quem está
+                    tentando acessar o sistema.
+                </p>
+
+                <p>
+                    <strong>Autorização</strong> determina o que esse
+                    usuário pode fazer.
+                </p>
+
+                <p>
+                    O <strong>princípio do menor privilégio</strong>
+                    recomenda conceder somente as permissões necessárias.
+                </p>
+
+                <p>
+                    Credenciais devem ser protegidas e não devem ficar
+                    diretamente no código.
+                </p>
+
+                <p>
+                    O banco deve ser protegido também por controles
+                    de rede e comunicação segura.
+                </p>
+
+                <p>
+                    Aplicações devem validar entradas externas e
+                    proteger dados sensíveis.
+                </p>
+
+                <p>
+                    Backups, logs e monitoramento fazem parte de uma
+                    estratégia de segurança e recuperação.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           CHECKPOINT
+        ====================================================== -->
+
+        <section>
+
+            <h2>🧠 Checkpoint</h2>
+
+            <p>
+                Antes de continuar, tente responder:
+            </p>
+
+
+            <ol>
+
+                <li>
+                    Qual é a diferença entre autenticação e autorização?
+                </li>
+
+                <li>
+                    O que significa princípio do menor privilégio?
+                </li>
+
+                <li>
+                    Por que a aplicação não deve utilizar necessariamente
+                    um usuário administrador?
+                </li>
+
+                <li>
+                    Por que não devemos colocar senhas diretamente
+                    no código?
+                </li>
+
+                <li>
+                    Para que servem variáveis de ambiente?
+                </li>
+
+                <li>
+                    Por que devemos evitar expor diretamente o MongoDB
+                    para a internet?
+                </li>
+
+                <li>
+                    Qual é a função do TLS?
+                </li>
+
+                <li>
+                    Por que devemos validar dados recebidos do usuário?
+                </li>
+
+                <li>
+                    Por que backups precisam ser testados?
+                </li>
+
+                <li>
+                    Qual é a função dos logs e do monitoramento?
+                </li>
+
+            </ol>
+
+        </section>
+
+
+        <!-- =====================================================
+           DESAFIO
+        ====================================================== -->
+
+        <section>
+
+            <h2>🧪 Desafio da aula</h2>
+
+            <p>
+                Imagine que você está desenvolvendo uma API para
+                uma loja virtual utilizando MongoDB.
+            </p>
+
+
+            <p>
+                A aplicação possui:
+            </p>
+
+
+            <pre><code>Usuários
+Produtos
+Pedidos
+Pagamentos</code></pre>
+
+
+            <p>
+                Crie uma estratégia de segurança para essa aplicação.
+            </p>
+
+
+            <p>
+                Pense nas seguintes perguntas:
+            </p>
+
+
+            <ol>
+
+                <li>
+                    Quais usuários do MongoDB seriam necessários?
+                </li>
+
+                <li>
+                    Quais permissões cada usuário deveria possuir?
+                </li>
+
+                <li>
+                    Onde você armazenaria as credenciais?
+                </li>
+
+                <li>
+                    Como impediria o acesso direto ao MongoDB pela internet?
+                </li>
+
+                <li>
+                    Como protegeria a comunicação entre aplicação e banco?
+                </li>
+
+                <li>
+                    Como validaria dados enviados pelos usuários?
+                </li>
+
+                <li>
+                    Como faria backup?
+                </li>
+
+                <li>
+                    Como monitoraria o sistema?
+                </li>
+
+            </ol>
+
+
+            <div class="highlight">
+
+                <strong>
+                    🚀 Desafio extra
+                </strong>
+
+                <p>
+                    Desenhe no papel ou em uma ferramenta de diagramas
+                    a arquitetura da sua aplicação.
+                </p>
+
+                <p>
+                    Mostre o caminho:
+                </p>
+
+                <pre><code>Usuário
+   ↓
+Frontend
+   ↓
+API
+   ↓
+Autenticação
+   ↓
+Regras de negócio
+   ↓
+MongoDB</code></pre>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           PROJETO
+        ====================================================== -->
+
+        <section>
+
+            <h2>🏆 Preparação para o projeto</h2>
+
+            <p>
+                Com esta aula, você já possui uma visão muito mais
+                completa do MongoDB.
+            </p>
+
+
+            <p>
+                Ao longo das aulas anteriores, você estudou:
+            </p>
+
+
+            <ul>
+
+                <li>
+                    Fundamentos de bancos de dados.
+                </li>
+
+                <li>
+                    Diferença entre banco de dados, SGBD e aplicação.
+                </li>
+
+                <li>
+                    Modelagem de dados.
+                </li>
+
+                <li>
+                    MongoDB e documentos.
+                </li>
+
+                <li>
+                    CRUD.
+                </li>
+
+                <li>
+                    Consultas.
+                </li>
+
+                <li>
+                    Atualizações.
+                </li>
+
+                <li>
+                    Aggregation Pipeline.
+                </li>
+
+                <li>
+                    Índices e performance.
+                </li>
+
+                <li>
+                    Transações.
+                </li>
+
+                <li>
+                    Segurança.
+                </li>
+
+            </ul>
+
+
+            <div class="highlight">
+
+                <strong>
+                    Agora é hora de colocar tudo isso em prática.
+                </strong>
+
+                <p>
+                    A próxima etapa pode ser um projeto completo utilizando
+                    MongoDB, desde a modelagem até a implementação da API.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           CTA
+        ====================================================== -->
+
+        <section class="cta">
+
+            <h2>
+                🚀 Próxima aula: Projeto Prático com MongoDB
+            </h2>
+
+            <p>
+                Na próxima aula vamos juntar os conhecimentos adquiridos
+                e construir um projeto completo utilizando MongoDB.
+            </p>
+
+            <p>
+                Vamos passar pela modelagem, criação das coleções,
+                operações CRUD, consultas, agregações, índices e
+                integração com uma aplicação.
+            </p>
+
+
+            <a href="./31.html" class="cta-button">
+                Aula 31 →
+            </a>
+
+        </section>
+
+
+    </main>
+
+
+    <!-- =====================================================
+       FOOTER
+    ====================================================== -->
+
+    <footer>
+
+        <p>
+            Guia de Banco de Dados
+        </p>
+
+        <p>
+            Aula 30 • Segurança e Boas Práticas no MongoDB
+        </p>
+
+    </footer>
+
+
+    <!-- =====================================================
+       JAVASCRIPT — DARK / LIGHT MODE
+    ====================================================== -->
+
+    <script src="./script.js"></script>
+
+</body>
+
+</html>

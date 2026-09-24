@@ -1,0 +1,1898 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="icon" type="image/png" href="../assets/images/logo.png">
+
+    <title>Aula 4 — Introdução à Modelagem de Dados</title>
+</head>
+
+<body>
+
+    <header>
+
+        <button class="theme-toggle" id="themeToggle" type="button" aria-label="Alternar tema">
+
+            <span class="theme-icon" id="themeIcon">
+                ☀️
+            </span>
+
+            <span class="theme-label" id="themeLabel">
+                Modo claro
+            </span>
+
+        </button>
+
+        <div class="header-content">
+
+            <span class="eyebrow">
+                AULA 4 • FUNDAMENTOS DE BANCO DE DADOS
+            </span>
+
+            <h1>
+                Introdução à Modelagem de Dados
+            </h1>
+
+            <p>
+                Aprenda como analisar um problema do mundo real e
+                transformá-lo em uma estrutura organizada de dados.
+            </p>
+
+        </div>
+
+    </header>
+
+
+    <main>
+
+
+        <!-- =====================================================
+             OBJETIVOS
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Objetivos da aula
+            </h2>
+
+            <p>
+                Nas aulas anteriores, aprendemos o que é um banco de
+                dados, o papel do SGBD e como os dados podem ser
+                organizados em tabelas.
+            </p>
+
+            <p>
+                Agora vamos dar um passo importante:
+                <strong>aprender a planejar a estrutura do banco
+                antes de criá-lo.</strong>
+            </p>
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <div class="icon">
+                        🧠
+                    </div>
+
+                    <h3>
+                        Analisar
+                    </h3>
+
+                    <p>
+                        Identificar quais informações o sistema
+                        precisa armazenar.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🧩
+                    </div>
+
+                    <h3>
+                        Modelar
+                    </h3>
+
+                    <p>
+                        Organizar entidades, atributos e
+                        relacionamentos.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        📊
+                    </div>
+
+                    <h3>
+                        Estruturar
+                    </h3>
+
+                    <p>
+                        Transformar o modelo em tabelas e
+                        relacionamentos.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🗄️
+                    </div>
+
+                    <h3>
+                        Planejar
+                    </h3>
+
+                    <p>
+                        Preparar uma estrutura adequada para
+                        o banco de dados.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             REVISÃO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Relembrando a Aula 3
+            </h2>
+
+            <p>
+                Na aula anterior, conhecemos os principais elementos
+                de um banco de dados relacional.
+            </p>
+
+            <div class="highlight">
+
+                <p>
+                    📊 <strong>Tabela</strong>
+                    → organiza informações.
+                </p>
+
+                <p>
+                    🧱 <strong>Coluna</strong>
+                    → representa um atributo.
+                </p>
+
+                <p>
+                    📝 <strong>Registro</strong>
+                    → representa uma ocorrência.
+                </p>
+
+                <p>
+                    🔑 <strong>Chave primária</strong>
+                    → identifica um registro.
+                </p>
+
+                <p>
+                    🔗 <strong>Chave estrangeira</strong>
+                    → pode relacionar tabelas.
+                </p>
+
+            </div>
+
+            <p>
+                Nesta aula vamos aprender como decidir
+                <strong>quais tabelas criar</strong> e
+                <strong>como elas devem se relacionar</strong>.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             O QUE É MODELAGEM
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                O que é modelagem de dados?
+            </h2>
+
+            <p>
+                <strong>Modelagem de dados</strong> é o processo de
+                analisar as informações de um sistema e definir
+                como elas serão organizadas.
+            </p>
+
+            <p>
+                Antes de criar tabelas no banco de dados, precisamos
+                entender o problema que estamos tentando representar.
+            </p>
+
+            <div class="highlight">
+
+                <strong>Em termos simples:</strong>
+
+                <p>
+                    Modelar dados é transformar uma situação do
+                    mundo real em uma estrutura que possa ser
+                    armazenada e manipulada por um banco de dados.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             EXEMPLO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Imagine um sistema de uma loja
+            </h2>
+
+            <p>
+                Vamos imaginar que precisamos criar o banco de dados
+                de uma loja virtual.
+            </p>
+
+            <p>
+                O sistema precisa armazenar informações sobre:
+            </p>
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <div class="icon">
+                        👤
+                    </div>
+
+                    <h3>
+                        Clientes
+                    </h3>
+
+                    <p>
+                        Nome, e-mail, telefone e endereço.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        📦
+                    </div>
+
+                    <h3>
+                        Produtos
+                    </h3>
+
+                    <p>
+                        Nome, descrição, preço e estoque.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🛒
+                    </div>
+
+                    <h3>
+                        Pedidos
+                    </h3>
+
+                    <p>
+                        Data, valor e cliente responsável.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        💳
+                    </div>
+
+                    <h3>
+                        Pagamentos
+                    </h3>
+
+                    <p>
+                        Forma de pagamento e situação da cobrança.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             PRIMEIRO PASSO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Primeiro passo: entender o problema
+            </h2>
+
+            <p>
+                Um erro comum é começar imediatamente criando tabelas.
+            </p>
+
+            <p>
+                Antes disso, precisamos fazer perguntas:
+            </p>
+
+            <ul>
+
+                <li>
+                    Quais informações o sistema precisa armazenar?
+                </li>
+
+                <li>
+                    Quais objetos existem no problema?
+                </li>
+
+                <li>
+                    Quais características desses objetos precisamos guardar?
+                </li>
+
+                <li>
+                    Como esses objetos se relacionam?
+                </li>
+
+                <li>
+                    Quais informações precisam ser únicas?
+                </li>
+
+                <li>
+                    Quais regras o sistema precisa respeitar?
+                </li>
+
+            </ul>
+
+            <div class="highlight">
+
+                <strong>Regra importante:</strong>
+
+                <p>
+                    Não comece pensando em tabelas.
+                    Comece pensando no problema e nas informações
+                    que precisam ser representadas.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             ENTIDADES
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                O que são entidades?
+            </h2>
+
+            <p>
+                Uma <strong>entidade</strong> representa algo que
+                queremos identificar e armazenar informações sobre
+                dentro do sistema.
+            </p>
+
+            <p>
+                No exemplo da loja, podemos identificar entidades como:
+            </p>
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <div class="icon">
+                        👤
+                    </div>
+
+                    <h3>
+                        Cliente
+                    </h3>
+
+                    <p>
+                        Pessoa que compra produtos.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        📦
+                    </div>
+
+                    <h3>
+                        Produto
+                    </h3>
+
+                    <p>
+                        Item vendido pela loja.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🛒
+                    </div>
+
+                    <h3>
+                        Pedido
+                    </h3>
+
+                    <p>
+                        Compra realizada por um cliente.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        💳
+                    </div>
+
+                    <h3>
+                        Pagamento
+                    </h3>
+
+                    <p>
+                        Informação relacionada ao pagamento.
+                    </p>
+
+                </div>
+
+            </div>
+
+            <div class="highlight">
+
+                <strong>Uma forma de pensar:</strong>
+
+                <p>
+                    Se o sistema precisa guardar informações sobre
+                    determinado objeto, pessoa, evento ou conceito,
+                    ele pode representar isso como uma entidade.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             ENTIDADE PARA TABELA
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Entidade e tabela são a mesma coisa?
+            </h2>
+
+            <p>
+                Não exatamente.
+            </p>
+
+            <p>
+                Durante a modelagem, usamos o conceito de
+                <strong>entidade</strong> para representar algo
+                do domínio do sistema.
+            </p>
+
+            <p>
+                Ao implementar um modelo relacional, essa entidade
+                pode ser representada por uma <strong>tabela</strong>.
+            </p>
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Modelo</th>
+                            <th>Implementação relacional</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>
+                                Entidade Cliente
+                            </td>
+
+                            <td>
+                                Tabela clientes
+                            </td>
+
+                        </tr>
+
+                        <tr>
+
+                            <td>
+                                Entidade Produto
+                            </td>
+
+                            <td>
+                                Tabela produtos
+                            </td>
+
+                        </tr>
+
+                        <tr>
+
+                            <td>
+                                Entidade Pedido
+                            </td>
+
+                            <td>
+                                Tabela pedidos
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             ATRIBUTOS
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                O que são atributos?
+            </h2>
+
+            <p>
+                <strong>Atributos</strong> são características ou
+                propriedades que descrevem uma entidade.
+            </p>
+
+            <p>
+                Por exemplo, um cliente pode possuir:
+            </p>
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <div class="icon">
+                        🆔
+                    </div>
+
+                    <h3>
+                        ID
+                    </h3>
+
+                    <p>
+                        Identificador do cliente.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        👤
+                    </div>
+
+                    <h3>
+                        Nome
+                    </h3>
+
+                    <p>
+                        Nome do cliente.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        📧
+                    </div>
+
+                    <h3>
+                        E-mail
+                    </h3>
+
+                    <p>
+                        Endereço de e-mail.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        📱
+                    </div>
+
+                    <h3>
+                        Telefone
+                    </h3>
+
+                    <p>
+                        Telefone do cliente.
+                    </p>
+
+                </div>
+
+            </div>
+
+            <div class="highlight">
+
+                <p>
+                    <strong>Entidade:</strong> Cliente
+                </p>
+
+                <p>
+                    <strong>Atributos:</strong> ID, nome, e-mail,
+                    telefone.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             RELACIONAMENTOS
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Identificando relacionamentos
+            </h2>
+
+            <p>
+                Depois de identificar as entidades, precisamos
+                descobrir como elas se relacionam.
+            </p>
+
+            <p>
+                No nosso exemplo:
+            </p>
+
+            <div class="highlight">
+
+                <p>
+                    👤 Um <strong>cliente</strong> realiza
+                    🛒 <strong>pedidos</strong>.
+                </p>
+
+                <p>
+                    🛒 Um <strong>pedido</strong> possui
+                    📦 <strong>produtos</strong>.
+                </p>
+
+                <p>
+                    📦 Um <strong>produto</strong> pode aparecer
+                    em vários 🛒 <strong>pedidos</strong>.
+                </p>
+
+            </div>
+
+            <p>
+                Essas relações fazem parte das regras do sistema
+                e precisam ser representadas no modelo.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             CARDINALIDADE
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                O que é cardinalidade?
+            </h2>
+
+            <p>
+                A <strong>cardinalidade</strong> ajuda a representar
+                quantas ocorrências de uma entidade podem estar
+                relacionadas a outra entidade.
+            </p>
+
+            <p>
+                Alguns exemplos comuns são:
+            </p>
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <div class="icon">
+                        1️⃣
+                    </div>
+
+                    <h3>
+                        1 : 1
+                    </h3>
+
+                    <p>
+                        Um registro está relacionado a no máximo
+                        um registro do outro lado.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        1️⃣➡️👥
+                    </div>
+
+                    <h3>
+                        1 : N
+                    </h3>
+
+                    <p>
+                        Um registro pode estar relacionado
+                        a vários registros.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        👥↔️👥
+                    </div>
+
+                    <h3>
+                        N : N
+                    </h3>
+
+                    <p>
+                        Vários registros podem estar relacionados
+                        a vários registros.
+                    </p>
+
+                </div>
+
+            </div>
+
+            <p>
+                Esses conceitos serão aprofundados em aulas
+                posteriores.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             EXEMPLO 1:N
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Exemplo: Cliente e Pedido
+            </h2>
+
+            <p>
+                Considere a seguinte regra:
+            </p>
+
+            <div class="highlight">
+
+                <strong>
+                    Um cliente pode realizar vários pedidos.
+                </strong>
+
+            </div>
+
+            <p>
+                Podemos representar isso como:
+            </p>
+
+            <div class="highlight">
+
+                <p>
+                    👤 Cliente
+                </p>
+
+                <p>
+                    ↓
+                </p>
+
+                <p>
+                    🛒 Pedido
+                </p>
+
+                <p>
+                    <strong>1 : N</strong>
+                </p>
+
+            </div>
+
+            <p>
+                Um cliente pode ter muitos pedidos, enquanto cada
+                pedido pertence a um cliente específico.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             N:N
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Exemplo: Pedido e Produto
+            </h2>
+
+            <p>
+                Agora temos outra situação:
+            </p>
+
+            <div class="highlight">
+
+                <p>
+                    Um pedido pode possuir vários produtos.
+                </p>
+
+                <p>
+                    Um produto pode aparecer em vários pedidos.
+                </p>
+
+            </div>
+
+            <p>
+                Temos então uma relação:
+            </p>
+
+            <div class="highlight">
+
+                <p>
+                    🛒 Pedido
+                    ↔
+                    📦 Produto
+                </p>
+
+                <p>
+                    <strong>N : N</strong>
+                </p>
+
+            </div>
+
+            <p>
+                No modelo relacional, esse tipo de relacionamento
+                normalmente precisa ser representado por uma
+                estrutura intermediária.
+            </p>
+
+            <p>
+                Podemos chamá-la, por exemplo, de
+                <strong>itens_pedido</strong>.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             MODELO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Transformando o problema em um modelo
+            </h2>
+
+            <p>
+                Podemos começar a visualizar nossa loja da seguinte
+                maneira:
+            </p>
+
+            <div class="highlight">
+
+                <p>
+                    👤 <strong>CLIENTE</strong>
+                </p>
+
+                <p>
+                    id
+                </p>
+
+                <p>
+                    nome
+                </p>
+
+                <p>
+                    email
+                </p>
+
+                <p>
+                    ↓
+                </p>
+
+                <p>
+                    🛒 <strong>PEDIDO</strong>
+                </p>
+
+                <p>
+                    id
+                </p>
+
+                <p>
+                    cliente_id
+                </p>
+
+                <p>
+                    data
+                </p>
+
+                <p>
+                    ↓
+                </p>
+
+                <p>
+                    📋 <strong>ITENS_PEDIDO</strong>
+                </p>
+
+                <p>
+                    pedido_id
+                </p>
+
+                <p>
+                    produto_id
+                </p>
+
+                <p>
+                    quantidade
+                </p>
+
+                <p>
+                    ↓
+                </p>
+
+                <p>
+                    📦 <strong>PRODUTO</strong>
+                </p>
+
+                <p>
+                    id
+                </p>
+
+                <p>
+                    nome
+                </p>
+
+                <p>
+                    preco
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             MODELO CONCEITUAL
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Modelo conceitual
+            </h2>
+
+            <p>
+                O <strong>modelo conceitual</strong> representa
+                o problema em um nível mais próximo do negócio
+                e menos preocupado com detalhes técnicos.
+            </p>
+
+            <p>
+                Podemos pensar simplesmente em:
+            </p>
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <div class="icon">
+                        👤
+                    </div>
+
+                    <h3>
+                        Cliente
+                    </h3>
+
+                    <p>
+                        Realiza pedidos.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🛒
+                    </div>
+
+                    <h3>
+                        Pedido
+                    </h3>
+
+                    <p>
+                        Contém itens.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        📦
+                    </div>
+
+                    <h3>
+                        Produto
+                    </h3>
+
+                    <p>
+                        Pode aparecer em pedidos.
+                    </p>
+
+                </div>
+
+            </div>
+
+            <div class="highlight">
+
+                <strong>Foco:</strong>
+
+                <p>
+                    Entender o negócio e suas regras antes de
+                    pensar nos detalhes do banco.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             MODELO LÓGICO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Modelo lógico
+            </h2>
+
+            <p>
+                Depois de compreender o problema, podemos começar
+                a definir como os dados serão organizados no modelo
+                escolhido.
+            </p>
+
+            <p>
+                No modelo relacional, isso significa começar a
+                definir tabelas, colunas, chaves e relacionamentos.
+            </p>
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Tabela</th>
+                            <th>Principais colunas</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>
+                                clientes
+                            </td>
+
+                            <td>
+                                id, nome, email
+                            </td>
+
+                        </tr>
+
+                        <tr>
+
+                            <td>
+                                pedidos
+                            </td>
+
+                            <td>
+                                id, cliente_id, data
+                            </td>
+
+                        </tr>
+
+                        <tr>
+
+                            <td>
+                                produtos
+                            </td>
+
+                            <td>
+                                id, nome, preco
+                            </td>
+
+                        </tr>
+
+                        <tr>
+
+                            <td>
+                                itens_pedido
+                            </td>
+
+                            <td>
+                                pedido_id, produto_id, quantidade
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             DO MODELO AO SQL
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Do modelo para o SQL
+            </h2>
+
+            <p>
+                Depois de definir o modelo, podemos implementá-lo
+                utilizando SQL.
+            </p>
+
+            <p>
+                Por exemplo:
+            </p>
+
+            <pre><code><span class="sql-keyword">CREATE TABLE</span> clientes (
+    id <span class="sql-keyword">INTEGER PRIMARY KEY</span>,
+    nome <span class="sql-keyword">VARCHAR</span>(100),
+    email <span class="sql-keyword">VARCHAR</span>(150)
+);</code></pre>
+
+            <p>
+                O SQL é utilizado aqui para transformar parte do
+                modelo em estruturas que o SGBD pode criar e gerenciar.
+            </p>
+
+            <div class="highlight">
+
+                <p>
+                    🧠 <strong>Problema</strong>
+                </p>
+
+                <p>
+                    ↓
+                </p>
+
+                <p>
+                    🧩 <strong>Modelo</strong>
+                </p>
+
+                <p>
+                    ↓
+                </p>
+
+                <p>
+                    📊 <strong>Tabelas e relacionamentos</strong>
+                </p>
+
+                <p>
+                    ↓
+                </p>
+
+                <p>
+                    🔤 <strong>SQL</strong>
+                </p>
+
+                <p>
+                    ↓
+                </p>
+
+                <p>
+                    ⚙️ <strong>SGBD</strong>
+                </p>
+
+                <p>
+                    ↓
+                </p>
+
+                <p>
+                    🗄️ <strong>Banco de Dados</strong>
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             REGRAS DE NEGÓCIO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                O que são regras de negócio?
+            </h2>
+
+            <p>
+                Durante a modelagem, precisamos entender as
+                <strong>regras de negócio</strong> do sistema.
+            </p>
+
+            <p>
+                Elas representam condições ou comportamentos que
+                fazem parte do funcionamento do negócio.
+            </p>
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <div class="icon">
+                        👤
+                    </div>
+
+                    <h3>
+                        Cliente
+                    </h3>
+
+                    <p>
+                        Um cliente pode realizar vários pedidos.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🛒
+                    </div>
+
+                    <h3>
+                        Pedido
+                    </h3>
+
+                    <p>
+                        Um pedido pertence a um cliente.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        📦
+                    </div>
+
+                    <h3>
+                        Produto
+                    </h3>
+
+                    <p>
+                        Um produto pode aparecer em vários pedidos.
+                    </p>
+
+                </div>
+
+            </div>
+
+            <div class="highlight">
+
+                <strong>Por que isso importa?</strong>
+
+                <p>
+                    O banco de dados precisa representar as regras
+                    importantes do sistema. Um modelo mal planejado
+                    pode gerar dados duplicados, inconsistências
+                    e dificuldades de manutenção.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             ERROS
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Erros comuns na modelagem
+            </h2>
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <div class="icon">
+                        ❌
+                    </div>
+
+                    <h3>
+                        Colocar tudo em uma tabela
+                    </h3>
+
+                    <p>
+                        Misturar clientes, produtos e pedidos
+                        em uma única estrutura pode gerar
+                        repetição e dificuldade de manutenção.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        ❌
+                    </div>
+
+                    <h3>
+                        Ignorar relacionamentos
+                    </h3>
+
+                    <p>
+                        Não representar corretamente as relações
+                        pode dificultar consultas e comprometer
+                        a consistência.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        ❌
+                    </div>
+
+                    <h3>
+                        Não definir identificadores
+                    </h3>
+
+                    <p>
+                        Sem uma forma adequada de identificar
+                        registros, operações sobre os dados
+                        ficam mais difíceis.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        ❌
+                    </div>
+
+                    <h3>
+                        Modelar sem entender o negócio
+                    </h3>
+
+                    <p>
+                        Uma estrutura tecnicamente válida pode
+                        não representar corretamente as regras
+                        do sistema.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             PROCESSO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Um processo simples de modelagem
+            </h2>
+
+            <div class="highlight">
+
+                <p>
+                    <strong>1. Entenda o problema</strong>
+                </p>
+
+                <p>
+                    Descubra o que o sistema precisa fazer.
+                </p>
+
+                <p>
+                    ↓
+                </p>
+
+                <p>
+                    <strong>2. Identifique as entidades</strong>
+                </p>
+
+                <p>
+                    Descubra quais objetos e conceitos precisam
+                    ser representados.
+                </p>
+
+                <p>
+                    ↓
+                </p>
+
+                <p>
+                    <strong>3. Identifique os atributos</strong>
+                </p>
+
+                <p>
+                    Descubra quais informações precisam ser
+                    armazenadas sobre cada entidade.
+                </p>
+
+                <p>
+                    ↓
+                </p>
+
+                <p>
+                    <strong>4. Identifique os relacionamentos</strong>
+                </p>
+
+                <p>
+                    Descubra como as entidades se relacionam.
+                </p>
+
+                <p>
+                    ↓
+                </p>
+
+                <p>
+                    <strong>5. Defina as chaves</strong>
+                </p>
+
+                <p>
+                    Identifique como os registros serão identificados
+                    e relacionados.
+                </p>
+
+                <p>
+                    ↓
+                </p>
+
+                <p>
+                    <strong>6. Transforme o modelo em tabelas</strong>
+                </p>
+
+                <p>
+                    No modelo relacional, defina tabelas, colunas
+                    e relacionamentos.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             MINI PROJETO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🧪 Exercício de modelagem
+            </h2>
+
+            <p>
+                Imagine agora que você precisa criar um sistema
+                para uma escola.
+            </p>
+
+            <p>
+                O sistema precisa armazenar:
+            </p>
+
+            <ul>
+
+                <li>
+                    alunos;
+                </li>
+
+                <li>
+                    professores;
+                </li>
+
+                <li>
+                    cursos;
+                </li>
+
+                <li>
+                    disciplinas;
+                </li>
+
+                <li>
+                    matrículas.
+                </li>
+
+            </ul>
+
+            <p>
+                Antes de pensar em SQL, tente responder:
+            </p>
+
+            <div class="highlight">
+
+                <p>
+                    <strong>1.</strong>
+                    Quais são as entidades?
+                </p>
+
+                <p>
+                    <strong>2.</strong>
+                    Quais atributos cada entidade possui?
+                </p>
+
+                <p>
+                    <strong>3.</strong>
+                    Qual atributo poderia identificar cada registro?
+                </p>
+
+                <p>
+                    <strong>4.</strong>
+                    Como as entidades estão relacionadas?
+                </p>
+
+                <p>
+                    <strong>5.</strong>
+                    Existem relacionamentos 1:N?
+                </p>
+
+                <p>
+                    <strong>6.</strong>
+                    Existe algum relacionamento N:N?
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             DESAFIO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🎯 Desafio
+            </h2>
+
+            <p>
+                Tente criar uma primeira versão do modelo de uma
+                loja virtual.
+            </p>
+
+            <p>
+                Comece apenas com estas entidades:
+            </p>
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <h3>
+                        Cliente
+                    </h3>
+
+                    <p>
+                        Quais atributos são necessários?
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        Produto
+                    </h3>
+
+                    <p>
+                        Quais informações precisamos armazenar?
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        Pedido
+                    </h3>
+
+                    <p>
+                        Como sabemos quem realizou o pedido?
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        Item do pedido
+                    </h3>
+
+                    <p>
+                        Como sabemos quais produtos estão
+                        dentro de cada pedido?
+                    </p>
+
+                </div>
+
+            </div>
+
+            <p>
+                Não se preocupe em escrever SQL ainda.
+                Primeiro pense na estrutura.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             RESUMO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Resumindo
+            </h2>
+
+            <div class="highlight">
+
+                <p>
+                    🧠 <strong>Modelagem de dados</strong> é o processo
+                    de planejar como as informações serão representadas.
+                </p>
+
+                <p>
+                    🧩 <strong>Entidades</strong> representam objetos,
+                    pessoas, conceitos ou eventos relevantes para o sistema.
+                </p>
+
+                <p>
+                    📝 <strong>Atributos</strong> representam
+                    características das entidades.
+                </p>
+
+                <p>
+                    🔗 <strong>Relacionamentos</strong> representam
+                    como as entidades se conectam.
+                </p>
+
+                <p>
+                    🔑 <strong>Chaves</strong> ajudam a identificar
+                    e relacionar registros.
+                </p>
+
+                <p>
+                    📊 No modelo relacional, o modelo pode ser
+                    implementado utilizando <strong>tabelas</strong>.
+                </p>
+
+                <p>
+                    🔤 Depois disso, podemos utilizar
+                    <strong>SQL</strong> para implementar a estrutura
+                    no SGBD.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             CHECKPOINT
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🧠 Você entendeu?
+            </h2>
+
+            <p>
+                Antes de avançar para a próxima aula, tente responder:
+            </p>
+
+            <ul>
+
+                <li>
+                    O que significa modelagem de dados?
+                </li>
+
+                <li>
+                    O que é uma entidade?
+                </li>
+
+                <li>
+                    O que é um atributo?
+                </li>
+
+                <li>
+                    O que é um relacionamento?
+                </li>
+
+                <li>
+                    Para que serve a cardinalidade?
+                </li>
+
+                <li>
+                    Qual é a diferença entre modelo conceitual
+                    e implementação em tabelas?
+                </li>
+
+                <li>
+                    Por que devemos entender as regras do negócio
+                    antes de criar as tabelas?
+                </li>
+
+                <li>
+                    Por que um relacionamento N:N normalmente
+                    precisa de uma estrutura intermediária
+                    no modelo relacional?
+                </li>
+
+            </ul>
+
+        </section>
+
+
+        <!-- =====================================================
+             CTA
+        ====================================================== -->
+
+        <section class="cta">
+
+            <h2>
+                Aula 4 concluída!
+            </h2>
+
+            <p>
+                Agora você já sabe analisar um problema,
+                identificar entidades e atributos e pensar
+                nos relacionamentos antes de criar as tabelas.
+            </p>
+
+            <a href="./5.html" class="cta-button">
+                Aula 5 →
+            </a>
+
+        </section>
+
+    </main>
+
+
+    <!-- =====================================================
+       FOOTER
+    ====================================================== -->
+
+    <footer>
+
+        <p>
+            Guia de Banco de Dados
+        </p>
+
+        <p>
+            Aula 4 • Introdução à Modelagem de Dados
+        </p>
+
+    </footer>
+
+
+    <!-- =====================================================
+       JAVASCRIPT — DARK / LIGHT MODE
+    ====================================================== -->
+
+    <script src="../assets/js/script.js"></script>
+
+</body>
+
+</html>

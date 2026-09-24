@@ -1,0 +1,1297 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="icon" type="image/png" href="../assets/images/logo.png">
+
+    <title>Aula 2 — Como funciona um SGBD?</title>
+</head>
+
+<body>
+
+    <header>
+
+        <button
+            class="theme-toggle"
+            id="themeToggle"
+            type="button"
+            aria-label="Alternar tema"
+        >
+            <span class="theme-icon" id="themeIcon">
+                ☀️
+            </span>
+
+            <span class="theme-label" id="themeLabel">
+                Modo claro
+            </span>
+        </button>
+
+        <div class="header-content">
+
+            <span class="eyebrow">
+                AULA 2 • FUNDAMENTOS DE BANCO DE DADOS
+            </span>
+
+            <h1>
+                Como funciona um SGBD?
+            </h1>
+
+            <p>
+                Entenda como um Sistema de Gerenciamento de Banco de
+                Dados recebe solicitações, processa operações e
+                controla o acesso às informações.
+            </p>
+
+        </div>
+
+    </header>
+
+
+    <main>
+
+        <!-- =====================================================
+             OBJETIVOS
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Objetivos da aula
+            </h2>
+
+            <p>
+                Na aula anterior, vimos que o SGBD é o software
+                responsável por gerenciar bancos de dados.
+            </p>
+
+            <p>
+                Agora vamos entender melhor o que isso significa
+                na prática.
+            </p>
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <div class="icon">
+                        ⚙️
+                    </div>
+
+                    <h3>
+                        Entender o SGBD
+                    </h3>
+
+                    <p>
+                        Compreender sua função dentro de um sistema.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🔌
+                    </div>
+
+                    <h3>
+                        Conexões
+                    </h3>
+
+                    <p>
+                        Entender como uma aplicação se comunica
+                        com o SGBD.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🔎
+                    </div>
+
+                    <h3>
+                        Operações
+                    </h3>
+
+                    <p>
+                        Entender como consultas e alterações
+                        chegam até os dados.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🔐
+                    </div>
+
+                    <h3>
+                        Controle
+                    </h3>
+
+                    <p>
+                        Conhecer alguns mecanismos de segurança,
+                        concorrência e integridade.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             REVISÃO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Relembrando a Aula 1
+            </h2>
+
+            <p>
+                Na primeira aula, aprendemos que existem papéis
+                diferentes dentro de um sistema.
+            </p>
+
+            <div class="highlight">
+
+                <p>
+                    💻 <strong>Aplicação</strong>
+                    → implementa as funcionalidades.
+                </p>
+
+                <p>
+                    ⚙️ <strong>SGBD</strong>
+                    → gerencia o acesso aos dados.
+                </p>
+
+                <p>
+                    🗄️ <strong>Banco de Dados</strong>
+                    → contém os dados armazenados.
+                </p>
+
+            </div>
+
+            <p>
+                Agora vamos entender o que acontece quando a aplicação
+                precisa acessar esses dados.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             O QUE É SGBD
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                O que é um SGBD?
+            </h2>
+
+            <p>
+                <strong>SGBD</strong> significa
+                <strong>Sistema de Gerenciamento de Banco de Dados</strong>.
+            </p>
+
+            <p>
+                É um software responsável por fornecer mecanismos
+                para criar, armazenar, consultar, modificar e
+                administrar bancos de dados.
+            </p>
+
+            <div class="highlight">
+
+                <strong>Em termos simples:</strong>
+
+                <p>
+                    O SGBD funciona como uma camada intermediária
+                    entre as aplicações e os dados.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             ARQUITETURA
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Onde o SGBD fica?
+            </h2>
+
+            <p>
+                Podemos visualizar uma aplicação simples desta forma:
+            </p>
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <div class="icon">
+                        👤
+                    </div>
+
+                    <h3>
+                        Usuário
+                    </h3>
+
+                    <p>
+                        Interage com o sistema.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        💻
+                    </div>
+
+                    <h3>
+                        Aplicação
+                    </h3>
+
+                    <p>
+                        Processa as solicitações do usuário.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        ⚙️
+                    </div>
+
+                    <h3>
+                        SGBD
+                    </h3>
+
+                    <p>
+                        Gerencia as operações sobre os dados.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🗄️
+                    </div>
+
+                    <h3>
+                        Banco de Dados
+                    </h3>
+
+                    <p>
+                        Armazena as informações.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             FLUXO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                O caminho de uma solicitação
+            </h2>
+
+            <p>
+                Imagine que o usuário deseja visualizar seus pedidos.
+            </p>
+
+            <div class="highlight">
+
+                <p>
+                    <strong>1. Usuário</strong>
+                </p>
+
+                <p>
+                    Solicita seus pedidos através da aplicação.
+                </p>
+
+                <p>
+                    ↓
+                </p>
+
+                <p>
+                    <strong>2. Aplicação</strong>
+                </p>
+
+                <p>
+                    Processa a solicitação e prepara uma operação
+                    para consultar os dados.
+                </p>
+
+                <p>
+                    ↓
+                </p>
+
+                <p>
+                    <strong>3. SGBD</strong>
+                </p>
+
+                <p>
+                    Recebe a operação e verifica como executá-la.
+                </p>
+
+                <p>
+                    ↓
+                </p>
+
+                <p>
+                    <strong>4. Banco de Dados</strong>
+                </p>
+
+                <p>
+                    Os dados necessários são localizados.
+                </p>
+
+                <p>
+                    ↓
+                </p>
+
+                <p>
+                    <strong>5. SGBD</strong>
+                </p>
+
+                <p>
+                    Retorna o resultado para a aplicação.
+                </p>
+
+                <p>
+                    ↓
+                </p>
+
+                <p>
+                    <strong>6. Aplicação</strong>
+                </p>
+
+                <p>
+                    Apresenta os dados ao usuário.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             CONEXÃO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Como a aplicação conversa com o SGBD?
+            </h2>
+
+            <p>
+                Para trabalhar com um banco de dados, a aplicação
+                precisa estabelecer uma comunicação com o SGBD.
+            </p>
+
+            <p>
+                Essa comunicação normalmente envolve informações
+                como:
+            </p>
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <div class="icon">
+                        🌐
+                    </div>
+
+                    <h3>
+                        Endereço
+                    </h3>
+
+                    <p>
+                        Onde o servidor do banco de dados está
+                        disponível.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🚪
+                    </div>
+
+                    <h3>
+                        Porta
+                    </h3>
+
+                    <p>
+                        Define o ponto de comunicação utilizado
+                        pelo serviço.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        👤
+                    </div>
+
+                    <h3>
+                        Usuário
+                    </h3>
+
+                    <p>
+                        Identifica uma conta utilizada para acesso.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🔑
+                    </div>
+
+                    <h3>
+                        Autenticação
+                    </h3>
+
+                    <p>
+                        Permite verificar se o acesso é autorizado.
+                    </p>
+
+                </div>
+
+            </div>
+
+            <div class="highlight">
+
+                <strong>Importante:</strong>
+
+                <p>
+                    Os detalhes de conexão dependem do SGBD,
+                    da configuração do ambiente e da aplicação.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             OPERAÇÕES
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                O que podemos pedir ao SGBD?
+            </h2>
+
+            <p>
+                Uma aplicação pode solicitar diferentes operações
+                sobre os dados.
+            </p>
+
+            <div class="cards">
+
+                <div class="card crud-card create">
+
+                    <h3>
+                        ➕ Criar
+                    </h3>
+
+                    <p>
+                        Adicionar novos dados.
+                    </p>
+
+                </div>
+
+
+                <div class="card crud-card read">
+
+                    <h3>
+                        🔎 Consultar
+                    </h3>
+
+                    <p>
+                        Recuperar dados existentes.
+                    </p>
+
+                </div>
+
+
+                <div class="card crud-card update">
+
+                    <h3>
+                        ✏️ Atualizar
+                    </h3>
+
+                    <p>
+                        Modificar dados existentes.
+                    </p>
+
+                </div>
+
+
+                <div class="card crud-card delete">
+
+                    <h3>
+                        🗑️ Excluir
+                    </h3>
+
+                    <p>
+                        Remover dados.
+                    </p>
+
+                </div>
+
+            </div>
+
+            <p>
+                Essas quatro operações são frequentemente resumidas
+                pelo termo <strong>CRUD</strong>.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             SQL
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Onde entra o SQL?
+            </h2>
+
+            <p>
+                Em um SGBD relacional, uma das formas mais conhecidas
+                de expressar operações sobre os dados é utilizando
+                <strong>SQL</strong>.
+            </p>
+
+            <p>
+                Por exemplo:
+            </p>
+
+            <pre><code><span class="sql-keyword">SELECT</span> *
+<span class="sql-keyword">FROM</span> clientes;</code></pre>
+
+            <p>
+                Essa instrução solicita que sejam consultados os
+                registros da tabela <strong>clientes</strong>.
+            </p>
+
+            <div class="highlight">
+
+                <p>
+                    <strong>Aplicação</strong>
+                    → envia uma operação.
+                </p>
+
+                <p>
+                    <strong>SGBD</strong>
+                    → interpreta e executa a operação.
+                </p>
+
+                <p>
+                    <strong>Banco de Dados</strong>
+                    → fornece os dados necessários.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             RESPONSABILIDADES
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                O SGBD faz muito mais do que executar consultas
+            </h2>
+
+            <p>
+                Um SGBD não serve apenas para receber comandos e
+                devolver dados. Ele também possui diversas
+                responsabilidades importantes.
+            </p>
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <div class="icon">
+                        🔐
+                    </div>
+
+                    <h3>
+                        Segurança
+                    </h3>
+
+                    <p>
+                        Controla quem pode acessar determinados
+                        recursos e realizar operações.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🔄
+                    </div>
+
+                    <h3>
+                        Transações
+                    </h3>
+
+                    <p>
+                        Ajuda a garantir que operações relacionadas
+                        sejam tratadas de forma consistente.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        👥
+                    </div>
+
+                    <h3>
+                        Concorrência
+                    </h3>
+
+                    <p>
+                        Gerencia situações em que várias operações
+                        acontecem ao mesmo tempo.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        💾
+                    </div>
+
+                    <h3>
+                        Persistência
+                    </h3>
+
+                    <p>
+                        Gerencia o armazenamento dos dados de acordo
+                        com o funcionamento do sistema.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             CONCORRÊNCIA
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                E se várias pessoas acessarem ao mesmo tempo?
+            </h2>
+
+            <p>
+                Imagine uma loja virtual com milhares de usuários.
+                Várias pessoas podem consultar produtos e realizar
+                pedidos simultaneamente.
+            </p>
+
+            <p>
+                O SGBD possui mecanismos para lidar com múltiplas
+                operações acontecendo ao mesmo tempo e ajudar a
+                preservar a consistência dos dados.
+            </p>
+
+            <div class="highlight">
+
+                <strong>Exemplo:</strong>
+
+                <p>
+                    Dois clientes tentam comprar o último produto
+                    disponível no estoque.
+                </p>
+
+                <p>
+                    O controle de concorrência e as transações são
+                    importantes para evitar que operações simultâneas
+                    produzam resultados incorretos.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             TRANSAÇÕES
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                O que é uma transação?
+            </h2>
+
+            <p>
+                Uma <strong>transação</strong> é uma unidade de
+                trabalho formada por uma ou mais operações que devem
+                ser tratadas de maneira consistente.
+            </p>
+
+            <p>
+                Um exemplo clássico é uma transferência bancária.
+            </p>
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <div class="icon">
+                        💰
+                    </div>
+
+                    <h3>
+                        Conta A
+                    </h3>
+
+                    <p>
+                        O valor precisa ser retirado da conta
+                        de origem.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        ➡️
+                    </div>
+
+                    <h3>
+                        Transferência
+                    </h3>
+
+                    <p>
+                        A operação precisa ser tratada como
+                        uma unidade lógica.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        💵
+                    </div>
+
+                    <h3>
+                        Conta B
+                    </h3>
+
+                    <p>
+                        O valor precisa ser adicionado à conta
+                        de destino.
+                    </p>
+
+                </div>
+
+            </div>
+
+            <p>
+                O conceito de transação será estudado com mais
+                profundidade em aulas futuras.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             SEGURANÇA
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Segurança e permissões
+            </h2>
+
+            <p>
+                Nem todo usuário ou aplicação deve ter acesso
+                irrestrito aos dados.
+            </p>
+
+            <p>
+                Um SGBD pode trabalhar com usuários, permissões
+                e diferentes níveis de acesso.
+            </p>
+
+            <div class="highlight">
+
+                <p>
+                    Por exemplo, uma aplicação pode ter permissão
+                    para consultar e alterar determinados dados,
+                    enquanto outro usuário pode possuir permissões
+                    diferentes.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             SGBD NÃO É BANCO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                SGBD não é a mesma coisa que Banco de Dados
+            </h2>
+
+            <p>
+                Essa é uma das diferenças mais importantes desta aula.
+            </p>
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+                            <th>Banco de Dados</th>
+                            <th>SGBD</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>
+                                Contém os dados.
+                            </td>
+
+                            <td>
+                                É o software que gerencia os dados.
+                            </td>
+
+                        </tr>
+
+                        <tr>
+
+                            <td>
+                                Pode conter tabelas, registros,
+                                índices e outros objetos.
+                            </td>
+
+                            <td>
+                                Fornece mecanismos para criar,
+                                consultar, alterar e administrar
+                                esses objetos.
+                            </td>
+
+                        </tr>
+
+                        <tr>
+
+                            <td>
+                                Representa as informações armazenadas.
+                            </td>
+
+                            <td>
+                                Controla como essas informações
+                                são acessadas e manipuladas.
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             EXEMPLOS
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Exemplos de SGBDs
+            </h2>
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <span class="badge">
+                        RELACIONAL
+                    </span>
+
+                    <h3>
+                        PostgreSQL
+                    </h3>
+
+                    <p>
+                        SGBD relacional.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <span class="badge">
+                        RELACIONAL
+                    </span>
+
+                    <h3>
+                        MySQL
+                    </h3>
+
+                    <p>
+                        SGBD relacional.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <span class="badge">
+                        DOCUMENTOS
+                    </span>
+
+                    <h3>
+                        MongoDB
+                    </h3>
+
+                    <p>
+                        SGBD orientado a documentos.
+                    </p>
+
+                </div>
+
+            </div>
+
+            <div class="highlight">
+
+                <strong>Atenção:</strong>
+
+                <p>
+                    PostgreSQL, MySQL e MongoDB são nomes de
+                    <strong>produtos de software</strong> utilizados
+                    para gerenciamento de bancos de dados.
+                </p>
+
+                <p>
+                    Eles não são a linguagem SQL.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             ANALOGIA
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Uma analogia simples
+            </h2>
+
+            <p>
+                Imagine um restaurante.
+            </p>
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <div class="icon">
+                        📦
+                    </div>
+
+                    <h3>
+                        Banco de Dados
+                    </h3>
+
+                    <p>
+                        É como o estoque onde estão armazenados
+                        os ingredientes.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        👨‍🍳
+                    </div>
+
+                    <h3>
+                        SGBD
+                    </h3>
+
+                    <p>
+                        É como o responsável por organizar e
+                        controlar o acesso ao estoque.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🧑‍💼
+                    </div>
+
+                    <h3>
+                        Aplicação
+                    </h3>
+
+                    <p>
+                        É como o sistema que recebe os pedidos
+                        dos clientes e coordena as operações.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        👤
+                    </div>
+
+                    <h3>
+                        Usuário
+                    </h3>
+
+                    <p>
+                        É quem utiliza o sistema para fazer
+                        solicitações.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             RESUMO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                Resumindo
+            </h2>
+
+            <div class="highlight">
+
+                <p>
+                    ⚙️ <strong>SGBD</strong>
+                    é o software responsável por gerenciar
+                    bancos de dados.
+                </p>
+
+                <p>
+                    🔌 A <strong>aplicação</strong> utiliza o SGBD
+                    para trabalhar com os dados.
+                </p>
+
+                <p>
+                    🗄️ O <strong>banco de dados</strong> contém
+                    os dados que serão armazenados e consultados.
+                </p>
+
+                <p>
+                    🔤 Em bancos relacionais, o
+                    <strong>SQL</strong> é uma linguagem utilizada
+                    para expressar operações sobre os dados.
+                </p>
+
+                <p>
+                    🔐 O SGBD também pode cuidar de aspectos como
+                    segurança, transações e concorrência.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             CHECKPOINT
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🧠 Você entendeu?
+            </h2>
+
+            <p>
+                Antes de seguir para a próxima aula, tente responder:
+            </p>
+
+            <ul>
+
+                <li>
+                    O que significa SGBD?
+                </li>
+
+                <li>
+                    Qual é a diferença entre SGBD e banco de dados?
+                </li>
+
+                <li>
+                    Como uma aplicação acessa os dados?
+                </li>
+
+                <li>
+                    Qual é o papel do SQL em um banco relacional?
+                </li>
+
+                <li>
+                    Por que um SGBD precisa controlar acessos?
+                </li>
+
+                <li>
+                    O que significa dizer que um SGBD lida com
+                    concorrência?
+                </li>
+
+                <li>
+                    O que é uma transação?
+                </li>
+
+            </ul>
+
+        </section>
+
+
+        <!-- =====================================================
+             CTA
+        ====================================================== -->
+
+        <section class="cta">
+
+            <h2>
+                Aula 2 concluída!
+            </h2>
+
+            <p>
+                Agora você entende o papel do SGBD e como ele se
+                relaciona com a aplicação e o banco de dados.
+            </p>
+
+            <a
+                href="../aulas/aula-3.html"
+                class="cta-button"
+            >
+                Aula 3 →
+            </a>
+
+        </section>
+
+    </main>
+
+
+    <!-- =====================================================
+       FOOTER
+    ====================================================== -->
+
+    <footer>
+
+        <p>
+            Guia de Banco de Dados
+        </p>
+
+        <p>
+            Aula 2 • Como funciona um SGBD?
+        </p>
+
+    </footer>
+
+
+    <!-- =====================================================
+       JAVASCRIPT — DARK / LIGHT MODE
+    ====================================================== -->
+
+    <script src="../assets/js/script.js"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,1834 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="./style.css">
+
+    <link rel="icon" type="image/png" href="./assets/images/logo.png">
+
+    <title>Aula 18 — Documentos e Coleções</title>
+
+</head>
+
+<body>
+
+
+    <!-- =====================================================
+         HEADER
+    ====================================================== -->
+
+    <header>
+
+        <button
+            class="theme-toggle"
+            id="themeToggle"
+            type="button"
+            aria-label="Alternar tema">
+
+            <span class="theme-icon" id="themeIcon">
+                ☀️
+            </span>
+
+            <span class="theme-label" id="themeLabel">
+                Modo claro
+            </span>
+
+        </button>
+
+
+        <div class="header-content">
+
+            <span class="eyebrow">
+                AULA 18 • MONGODB
+            </span>
+
+            <h1>
+                Documentos e Coleções
+            </h1>
+
+            <p>
+                Aprenda como os documentos são estruturados, como as
+                coleções organizam esses documentos e como representar
+                diferentes tipos de dados no MongoDB.
+            </p>
+
+        </div>
+
+    </header>
+
+
+    <!-- =====================================================
+         CONTEÚDO
+    ====================================================== -->
+
+    <main>
+
+
+        <!-- =====================================================
+             OBJETIVOS
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🎯 Objetivos da aula
+            </h2>
+
+            <p>
+                Nesta aula vamos aprofundar os dois conceitos centrais
+                do modelo documental: <strong>documentos</strong> e
+                <strong>coleções</strong>.
+            </p>
+
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <div class="icon">
+                        📄
+                    </div>
+
+                    <h3>
+                        Documentos
+                    </h3>
+
+                    <p>
+                        Entender como informações são representadas
+                        no MongoDB.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🗂️
+                    </div>
+
+                    <h3>
+                        Coleções
+                    </h3>
+
+                    <p>
+                        Entender como documentos relacionados
+                        são agrupados.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🔢
+                    </div>
+
+                    <h3>
+                        Tipos de dados
+                    </h3>
+
+                    <p>
+                        Conhecer strings, números, booleanos,
+                        arrays, objetos e datas.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🧩
+                    </div>
+
+                    <h3>
+                        Estruturas
+                    </h3>
+
+                    <p>
+                        Trabalhar com documentos aninhados
+                        e arrays de objetos.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             REVISÃO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🔄 Relembrando a aula anterior
+            </h2>
+
+            <p>
+                Na Aula 17 aprendemos que o MongoDB é um
+                <strong>SGBD NoSQL orientado a documentos</strong>.
+            </p>
+
+
+            <p>
+                Também conhecemos uma estrutura básica:
+            </p>
+
+
+            <pre><code>MongoDB
+   │
+   └── Banco de dados
+          │
+          └── Coleção
+                 │
+                 ├── Documento
+                 ├── Documento
+                 └── Documento</code></pre>
+
+
+            <div class="highlight">
+
+                <strong>Modelo mental:</strong>
+
+                <p>
+                    <strong>MongoDB</strong> → SGBD
+                </p>
+
+                <p>
+                    <strong>Database</strong> → banco de dados
+                </p>
+
+                <p>
+                    <strong>Collection</strong> → coleção
+                </p>
+
+                <p>
+                    <strong>Document</strong> → documento
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             DOCUMENTO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                📄 O que é um documento?
+            </h2>
+
+            <p>
+                Um documento MongoDB é uma estrutura formada por
+                <strong>campos</strong> e <strong>valores</strong>.
+            </p>
+
+
+            <pre><code>{
+    <span class="json-key">"nome"</span>: <span class="json-string">"Ana Silva"</span>,
+    <span class="json-key">"idade"</span>: <span class="json-number">25</span>,
+    <span class="json-key">"ativo"</span>: <span class="json-boolean">true</span>
+}</code></pre>
+
+
+            <p>
+                Nesse exemplo temos três campos:
+            </p>
+
+
+            <ul>
+
+                <li>
+                    <strong>nome</strong>
+                </li>
+
+                <li>
+                    <strong>idade</strong>
+                </li>
+
+                <li>
+                    <strong>ativo</strong>
+                </li>
+
+            </ul>
+
+
+            <p>
+                Cada campo possui um valor correspondente.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             CAMPOS
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🏷️ Campos e valores
+            </h2>
+
+            <p>
+                Um campo possui um nome e um valor.
+            </p>
+
+
+            <pre><code>{
+    <span class="json-key">"nome"</span>: <span class="json-string">"Carlos"</span>
+}</code></pre>
+
+
+            <p>
+                Podemos interpretar dessa forma:
+            </p>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Campo
+                            </th>
+
+                            <th>
+                                Valor
+                            </th>
+
+                            <th>
+                                Tipo
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>
+                                nome
+                            </td>
+
+                            <td>
+                                "Carlos"
+                            </td>
+
+                            <td>
+                                String
+                            </td>
+
+                        </tr>
+
+                        <tr>
+
+                            <td>
+                                idade
+                            </td>
+
+                            <td>
+                                30
+                            </td>
+
+                            <td>
+                                Número
+                            </td>
+
+                        </tr>
+
+                        <tr>
+
+                            <td>
+                                ativo
+                            </td>
+
+                            <td>
+                                true
+                            </td>
+
+                            <td>
+                                Boolean
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             TIPOS DE DADOS
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🔢 Principais tipos de dados
+            </h2>
+
+            <p>
+                O MongoDB trabalha com diferentes tipos de dados.
+                Alguns dos mais importantes são:
+            </p>
+
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <span class="badge">
+                        STRING
+                    </span>
+
+                    <h3>
+                        Texto
+                    </h3>
+
+                    <pre><code>"Ana Silva"</code></pre>
+
+                </div>
+
+
+                <div class="card">
+
+                    <span class="badge">
+                        NUMBER
+                    </span>
+
+                    <h3>
+                        Número
+                    </h3>
+
+                    <pre><code>25</code></pre>
+
+                </div>
+
+
+                <div class="card">
+
+                    <span class="badge">
+                        BOOLEAN
+                    </span>
+
+                    <h3>
+                        Verdadeiro / falso
+                    </h3>
+
+                    <pre><code>true</code></pre>
+
+                </div>
+
+
+                <div class="card">
+
+                    <span class="badge">
+                        NULL
+                    </span>
+
+                    <h3>
+                        Ausência de valor
+                    </h3>
+
+                    <pre><code>null</code></pre>
+
+                </div>
+
+            </div>
+
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <span class="badge">
+                        ARRAY
+                    </span>
+
+                    <h3>
+                        Lista
+                    </h3>
+
+                    <pre><code>["SQL", "NoSQL"]</code></pre>
+
+                </div>
+
+
+                <div class="card">
+
+                    <span class="badge">
+                        OBJECT
+                    </span>
+
+                    <h3>
+                        Objeto aninhado
+                    </h3>
+
+                    <pre><code>{
+    cidade: "Rio"
+}</code></pre>
+
+                </div>
+
+
+                <div class="card">
+
+                    <span class="badge">
+                        DATE
+                    </span>
+
+                    <h3>
+                        Data
+                    </h3>
+
+                    <pre><code>ISODate(...)</code></pre>
+
+                </div>
+
+
+                <div class="card">
+
+                    <span class="badge">
+                        OBJECTID
+                    </span>
+
+                    <h3>
+                        Identificador
+                    </h3>
+
+                    <pre><code>ObjectId(...)</code></pre>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             STRING
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🔤 Strings
+            </h2>
+
+            <p>
+                Strings representam textos.
+            </p>
+
+
+            <pre><code>{
+    <span class="json-key">"nome"</span>: <span class="json-string">"Maria"</span>,
+    <span class="json-key">"email"</span>: <span class="json-string">"maria@email.com"</span>,
+    <span class="json-key">"cidade"</span>: <span class="json-string">"Rio de Janeiro"</span>
+}</code></pre>
+
+
+            <p>
+                Strings são utilizadas para informações como nomes,
+                e-mails, endereços, descrições e outros textos.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             NUMBER
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🔢 Números
+            </h2>
+
+            <p>
+                Números podem representar valores como idade,
+                quantidade, preço ou pontuação.
+            </p>
+
+
+            <pre><code>{
+    <span class="json-key">"idade"</span>: <span class="json-number">25</span>,
+    <span class="json-key">"saldo"</span>: <span class="json-number">1500.50</span>,
+    <span class="json-key">"quantidade"</span>: <span class="json-number">10</span>
+}</code></pre>
+
+
+            <div class="highlight">
+
+                <strong>Uma atenção importante:</strong>
+
+                <p>
+                    Valores numéricos devem ser armazenados como
+                    números quando pretendemos realizar operações
+                    matemáticas ou comparações numéricas.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             BOOLEAN
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                ✅ Booleanos
+            </h2>
+
+            <p>
+                Booleanos representam dois estados:
+                <strong>true</strong> ou <strong>false</strong>.
+            </p>
+
+
+            <pre><code>{
+    <span class="json-key">"ativo"</span>: <span class="json-boolean">true</span>,
+    <span class="json-key">"verificado"</span>: <span class="json-boolean">false</span>
+}</code></pre>
+
+
+            <p>
+                São úteis para representar situações como:
+            </p>
+
+
+            <ul>
+
+                <li>
+                    Usuário ativo ou inativo.
+                </li>
+
+                <li>
+                    E-mail verificado ou não verificado.
+                </li>
+
+                <li>
+                    Produto disponível ou indisponível.
+                </li>
+
+            </ul>
+
+        </section>
+
+
+        <!-- =====================================================
+             ARRAYS
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                📚 Arrays
+            </h2>
+
+            <p>
+                Um array permite armazenar uma lista de valores.
+            </p>
+
+
+            <pre><code>{
+    <span class="json-key">"nome"</span>: <span class="json-string">"Ana"</span>,
+
+    <span class="json-key">"linguagens"</span>: [
+
+        <span class="json-string">"JavaScript"</span>,
+
+        <span class="json-string">"Python"</span>,
+
+        <span class="json-string">"SQL"</span>
+
+    ]
+}</code></pre>
+
+
+            <p>
+                Nesse caso, o campo <strong>linguagens</strong>
+                possui três valores.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>Imagine:</strong>
+
+                <p>
+                    Um usuário pode possuir vários telefones,
+                    vários endereços ou várias habilidades.
+                </p>
+
+                <p>
+                    Um array pode representar essas listas
+                    dentro do documento.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             ARRAY DE OBJETOS
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🧩 Arrays de objetos
+            </h2>
+
+            <p>
+                Um array também pode armazenar objetos.
+            </p>
+
+
+            <pre><code>{
+    <span class="json-key">"nome"</span>: <span class="json-string">"Ana"</span>,
+
+    <span class="json-key">"enderecos"</span>: [
+
+        {
+            <span class="json-key">"tipo"</span>: <span class="json-string">"residencial"</span>,
+            <span class="json-key">"cidade"</span>: <span class="json-string">"Rio de Janeiro"</span>
+        },
+
+        {
+            <span class="json-key">"tipo"</span>: <span class="json-string">"comercial"</span>,
+            <span class="json-key">"cidade"</span>: <span class="json-string">"Niterói"</span>
+        }
+
+    ]
+}</code></pre>
+
+
+            <p>
+                Agora cada item do array possui seus próprios campos.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>Esse recurso é muito importante no MongoDB.</strong>
+
+                <p>
+                    Ele permite representar estruturas complexas
+                    de forma natural dentro de um documento.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             DOCUMENTO ANINHADO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                📦 Documentos aninhados
+            </h2>
+
+            <p>
+                Também podemos colocar um objeto diretamente dentro
+                de outro objeto.
+            </p>
+
+
+            <pre><code>{
+    <span class="json-key">"nome"</span>: <span class="json-string">"João"</span>,
+
+    <span class="json-key">"endereco"</span>: {
+
+        <span class="json-key">"rua"</span>: <span class="json-string">"Rua A"</span>,
+
+        <span class="json-key">"numero"</span>: <span class="json-number">100</span>,
+
+        <span class="json-key">"cidade"</span>: <span class="json-string">"São Paulo"</span>,
+
+        <span class="json-key">"estado"</span>: <span class="json-string">"SP"</span>
+
+    }
+}</code></pre>
+
+
+            <p>
+                O campo <strong>endereco</strong> contém outro
+                objeto.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>Observe a estrutura:</strong>
+
+                <p>
+                    Documento → endereço → cidade
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             OBJECTID
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🆔 ObjectId e o campo _id
+            </h2>
+
+            <p>
+                O MongoDB utiliza o campo <strong>_id</strong>
+                para identificar cada documento de forma única
+                dentro de uma coleção.
+            </p>
+
+
+            <pre><code>{
+    <span class="json-key">"_id"</span>: ObjectId("65a123456789abcdef123456"),
+
+    <span class="json-key">"nome"</span>: <span class="json-string">"Ana Silva"</span>,
+
+    <span class="json-key">"email"</span>: <span class="json-string">"ana@email.com"</span>
+}</code></pre>
+
+
+            <p>
+                Quando o MongoDB gera automaticamente esse identificador,
+                ele normalmente utiliza um valor do tipo
+                <strong>ObjectId</strong>.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>Regra importante:</strong>
+
+                <p>
+                    Dois documentos da mesma coleção não podem possuir
+                    o mesmo valor de <strong>_id</strong>.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             COLEÇÃO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🗃️ O que é uma coleção?
+            </h2>
+
+            <p>
+                Uma coleção agrupa documentos relacionados.
+            </p>
+
+
+            <p>
+                Em uma aplicação de comércio eletrônico,
+                poderíamos ter:
+            </p>
+
+
+            <pre><code>loja
+│
+├── clientes
+│
+├── produtos
+│
+├── pedidos
+│
+└── pagamentos</code></pre>
+
+
+            <p>
+                Cada coleção possui uma finalidade.
+            </p>
+
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <h3>
+                        clientes
+                    </h3>
+
+                    <p>
+                        Documentos que representam clientes.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        produtos
+                    </h3>
+
+                    <p>
+                        Documentos que representam produtos.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        pedidos
+                    </h3>
+
+                    <p>
+                        Documentos que representam pedidos.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        pagamentos
+                    </h3>
+
+                    <p>
+                        Documentos relacionados aos pagamentos.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             FLEXIBILIDADE
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🔀 Documentos podem ter estruturas diferentes?
+            </h2>
+
+            <p>
+                Em bancos documentais como MongoDB, documentos da mesma
+                coleção podem ter estruturas diferentes.
+            </p>
+
+
+            <pre><code>{
+    <span class="json-key">"nome"</span>: <span class="json-string">"Ana"</span>,
+    <span class="json-key">"email"</span>: <span class="json-string">"ana@email.com"</span>
+}
+
+
+{
+    <span class="json-key">"nome"</span>: <span class="json-string">"João"</span>,
+    <span class="json-key">"email"</span>: <span class="json-string">"joao@email.com"</span>,
+    <span class="json-key">"telefone"</span>: <span class="json-string">"99999-9999"</span>
+}</code></pre>
+
+
+            <p>
+                O segundo documento possui um campo adicional:
+                <strong>telefone</strong>.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>Mas flexibilidade não significa ausência
+                de regras.</strong>
+
+                <p>
+                    Uma aplicação pode definir validações e padrões
+                    para garantir a qualidade dos dados.
+                </p>
+
+                <p>
+                    Uma estrutura flexível deve ser utilizada
+                    conscientemente.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             EMBUTIR OU REFERENCIAR
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🔗 Embutir ou referenciar dados?
+            </h2>
+
+            <p>
+                Ao modelar documentos MongoDB, uma decisão importante
+                é escolher entre <strong>embutir</strong> informações
+                ou utilizar <strong>referências</strong>.
+            </p>
+
+
+            <h3>
+                Dados embutidos
+            </h3>
+
+
+            <pre><code>{
+    <span class="json-key">"nome"</span>: <span class="json-string">"Ana"</span>,
+
+    <span class="json-key">"endereco"</span>: {
+
+        <span class="json-key">"cidade"</span>: <span class="json-string">"Rio de Janeiro"</span>,
+
+        <span class="json-key">"estado"</span>: <span class="json-string">"RJ"</span>
+
+    }
+}</code></pre>
+
+
+            <p>
+                O endereço está armazenado dentro do documento
+                do cliente.
+            </p>
+
+
+            <h3>
+                Referência
+            </h3>
+
+
+            <pre><code>{
+    <span class="json-key">"clienteId"</span>: ObjectId("..."),
+    <span class="json-key">"nome"</span>: <span class="json-string">"Pedido #1001"</span>
+}</code></pre>
+
+
+            <p>
+                Nesse caso, o documento pode utilizar um identificador
+                para apontar para outro documento.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>Não existe uma regra única.</strong>
+
+                <p>
+                    A decisão depende de como os dados são utilizados,
+                    consultados e atualizados pela aplicação.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             EMBUTIR
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                📦 Quando pensar em dados embutidos?
+            </h2>
+
+            <p>
+                Dados embutidos podem ser interessantes quando as
+                informações normalmente são acessadas juntas.
+            </p>
+
+
+            <pre><code>{
+    <span class="json-key">"nome"</span>: <span class="json-string">"Ana"</span>,
+
+    <span class="json-key">"contato"</span>: {
+
+        <span class="json-key">"email"</span>: <span class="json-string">"ana@email.com"</span>,
+
+        <span class="json-key">"telefone"</span>: <span class="json-string">"99999-9999"</span>
+
+    }
+}</code></pre>
+
+
+            <p>
+                O contato faz parte das informações do cliente
+                e pode ser lido junto com ele.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             REFERÊNCIAS
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🔗 Quando pensar em referências?
+            </h2>
+
+            <p>
+                Referências podem ser interessantes quando uma
+                informação é compartilhada por vários documentos
+                ou possui vida própria.
+            </p>
+
+
+            <pre><code>{
+    <span class="json-key">"produtoId"</span>: ObjectId("..."),
+
+    <span class="json-key">"quantidade"</span>: <span class="json-number">2</span>
+}</code></pre>
+
+
+            <p>
+                O pedido pode guardar uma referência para o produto
+                em vez de duplicar todas as informações do produto.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>Pense sempre nos padrões de acesso.</strong>
+
+                <p>
+                    A modelagem NoSQL costuma começar pelas perguntas
+                    que a aplicação precisa responder e pela forma
+                    como os dados serão acessados.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             EXEMPLO COMPLETO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🛒 Exemplo completo
+            </h2>
+
+            <p>
+                Podemos representar um cliente de uma loja desta forma:
+            </p>
+
+
+            <pre><code>{
+    <span class="json-key">"_id"</span>: ObjectId("65a123..."),
+
+    <span class="json-key">"nome"</span>: <span class="json-string">"Ana Silva"</span>,
+
+    <span class="json-key">"email"</span>: <span class="json-string">"ana@email.com"</span>,
+
+    <span class="json-key">"idade"</span>: <span class="json-number">25</span>,
+
+    <span class="json-key">"ativo"</span>: <span class="json-boolean">true</span>,
+
+    <span class="json-key">"endereco"</span>: {
+
+        <span class="json-key">"cidade"</span>: <span class="json-string">"Rio de Janeiro"</span>,
+
+        <span class="json-key">"estado"</span>: <span class="json-string">"RJ"</span>
+
+    },
+
+    <span class="json-key">"interesses"</span>: [
+
+        <span class="json-string">"Tecnologia"</span>,
+
+        <span class="json-string">"Banco de Dados"</span>,
+
+        <span class="json-string">"Programação"</span>
+
+    ]
+
+}</code></pre>
+
+
+            <p>
+                Esse único documento possui:
+            </p>
+
+
+            <ul>
+
+                <li>
+                    Um identificador.
+                </li>
+
+                <li>
+                    Informações textuais.
+                </li>
+
+                <li>
+                    Um número.
+                </li>
+
+                <li>
+                    Um booleano.
+                </li>
+
+                <li>
+                    Um objeto aninhado.
+                </li>
+
+                <li>
+                    Um array.
+                </li>
+
+            </ul>
+
+        </section>
+
+
+        <!-- =====================================================
+             COLEÇÃO COMPLETA
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🗂️ Uma coleção com vários documentos
+            </h2>
+
+            <p>
+                Uma coleção pode conter diversos documentos:
+            </p>
+
+
+            <pre><code>clientes
+
+┌─────────────────────────────┐
+│ Documento 1                 │
+│ nome: "Ana"                 │
+│ email: "ana@email.com"      │
+└─────────────────────────────┘
+
+┌─────────────────────────────┐
+│ Documento 2                 │
+│ nome: "João"                │
+│ email: "joao@email.com"     │
+└─────────────────────────────┘
+
+┌─────────────────────────────┐
+│ Documento 3                 │
+│ nome: "Maria"               │
+│ email: "maria@email.com"    │
+└─────────────────────────────┘</code></pre>
+
+
+            <p>
+                Todos esses documentos pertencem à coleção
+                <strong>clientes</strong>.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             DIFERENÇA ENTRE COLLECTION E DOCUMENT
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🧠 Collection × Document
+            </h2>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Conceito
+                            </th>
+
+                            <th>
+                                Função
+                            </th>
+
+                            <th>
+                                Exemplo
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>
+                                Collection
+                            </td>
+
+                            <td>
+                                Agrupar documentos relacionados.
+                            </td>
+
+                            <td>
+                                clientes
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Document
+                            </td>
+
+                            <td>
+                                Representar uma informação.
+                            </td>
+
+                            <td>
+                                { nome: "Ana" }
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             COLLECTION X TABLE
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🔄 Collection × Table
+            </h2>
+
+            <p>
+                Para facilitar o aprendizado, podemos estabelecer
+                uma comparação inicial:
+            </p>
+
+
+            <pre><code>SQL                         MongoDB
+
+Tabela                      Coleção
+   │                           │
+   ├── Linha                   ├── Documento
+   ├── Linha                   ├── Documento
+   └── Linha                   └── Documento</code></pre>
+
+
+            <p>
+                Porém, não devemos tratar os dois conceitos como
+                equivalentes em todos os aspectos.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>Por quê?</strong>
+
+                <p>
+                    O modelo relacional é baseado em relações,
+                    tabelas, linhas, colunas e restrições.
+                </p>
+
+                <p>
+                    O modelo documental trabalha com documentos
+                    que podem possuir estruturas aninhadas,
+                    arrays e diferentes formas de modelagem.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             BOAS PRÁTICAS
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                ✅ Boas práticas iniciais
+            </h2>
+
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <h3>
+                        🏷️ Use nomes claros
+                    </h3>
+
+                    <p>
+                        Prefira nomes que representem claramente
+                        o significado do campo.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        📐 Pense na estrutura
+                    </h3>
+
+                    <p>
+                        Flexibilidade não significa criar documentos
+                        sem organização.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        🔎 Pense nas consultas
+                    </h3>
+
+                    <p>
+                        A forma como os dados serão consultados
+                        influencia a modelagem.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        🧩 Evite duplicação desnecessária
+                    </h3>
+
+                    <p>
+                        Analise cuidadosamente quando embutir
+                        ou referenciar informações.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             ERROS COMUNS
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                ⚠️ Erros comuns
+            </h2>
+
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <h3>
+                        ❌ "MongoDB não possui estrutura"
+                    </h3>
+
+                    <p>
+                        Documentos possuem estrutura e podem possuir
+                        regras de validação.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        ❌ "Todo dado deve ser embutido"
+                    </h3>
+
+                    <p>
+                        Existem situações em que referências são
+                        mais adequadas.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        ❌ "Todo dado deve ser separado"
+                    </h3>
+
+                    <p>
+                        Dados que são acessados juntos podem,
+                        dependendo do caso, ser embutidos.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        ❌ "Flexível significa bagunçado"
+                    </h3>
+
+                    <p>
+                        Uma boa modelagem continua exigindo
+                        organização e regras.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             CHECKPOINT
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🧠 Checkpoint
+            </h2>
+
+            <p>
+                Tente responder às perguntas sem consultar a aula.
+            </p>
+
+
+            <ol>
+
+                <li>
+                    O que é um documento no MongoDB?
+                </li>
+
+                <li>
+                    O que é uma coleção?
+                </li>
+
+                <li>
+                    Qual é a função do campo <strong>_id</strong>?
+                </li>
+
+                <li>
+                    O que é um array?
+                </li>
+
+                <li>
+                    O que é um documento aninhado?
+                </li>
+
+                <li>
+                    Qual é a diferença entre um objeto e um array?
+                </li>
+
+                <li>
+                    O que significa embutir dados?
+                </li>
+
+                <li>
+                    O que significa utilizar uma referência?
+                </li>
+
+                <li>
+                    Por que os padrões de acesso influenciam
+                    a modelagem NoSQL?
+                </li>
+
+                <li>
+                    Collection e tabela são exatamente a mesma coisa?
+                    Explique.
+                </li>
+
+            </ol>
+
+        </section>
+
+
+        <!-- =====================================================
+             DESAFIO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                🧪 Desafio da aula
+            </h2>
+
+            <p>
+                Crie mentalmente um documento para representar
+                um aluno.
+            </p>
+
+
+            <p>
+                O aluno deve possuir:
+            </p>
+
+
+            <ul>
+
+                <li>
+                    Nome
+                </li>
+
+                <li>
+                    E-mail
+                </li>
+
+                <li>
+                    Idade
+                </li>
+
+                <li>
+                    Curso
+                </li>
+
+                <li>
+                    Uma lista de linguagens de programação
+                </li>
+
+                <li>
+                    Um endereço
+                </li>
+
+            </ul>
+
+
+            <p>
+                Uma possível estrutura seria:
+            </p>
+
+
+            <pre><code>{
+    "nome": "...",
+    "email": "...",
+    "idade": 0,
+
+    "curso": "...",
+
+    "linguagens": [
+        "...",
+        "..."
+    ],
+
+    "endereco": {
+        "cidade": "...",
+        "estado": "..."
+    }
+}</code></pre>
+
+
+            <div class="highlight">
+
+                <strong>Seu desafio:</strong>
+
+                <p>
+                    Não copie o exemplo. Crie seu próprio documento
+                    para um aluno fictício.
+                </p>
+
+                <p>
+                    Depois, identifique o tipo de cada campo.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             RESUMO
+        ====================================================== -->
+
+        <section>
+
+            <h2>
+                📝 Resumindo
+            </h2>
+
+
+            <div class="highlight">
+
+                <p>
+                    Um <strong>documento</strong> MongoDB é formado
+                    por campos e valores.
+                </p>
+
+                <p>
+                    Uma <strong>coleção</strong> agrupa documentos
+                    relacionados.
+                </p>
+
+                <p>
+                    Documentos podem conter
+                    <strong>strings, números, booleanos, arrays,
+                    objetos, datas e outros tipos</strong>.
+                </p>
+
+                <p>
+                    Documentos podem possuir
+                    <strong>estruturas aninhadas</strong>.
+                </p>
+
+                <p>
+                    Arrays podem armazenar valores ou objetos.
+                </p>
+
+                <p>
+                    O campo <strong>_id</strong> identifica
+                    cada documento de maneira única dentro
+                    de uma coleção.
+                </p>
+
+                <p>
+                    Na modelagem NoSQL, é importante considerar
+                    como os dados serão acessados antes de decidir
+                    entre embutir ou referenciar informações.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             PRÓXIMA AULA
+        ====================================================== -->
+
+        <section class="cta">
+
+            <h2>
+                🚀 Próxima aula: CRUD no MongoDB
+            </h2>
+
+            <p>
+                Agora que você entende documentos e coleções,
+                chegou a hora de começar a manipular dados.
+            </p>
+
+            <p>
+                Na próxima aula vamos trabalhar com as operações
+                fundamentais do MongoDB:
+                <strong>insert, find, update e delete</strong>.
+            </p>
+
+
+            <a
+                href="./19.html"
+                class="cta-button">
+
+                Aula 19 — CRUD no MongoDB →
+
+            </a>
+
+        </section>
+
+
+    </main>
+
+
+    <!-- =====================================================
+         FOOTER
+    ====================================================== -->
+
+    <footer>
+
+        <p>
+            Guia de Banco de Dados
+        </p>
+
+        <p>
+            Aula 18 • Documentos e Coleções
+        </p>
+
+    </footer>
+
+
+    <!-- =====================================================
+         JAVASCRIPT — DARK / LIGHT MODE
+    ====================================================== -->
+
+    <script src="./script.js"></script>
+
+</body>
+
+</html>

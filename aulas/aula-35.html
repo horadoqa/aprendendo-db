@@ -1,0 +1,1505 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="./style.css">
+
+    <link rel="icon" type="image/png" href="./assets/images/logo.png">
+
+    <title>Aula 35 — Window Functions e Projeto Final</title>
+
+</head>
+
+<body>
+
+
+    <!-- =====================================================
+       HEADER
+    ====================================================== -->
+
+    <header>
+
+        <button class="theme-toggle" id="themeToggle" type="button" aria-label="Alternar tema">
+
+            <span class="theme-icon" id="themeIcon">
+                ☀️
+            </span>
+
+            <span class="theme-label" id="themeLabel">
+                Modo claro
+            </span>
+
+        </button>
+
+
+        <div class="header-content">
+
+            <span class="eyebrow">
+                AULA 35 • SQL ANALÍTICO • FINAL
+            </span>
+
+            <h1>
+                Window Functions e Projeto Final
+            </h1>
+
+            <p>
+                Aprenda Window Functions e coloque em prática os principais
+                conceitos estudados ao longo do módulo de SQL, NoSQL,
+                Parquet e análise de dados.
+            </p>
+
+        </div>
+
+    </header>
+
+
+    <!-- =====================================================
+       CONTEÚDO
+    ====================================================== -->
+
+    <main>
+
+
+        <!-- =====================================================
+           OBJETIVOS
+        ====================================================== -->
+
+        <section>
+
+            <h2>🎯 Objetivos da aula</h2>
+
+            <p>
+                Nesta última aula vamos conhecer as
+                <strong>Window Functions</strong> e utilizar esse conceito
+                para realizar análises mais avançadas.
+            </p>
+
+            <p>
+                Também vamos revisar o caminho percorrido durante
+                toda a sequência de aulas e finalizar com um
+                <strong>projeto prático</strong>.
+            </p>
+
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <div class="icon">
+                        🪟
+                    </div>
+
+                    <h3>
+                        Window Functions
+                    </h3>
+
+                    <p>
+                        Realizar cálculos considerando outras linhas
+                        relacionadas ao registro atual.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🏆
+                    </div>
+
+                    <h3>
+                        Rankings
+                    </h3>
+
+                    <p>
+                        Criar classificações utilizando RANK e ROW_NUMBER.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        📈
+                    </div>
+
+                    <h3>
+                        Acumulados
+                    </h3>
+
+                    <p>
+                        Criar totais acumulados e análises temporais.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🚀
+                    </div>
+
+                    <h3>
+                        Projeto final
+                    </h3>
+
+                    <p>
+                        Consolidar os conhecimentos adquiridos.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           O QUE É WINDOW FUNCTION
+        ====================================================== -->
+
+        <section>
+
+            <h2>🪟 O que é uma Window Function?</h2>
+
+            <p>
+                Uma <strong>Window Function</strong> permite realizar
+                cálculos considerando um conjunto de linhas relacionadas
+                à linha atual.
+            </p>
+
+            <p>
+                A grande diferença para o <strong>GROUP BY</strong>
+                é que uma Window Function normalmente
+                <strong>não reduz o número de linhas do resultado</strong>.
+            </p>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                GROUP BY
+                            </th>
+
+                            <th>
+                                Window Function
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>
+                                Agrupa várias linhas em uma linha de resultado.
+                            </td>
+
+                            <td>
+                                Mantém as linhas e calcula informações
+                                considerando outras linhas.
+                            </td>
+
+                        </tr>
+
+                        <tr>
+
+                            <td>
+                                Muito utilizado para agregações.
+                            </td>
+
+                            <td>
+                                Muito utilizado para análises comparativas.
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           SINTAXE
+        ====================================================== -->
+
+        <section>
+
+            <h2>🧩 Estrutura de uma Window Function</h2>
+
+            <p>
+                Uma Window Function utiliza a cláusula
+                <strong>OVER()</strong>.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span>
+
+    produto,
+
+    preco,
+
+    <span class="sql-keyword">AVG</span>(preco)
+        <span class="sql-keyword">OVER</span>() <span class="sql-keyword">AS</span> media_geral
+
+<span class="sql-keyword">FROM</span> <span class="sql-string">'vendas.parquet'</span>;</code></pre>
+
+
+            <p>
+                A consulta calcula a média geral, mas mantém
+                cada registro individual no resultado.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+           ROW NUMBER
+        ====================================================== -->
+
+        <section>
+
+            <h2>🔢 ROW_NUMBER</h2>
+
+            <p>
+                <strong>ROW_NUMBER()</strong> atribui um número
+                sequencial para cada linha.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span>
+
+    produto,
+
+    preco,
+
+    <span class="sql-keyword">ROW_NUMBER</span>()
+        <span class="sql-keyword">OVER</span>(
+            <span class="sql-keyword">ORDER BY</span> preco <span class="sql-keyword">DESC</span>
+        ) <span class="sql-keyword">AS</span> posicao
+
+<span class="sql-keyword">FROM</span> <span class="sql-string">'vendas.parquet'</span>;</code></pre>
+
+
+            <p>
+                Agora cada produto recebe uma posição baseada
+                no preço.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+           RANK
+        ====================================================== -->
+
+        <section>
+
+            <h2>🏆 RANK</h2>
+
+            <p>
+                O <strong>RANK()</strong> também cria uma classificação,
+                mas trata valores iguais de maneira diferente.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span>
+
+    produto,
+
+    preco,
+
+    <span class="sql-keyword">RANK</span>()
+        <span class="sql-keyword">OVER</span>(
+            <span class="sql-keyword">ORDER BY</span> preco <span class="sql-keyword">DESC</span>
+        ) <span class="sql-keyword">AS</span> ranking
+
+<span class="sql-keyword">FROM</span> <span class="sql-string">'vendas.parquet'</span>;</code></pre>
+
+
+            <div class="highlight">
+
+                <strong>
+                    ROW_NUMBER x RANK
+                </strong>
+
+                <p>
+                    ROW_NUMBER cria uma sequência única.
+                </p>
+
+                <p>
+                    RANK permite que registros tenham a mesma posição
+                    quando possuem valores iguais.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           PARTITION BY
+        ====================================================== -->
+
+        <section>
+
+            <h2>📦 PARTITION BY</h2>
+
+            <p>
+                O <strong>PARTITION BY</strong> permite criar
+                grupos dentro da Window Function.
+            </p>
+
+
+            <p>
+                Imagine que queremos criar um ranking de produtos
+                separado para cada categoria.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span>
+
+    categoria,
+
+    produto,
+
+    preco,
+
+    <span class="sql-keyword">RANK</span>()
+        <span class="sql-keyword">OVER</span>(
+
+            <span class="sql-keyword">PARTITION BY</span> categoria
+
+            <span class="sql-keyword">ORDER BY</span> preco <span class="sql-keyword">DESC</span>
+
+        ) <span class="sql-keyword">AS</span> ranking
+
+<span class="sql-keyword">FROM</span> <span class="sql-string">'vendas.parquet'</span>;</code></pre>
+
+
+            <p>
+                Agora o ranking começa novamente dentro
+                de cada categoria.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+           SUM OVER
+        ====================================================== -->
+
+        <section>
+
+            <h2>📈 SUM com Window Function</h2>
+
+            <p>
+                Também podemos utilizar funções de agregação
+                como <strong>SUM()</strong> dentro de uma janela.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span>
+
+    data,
+
+    quantidade * preco <span class="sql-keyword">AS</span> valor,
+
+    <span class="sql-keyword">SUM</span>(quantidade * preco)
+        <span class="sql-keyword">OVER</span>(
+            <span class="sql-keyword">ORDER BY</span> data
+        ) <span class="sql-keyword">AS</span> faturamento_acumulado
+
+<span class="sql-keyword">FROM</span> <span class="sql-string">'vendas.parquet'</span>
+
+<span class="sql-keyword">ORDER BY</span>
+    data;</code></pre>
+
+
+            <p>
+                Isso cria um <strong>faturamento acumulado</strong>
+                ao longo do tempo.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+           PARTITION + SUM
+        ====================================================== -->
+
+        <section>
+
+            <h2>📊 Acumulado por categoria</h2>
+
+            <p>
+                Podemos combinar <strong>PARTITION BY</strong>
+                com <strong>SUM()</strong>.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span>
+
+    categoria,
+
+    data,
+
+    quantidade * preco <span class="sql-keyword">AS</span> valor,
+
+    <span class="sql-keyword">SUM</span>(quantidade * preco)
+        <span class="sql-keyword">OVER</span>(
+
+            <span class="sql-keyword">PARTITION BY</span> categoria
+
+            <span class="sql-keyword">ORDER BY</span> data
+
+        ) <span class="sql-keyword">AS</span> acumulado_categoria
+
+<span class="sql-keyword">FROM</span> <span class="sql-string">'vendas.parquet'</span>;</code></pre>
+
+
+            <p>
+                Cada categoria possui seu próprio acumulado.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+           LAG
+        ====================================================== -->
+
+        <section>
+
+            <h2>⬅️ LAG</h2>
+
+            <p>
+                A função <strong>LAG()</strong> permite acessar
+                o valor de uma linha anterior.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span>
+
+    data,
+
+    faturamento,
+
+    <span class="sql-keyword">LAG</span>(faturamento)
+        <span class="sql-keyword">OVER</span>(
+            <span class="sql-keyword">ORDER BY</span> data
+        ) <span class="sql-keyword">AS</span> faturamento_anterior
+
+<span class="sql-keyword">FROM</span> vendas_diarias;</code></pre>
+
+
+            <p>
+                Isso permite comparar um período com o período anterior.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+           CRESCIMENTO
+        ====================================================== -->
+
+        <section>
+
+            <h2>📈 Calculando crescimento</h2>
+
+            <p>
+                Com LAG podemos calcular a variação entre períodos.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span>
+
+    data,
+
+    faturamento,
+
+    <span class="sql-keyword">LAG</span>(faturamento)
+        <span class="sql-keyword">OVER</span>(
+            <span class="sql-keyword">ORDER BY</span> data
+        ) <span class="sql-keyword">AS</span> faturamento_anterior,
+
+    faturamento -
+        <span class="sql-keyword">LAG</span>(faturamento)
+        <span class="sql-keyword">OVER</span>(
+            <span class="sql-keyword">ORDER BY</span> data
+        ) <span class="sql-keyword">AS</span> variacao
+
+<span class="sql-keyword">FROM</span> vendas_diarias;</code></pre>
+
+
+            <p>
+                Esse tipo de cálculo é muito utilizado
+                em análises temporais.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+           LEAD
+        ====================================================== -->
+
+        <section>
+
+            <h2>➡️ LEAD</h2>
+
+            <p>
+                O <strong>LEAD()</strong> faz o oposto do LAG:
+                permite acessar uma linha posterior.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span>
+
+    data,
+
+    faturamento,
+
+    <span class="sql-keyword">LEAD</span>(faturamento)
+        <span class="sql-keyword">OVER</span>(
+            <span class="sql-keyword">ORDER BY</span> data
+        ) <span class="sql-keyword">AS</span> proximo_faturamento
+
+<span class="sql-keyword">FROM</span> vendas_diarias;</code></pre>
+
+        </section>
+
+
+        <!-- =====================================================
+           WINDOW FRAME
+        ====================================================== -->
+
+        <section>
+
+            <h2>🪟 Window Frame</h2>
+
+            <p>
+                Podemos controlar exatamente quais linhas
+                participam do cálculo utilizando um
+                <strong>Window Frame</strong>.
+            </p>
+
+
+            <p>
+                Por exemplo, podemos calcular uma média móvel.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span>
+
+    data,
+
+    faturamento,
+
+    <span class="sql-keyword">AVG</span>(faturamento)
+        <span class="sql-keyword">OVER</span>(
+
+            <span class="sql-keyword">ORDER BY</span> data
+
+            <span class="sql-keyword">ROWS BETWEEN</span>
+                6 <span class="sql-keyword">PRECEDING</span>
+                <span class="sql-keyword">AND CURRENT ROW</span>
+
+        ) <span class="sql-keyword">AS</span> media_movel_7_dias
+
+<span class="sql-keyword">FROM</span> vendas_diarias;</code></pre>
+
+
+            <p>
+                Nesse exemplo estamos calculando uma média móvel
+                considerando uma janela de até sete registros.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+           COMPARAÇÃO
+        ====================================================== -->
+
+        <section>
+
+            <h2>🧠 Principais Window Functions</h2>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Função
+                            </th>
+
+                            <th>
+                                Utilização
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>
+                                ROW_NUMBER()
+                            </td>
+
+                            <td>
+                                Numeração sequencial.
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                RANK()
+                            </td>
+
+                            <td>
+                                Ranking permitindo empates.
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                SUM() OVER
+                            </td>
+
+                            <td>
+                                Totais e acumulados.
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                AVG() OVER
+                            </td>
+
+                            <td>
+                                Médias e médias móveis.
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                LAG()
+                            </td>
+
+                            <td>
+                                Acessar valores anteriores.
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                LEAD()
+                            </td>
+
+                            <td>
+                                Acessar valores posteriores.
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           PROJETO
+        ====================================================== -->
+
+        <section>
+
+            <h2>🚀 Projeto Final</h2>
+
+            <p>
+                Agora vamos juntar tudo que aprendemos.
+            </p>
+
+            <p>
+                Imagine que você recebeu uma grande coleção
+                de arquivos Parquet contendo milhões de vendas.
+            </p>
+
+
+            <pre><code>
+dados/
+├── vendas_2024.parquet
+├── vendas_2025.parquet
+├── vendas_2026.parquet
+├── clientes.parquet
+└── produtos.parquet
+            </code></pre>
+
+
+            <p>
+                O objetivo é construir uma análise utilizando
+                <strong>DuckDB + SQL + Parquet</strong>.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+           DESAFIO FINAL
+        ====================================================== -->
+
+        <section>
+
+            <h2>🏆 Desafio final</h2>
+
+            <p>
+                Crie consultas capazes de responder às perguntas abaixo.
+            </p>
+
+
+            <ol>
+
+                <li>
+                    Quantas vendas existem?
+                </li>
+
+                <li>
+                    Qual foi o faturamento total?
+                </li>
+
+                <li>
+                    Qual foi o faturamento por categoria?
+                </li>
+
+                <li>
+                    Qual foi o faturamento por cidade?
+                </li>
+
+                <li>
+                    Quais são os 10 produtos com maior faturamento?
+                </li>
+
+                <li>
+                    Quais são os 10 clientes que mais gastaram?
+                </li>
+
+                <li>
+                    Qual é o ticket médio por cidade?
+                </li>
+
+                <li>
+                    Qual categoria possui maior faturamento?
+                </li>
+
+                <li>
+                    Qual produto ocupa a primeira posição dentro
+                    de cada categoria?
+                </li>
+
+                <li>
+                    Qual foi o faturamento acumulado ao longo do tempo?
+                </li>
+
+                <li>
+                    Qual foi o faturamento do período anterior?
+                </li>
+
+                <li>
+                    Qual foi a variação entre os períodos?
+                </li>
+
+                <li>
+                    Qual foi a média móvel das vendas?
+                </li>
+
+            </ol>
+
+        </section>
+
+
+        <!-- =====================================================
+           PROJETO EXTRA
+        ====================================================== -->
+
+        <section>
+
+            <h2>💡 Projeto extra — Dashboard</h2>
+
+            <p>
+                Como desafio final, transforme as consultas em
+                informações para um dashboard.
+            </p>
+
+
+            <p>
+                O dashboard poderia apresentar:
+            </p>
+
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <div class="icon">
+                        💰
+                    </div>
+
+                    <h3>
+                        Faturamento
+                    </h3>
+
+                    <p>
+                        Faturamento total e evolução ao longo do tempo.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🛒
+                    </div>
+
+                    <h3>
+                        Vendas
+                    </h3>
+
+                    <p>
+                        Quantidade de vendas e produtos vendidos.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🏆
+                    </div>
+
+                    <h3>
+                        Ranking
+                    </h3>
+
+                    <p>
+                        Produtos e clientes com maior movimentação.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🌎
+                    </div>
+
+                    <h3>
+                        Regiões
+                    </h3>
+
+                    <p>
+                        Comparação de cidades e regiões.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           REVISÃO DO CURSO
+        ====================================================== -->
+
+        <section>
+
+            <h2>🧭 O caminho percorrido</h2>
+
+            <p>
+                Ao longo das aulas, construímos uma visão progressiva
+                sobre dados, bancos de dados e análise.
+            </p>
+
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <h3>
+                        01
+                    </h3>
+
+                    <p>
+                        Banco de dados, SGBD e aplicação.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        02
+                    </h3>
+
+                    <p>
+                        SQL e bancos relacionais.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        03
+                    </h3>
+
+                    <p>
+                        Modelagem e relacionamentos.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        04
+                    </h3>
+
+                    <p>
+                        NoSQL e MongoDB.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        05
+                    </h3>
+
+                    <p>
+                        Consultas, agregações e índices.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        06
+                    </h3>
+
+                    <p>
+                        Parquet e grandes volumes de dados.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        07
+                    </h3>
+
+                    <p>
+                        DuckDB e SQL analítico.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        08
+                    </h3>
+
+                    <p>
+                        Window Functions e análise avançada.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           SQL x NOSQL
+        ====================================================== -->
+
+        <section>
+
+            <h2>🔄 SQL e NoSQL: onde chegamos?</h2>
+
+            <p>
+                Durante o curso trabalhamos com diferentes formas
+                de armazenamento e processamento de dados.
+            </p>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Tecnologia
+                            </th>
+
+                            <th>
+                                Conceito
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>
+                                SQL
+                            </td>
+
+                            <td>
+                                Linguagem para consultar e manipular
+                                dados em bancos que suportam SQL.
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                NoSQL
+                            </td>
+
+                            <td>
+                                Família de modelos de bancos de dados
+                                que não dependem do modelo relacional tradicional.
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                MongoDB
+                            </td>
+
+                            <td>
+                                SGBD orientado a documentos.
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Parquet
+                            </td>
+
+                            <td>
+                                Formato de armazenamento colunar
+                                voltado especialmente para dados analíticos.
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                DuckDB
+                            </td>
+
+                            <td>
+                                SGBD analítico que permite executar SQL
+                                diretamente sobre arquivos e outras fontes.
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           CONCEITO IMPORTANTE
+        ====================================================== -->
+
+        <section>
+
+            <h2>🧠 Uma distinção importante</h2>
+
+            <div class="highlight">
+
+                <p>
+                    <strong>SQL</strong> é uma linguagem.
+                </p>
+
+                <p>
+                    <strong>NoSQL</strong> é uma categoria de abordagens
+                    e modelos de bancos de dados.
+                </p>
+
+                <p>
+                    <strong>MongoDB</strong> é um SGBD orientado
+                    a documentos.
+                </p>
+
+                <p>
+                    <strong>Parquet</strong> é um formato de arquivo
+                    colunar para armazenamento de dados.
+                </p>
+
+                <p>
+                    <strong>DuckDB</strong> é um SGBD analítico que
+                    pode consultar arquivos como Parquet.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           O QUE APRENDER AGORA
+        ====================================================== -->
+
+        <section>
+
+            <h2>🚀 E depois deste curso?</h2>
+
+            <p>
+                Finalizar esta sequência não significa que você
+                terminou de aprender sobre dados.
+            </p>
+
+            <p>
+                Pelo contrário: agora você possui uma base para
+                avançar para assuntos mais especializados.
+            </p>
+
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <h3>
+                        Engenharia de Dados
+                    </h3>
+
+                    <p>
+                        Pipelines, ETL, ELT, orquestração,
+                        data lakes e data warehouses.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        Data Analytics
+                    </h3>
+
+                    <p>
+                        Métricas, dashboards, BI e análise
+                        exploratória.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        Data Science
+                    </h3>
+
+                    <p>
+                        Estatística, Python, machine learning
+                        e modelos preditivos.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        Big Data
+                    </h3>
+
+                    <p>
+                        Processamento distribuído, Spark,
+                        armazenamento em larga escala e cloud.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           CHECKPOINT FINAL
+        ====================================================== -->
+
+        <section>
+
+            <h2>🎓 Checkpoint final</h2>
+
+            <p>
+                Se você consegue explicar os conceitos abaixo
+                com suas próprias palavras, possui uma boa base
+                para continuar estudando.
+            </p>
+
+
+            <ul>
+
+                <li>
+                    O que é um banco de dados?
+                </li>
+
+                <li>
+                    O que é um SGBD?
+                </li>
+
+                <li>
+                    Qual é a função do SQL?
+                </li>
+
+                <li>
+                    Qual é a diferença entre SQL e NoSQL?
+                </li>
+
+                <li>
+                    O que é um documento no MongoDB?
+                </li>
+
+                <li>
+                    O que é uma agregação?
+                </li>
+
+                <li>
+                    Para que servem índices?
+                </li>
+
+                <li>
+                    O que é Parquet?
+                </li>
+
+                <li>
+                    Por que o formato colunar é interessante para analytics?
+                </li>
+
+                <li>
+                    O que é DuckDB?
+                </li>
+
+                <li>
+                    Para que serve GROUP BY?
+                </li>
+
+                <li>
+                    Qual a diferença entre WHERE e HAVING?
+                </li>
+
+                <li>
+                    O que é uma Window Function?
+                </li>
+
+                <li>
+                    Para que servem RANK, LAG e LEAD?
+                </li>
+
+            </ul>
+
+        </section>
+
+
+        <!-- =====================================================
+           CONCLUSÃO
+        ====================================================== -->
+
+        <section>
+
+            <h2>🏁 Conclusão</h2>
+
+            <div class="highlight">
+
+                <p>
+                    Você começou entendendo o que é um
+                    <strong>banco de dados</strong>.
+                </p>
+
+                <p>
+                    Depois conheceu <strong>SGBDs</strong>,
+                    SQL, modelagem, relacionamentos e operações
+                    sobre dados.
+                </p>
+
+                <p>
+                    Em seguida entrou no mundo
+                    <strong>NoSQL</strong>, trabalhando com
+                    documentos, MongoDB, consultas, agregações
+                    e índices.
+                </p>
+
+                <p>
+                    Finalmente, avançou para
+                    <strong>Parquet</strong>, grandes volumes
+                    de dados, <strong>DuckDB</strong> e SQL analítico.
+                </p>
+
+                <p>
+                    Agora você conhece as principais ideias necessárias
+                    para começar a trabalhar com dados de maneira mais
+                    estruturada.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           FRASE FINAL
+        ====================================================== -->
+
+        <section class="cta">
+
+            <h2>
+                🎓 Fim desta etapa!
+            </h2>
+
+            <p>
+                O objetivo não é decorar comandos.
+                É aprender a pensar sobre os dados.
+            </p>
+
+            <p>
+                Continue praticando, criando consultas,
+                modelando problemas e construindo projetos.
+            </p>
+
+            <p>
+                <strong>
+                    Aprender dados é aprender a transformar
+                    informação em conhecimento.
+                </strong>
+            </p>
+
+        </section>
+
+
+    </main>
+
+
+    <!-- =====================================================
+       FOOTER
+    ====================================================== -->
+
+    <footer>
+
+        <p>
+            Guia de Banco de Dados
+        </p>
+
+        <p>
+            Aula 35 • Window Functions e Projeto Final
+        </p>
+
+        <p>
+            Fim do módulo
+        </p>
+
+    </footer>
+
+
+    <!-- =====================================================
+       JAVASCRIPT — DARK / LIGHT MODE
+    ====================================================== -->
+
+    <script src="./script.js"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,1760 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="./style.css">
+
+    <link rel="icon" type="image/png" href="./assets/images/logo.png">
+
+    <title>Aula 28 — Índices e Performance no MongoDB</title>
+
+</head>
+
+<body>
+
+
+    <!-- =====================================================
+       HEADER
+    ====================================================== -->
+
+    <header>
+
+        <button class="theme-toggle" id="themeToggle" type="button" aria-label="Alternar tema">
+
+            <span class="theme-icon" id="themeIcon">
+                ☀️
+            </span>
+
+            <span class="theme-label" id="themeLabel">
+                Modo claro
+            </span>
+
+        </button>
+
+
+        <div class="header-content">
+
+            <span class="eyebrow">
+                AULA 28 • MONGODB
+            </span>
+
+            <h1>
+                Índices e Performance no MongoDB
+            </h1>
+
+            <p>
+                Aprenda como os índices aceleram consultas no MongoDB,
+                como criá-los, analisá-los e escolher índices adequados
+                para cada tipo de consulta.
+            </p>
+
+        </div>
+
+    </header>
+
+
+    <!-- =====================================================
+       CONTEÚDO
+    ====================================================== -->
+
+    <main>
+
+
+        <!-- =====================================================
+           OBJETIVOS
+        ====================================================== -->
+
+        <section>
+
+            <h2>🎯 Objetivos da aula</h2>
+
+            <p>
+                Até aqui aprendemos a armazenar, consultar, modificar,
+                agrupar e analisar documentos no MongoDB.
+            </p>
+
+            <p>
+                Agora vamos estudar um conceito fundamental para
+                aplicações que trabalham com grandes quantidades
+                de dados: <strong>índices</strong>.
+            </p>
+
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <div class="icon">
+                        ⚡
+                    </div>
+
+                    <h3>
+                        Performance
+                    </h3>
+
+                    <p>
+                        Entender como índices podem acelerar consultas.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🔎
+                    </div>
+
+                    <h3>
+                        Consultas
+                    </h3>
+
+                    <p>
+                        Identificar quais consultas podem se beneficiar
+                        de índices.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🛠️
+                    </div>
+
+                    <h3>
+                        Criar índices
+                    </h3>
+
+                    <p>
+                        Utilizar o createIndex() para criar índices.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        📊
+                    </div>
+
+                    <h3>
+                        Analisar consultas
+                    </h3>
+
+                    <p>
+                        Utilizar explain() para investigar o desempenho.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           O PROBLEMA
+        ====================================================== -->
+
+        <section>
+
+            <h2>🐌 O problema das consultas sem índice</h2>
+
+            <p>
+                Imagine uma coleção contendo milhões de documentos.
+            </p>
+
+            <p>
+                Queremos encontrar um usuário específico:
+            </p>
+
+
+            <pre><code>db.usuarios.find({
+
+    email: "ana@email.com"
+
+})</code></pre>
+
+
+            <p>
+                Sem um índice adequado, o banco pode precisar analisar
+                muitos documentos até encontrar os registros que
+                correspondem à consulta.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>
+                    Imagine uma biblioteca.
+                </strong>
+
+                <p>
+                    Procurar um livro específico examinando livro por
+                    livro seria muito demorado.
+                </p>
+
+                <p>
+                    Um catálogo permite encontrar rapidamente onde
+                    aquele livro está.
+                </p>
+
+                <p>
+                    Um índice funciona de maneira semelhante:
+                    ele cria uma estrutura que ajuda o MongoDB
+                    a localizar os documentos necessários.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           O QUE É UM ÍNDICE
+        ====================================================== -->
+
+        <section>
+
+            <h2>📚 O que é um índice?</h2>
+
+            <p>
+                Um <strong>índice</strong> é uma estrutura de dados
+                mantida pelo MongoDB para permitir que determinadas
+                consultas encontrem documentos de maneira mais eficiente.
+            </p>
+
+
+            <p>
+                Por exemplo, podemos criar um índice no campo
+                <strong>email</strong>:
+            </p>
+
+
+            <pre><code>db.usuarios.createIndex({
+
+    email: 1
+
+})</code></pre>
+
+
+            <p>
+                O número <strong>1</strong> representa uma ordenação
+                crescente no índice.
+            </p>
+
+
+            <p>
+                Também podemos utilizar <strong>-1</strong>:
+            </p>
+
+
+            <pre><code>db.usuarios.createIndex({
+
+    email: -1
+
+})</code></pre>
+
+
+            <p>
+                Nesse caso, o índice utiliza ordenação decrescente.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+           ÍNDICE PADRÃO
+        ====================================================== -->
+
+        <section>
+
+            <h2>🔑 O índice _id</h2>
+
+            <p>
+                Existe um índice especial que você encontra em
+                praticamente toda coleção MongoDB:
+                o índice do campo <strong>_id</strong>.
+            </p>
+
+
+            <p>
+                Quando um documento possui um campo
+                <strong>_id</strong>, o MongoDB cria automaticamente
+                um índice único para esse campo.
+            </p>
+
+
+            <pre><code>{
+    _id: 1,
+
+    nome: "Ana",
+
+    email: "ana@email.com"
+}</code></pre>
+
+
+            <div class="highlight">
+
+                <strong>
+                    Importante:
+                </strong>
+
+                <p>
+                    O índice de <strong>_id</strong> não precisa ser
+                    criado manualmente.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           CREATE INDEX
+        ====================================================== -->
+
+        <section>
+
+            <h2>🛠️ Criando um índice</h2>
+
+            <p>
+                O método utilizado para criar índices é:
+            </p>
+
+
+            <pre><code>createIndex()</code></pre>
+
+
+            <p>
+                Exemplo:
+            </p>
+
+
+            <pre><code>db.usuarios.createIndex({
+
+    email: 1
+
+})</code></pre>
+
+
+            <p>
+                Depois disso, consultas que utilizam esse campo
+                podem se beneficiar do índice.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+           LIST INDEXES
+        ====================================================== -->
+
+        <section>
+
+            <h2>📋 Visualizando os índices</h2>
+
+            <p>
+                Podemos verificar os índices existentes em uma coleção
+                utilizando:
+            </p>
+
+
+            <pre><code>db.usuarios.getIndexes()</code></pre>
+
+
+            <p>
+                O MongoDB retornará informações sobre os índices
+                existentes.
+            </p>
+
+
+            <pre><code>[
+    {
+        v: 2,
+
+        key: {
+            _id: 1
+        },
+
+        name: "_id_"
+    },
+
+    {
+        v: 2,
+
+        key: {
+            email: 1
+        },
+
+        name: "email_1"
+    }
+]</code></pre>
+
+        </section>
+
+
+        <!-- =====================================================
+           UNIQUE
+        ====================================================== -->
+
+        <section>
+
+            <h2>🔐 Índice único</h2>
+
+            <p>
+                Podemos criar um índice que impede valores duplicados
+                utilizando a opção <strong>unique</strong>.
+            </p>
+
+
+            <p>
+                Um exemplo clássico é o e-mail de um usuário.
+            </p>
+
+
+            <pre><code>db.usuarios.createIndex(
+
+    {
+        email: 1
+    },
+
+    {
+        unique: true
+    }
+
+)</code></pre>
+
+
+            <p>
+                Depois disso, dois documentos não poderão possuir
+                o mesmo valor de e-mail.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>
+                    Índice não serve apenas para performance.
+                </strong>
+
+                <p>
+                    Um índice único também pode ser utilizado para
+                    impor uma regra de unicidade.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           COMPOUND INDEX
+        ====================================================== -->
+
+        <section>
+
+            <h2>🧩 Índices compostos</h2>
+
+            <p>
+                Um índice pode utilizar mais de um campo.
+                Esse tipo de índice é chamado de
+                <strong>índice composto</strong>.
+            </p>
+
+
+            <p>
+                Por exemplo:
+            </p>
+
+
+            <pre><code>db.usuarios.createIndex({
+
+    cidade: 1,
+
+    nome: 1
+
+})</code></pre>
+
+
+            <p>
+                Esse índice considera os campos
+                <strong>cidade</strong> e <strong>nome</strong>.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>
+                    A ordem dos campos é importante.
+                </strong>
+
+                <p>
+                    Índices compostos devem ser planejados de acordo
+                    com os padrões reais de consulta da aplicação.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           EXEMPLO COMPOSTO
+        ====================================================== -->
+
+        <section>
+
+            <h2>🔎 Exemplo de consulta com índice composto</h2>
+
+            <p>
+                Imagine uma coleção de pedidos:
+            </p>
+
+
+            <pre><code>{
+    clienteId: 100,
+
+    status: "concluido",
+
+    valor: 4500
+}</code></pre>
+
+
+            <p>
+                Se uma aplicação consulta frequentemente pedidos
+                por cliente e status, podemos considerar um índice
+                composto:
+            </p>
+
+
+            <pre><code>db.pedidos.createIndex({
+
+    clienteId: 1,
+
+    status: 1
+
+})</code></pre>
+
+
+            <p>
+                E então realizar uma consulta como:
+            </p>
+
+
+            <pre><code>db.pedidos.find({
+
+    clienteId: 100,
+
+    status: "concluido"
+
+})</code></pre>
+
+        </section>
+
+
+        <!-- =====================================================
+           EXPLAIN
+        ====================================================== -->
+
+        <section>
+
+            <h2>🔬 Analisando consultas com explain()</h2>
+
+            <p>
+                Criar um índice não significa simplesmente assumir
+                que a consulta ficará mais rápida.
+            </p>
+
+            <p>
+                Precisamos analisar o comportamento da consulta.
+            </p>
+
+
+            <p>
+                O MongoDB fornece o método
+                <strong>explain()</strong> para isso.
+            </p>
+
+
+            <pre><code>db.usuarios.find({
+
+    email: "ana@email.com"
+
+}).explain("executionStats")</code></pre>
+
+
+            <p>
+                O resultado apresenta informações sobre como o MongoDB
+                executou a consulta.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+           COLLSCAN
+        ====================================================== -->
+
+        <section>
+
+            <h2>🔍 COLLSCAN</h2>
+
+            <p>
+                Um termo importante ao analisar uma consulta é
+                <strong>COLLSCAN</strong>.
+            </p>
+
+
+            <p>
+                COLLSCAN significa
+                <strong>Collection Scan</strong>.
+            </p>
+
+
+            <p>
+                Isso indica que o MongoDB está examinando documentos
+                da coleção para encontrar aqueles que correspondem
+                à consulta.
+            </p>
+
+
+            <pre><code>db.usuarios.find({
+
+    email: "ana@email.com"
+
+}).explain("executionStats")</code></pre>
+
+
+            <p>
+                Se a consulta resultar em um plano baseado em
+                <strong>COLLSCAN</strong>, pode ser necessário investigar
+                se existe um índice adequado.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+           IXSCAN
+        ====================================================== -->
+
+        <section>
+
+            <h2>⚡ IXSCAN</h2>
+
+            <p>
+                Outro termo importante é
+                <strong>IXSCAN</strong>.
+            </p>
+
+
+            <p>
+                IXSCAN indica que o MongoDB está percorrendo
+                um índice para executar parte da consulta.
+            </p>
+
+
+            <pre><code>db.usuarios.find({
+
+    email: "ana@email.com"
+
+}).explain("executionStats")</code></pre>
+
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <div class="icon">
+                        🐌
+                    </div>
+
+                    <h3>
+                        COLLSCAN
+                    </h3>
+
+                    <p>
+                        Percorre documentos da coleção.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        ⚡
+                    </div>
+
+                    <h3>
+                        IXSCAN
+                    </h3>
+
+                    <p>
+                        Utiliza um índice durante a execução.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           EXECUTION STATS
+        ====================================================== -->
+
+        <section>
+
+            <h2>📊 executionStats</h2>
+
+            <p>
+                Ao utilizar:
+            </p>
+
+
+            <pre><code>.explain("executionStats")</code></pre>
+
+
+            <p>
+                podemos observar diversas informações sobre a execução.
+            </p>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Informação
+                            </th>
+
+                            <th>
+                                O que representa
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>
+                                executionTimeMillis
+                            </td>
+
+                            <td>
+                                Tempo de execução observado.
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                nReturned
+                            </td>
+
+                            <td>
+                                Quantidade de documentos retornados.
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                totalDocsExamined
+                            </td>
+
+                            <td>
+                                Quantidade de documentos examinados.
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                totalKeysExamined
+                            </td>
+
+                            <td>
+                                Quantidade de entradas de índice examinadas.
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           DOCUMENTS EXAMINED
+        ====================================================== -->
+
+        <section>
+
+            <h2>📉 Por que totalDocsExamined importa?</h2>
+
+            <p>
+                Imagine uma coleção com:
+            </p>
+
+
+            <pre><code>10.000.000 documentos</code></pre>
+
+
+            <p>
+                E uma consulta que retorna apenas:
+            </p>
+
+
+            <pre><code>1 documento</code></pre>
+
+
+            <p>
+                Se o MongoDB precisar examinar milhões de documentos
+                para encontrar aquele único resultado, isso pode indicar
+                uma oportunidade de melhoria.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>
+                    A ideia não é simplesmente "usar índices em tudo".
+                </strong>
+
+                <p>
+                    O objetivo é criar índices que façam sentido
+                    para os padrões de consulta da aplicação.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           INDEX + SORT
+        ====================================================== -->
+
+        <section>
+
+            <h2>↕️ Índices e ordenação</h2>
+
+            <p>
+                Índices também podem ajudar consultas que precisam
+                ordenar resultados.
+            </p>
+
+
+            <p>
+                Imagine:
+            </p>
+
+
+            <pre><code>db.produtos.find({
+
+    categoria: "notebooks"
+
+}).sort({
+
+    preco: -1
+
+})</code></pre>
+
+
+            <p>
+                Um índice que considere os campos utilizados
+                pela consulta pode ajudar o MongoDB a processar
+                esse tipo de operação com mais eficiência.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+           INDEX TYPES
+        ====================================================== -->
+
+        <section>
+
+            <h2>🗂️ Tipos de índices</h2>
+
+            <p>
+                O MongoDB possui diferentes recursos de indexação
+                para diferentes necessidades.
+            </p>
+
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <h3>
+                        Índice simples
+                    </h3>
+
+                    <p>
+                        Utiliza um único campo.
+                    </p>
+
+                    <pre><code>{ email: 1 }</code></pre>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        Índice composto
+                    </h3>
+
+                    <p>
+                        Utiliza múltiplos campos.
+                    </p>
+
+                    <pre><code>{
+    cidade: 1,
+    nome: 1
+}</code></pre>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        Índice único
+                    </h3>
+
+                    <p>
+                        Impede valores duplicados.
+                    </p>
+
+                    <pre><code>{
+    unique: true
+}</code></pre>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        Índice de texto
+                    </h3>
+
+                    <p>
+                        Pode ser utilizado para determinadas
+                        pesquisas textuais.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           TEXT INDEX
+        ====================================================== -->
+
+        <section>
+
+            <h2>🔤 Índice de texto</h2>
+
+            <p>
+                O MongoDB possui suporte a índices de texto para
+                determinados cenários de pesquisa textual.
+            </p>
+
+
+            <p>
+                Por exemplo:
+            </p>
+
+
+            <pre><code>db.artigos.createIndex({
+
+    titulo: "text"
+
+})</code></pre>
+
+
+            <p>
+                Depois podemos utilizar uma consulta de texto:
+            </p>
+
+
+            <pre><code>db.artigos.find({
+
+    $text: {
+        $search: "MongoDB"
+    }
+
+})</code></pre>
+
+
+            <div class="highlight">
+
+                <strong>
+                    Atenção:
+                </strong>
+
+                <p>
+                    Índices de texto possuem características próprias
+                    e não substituem automaticamente mecanismos
+                    especializados de busca.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           CUSTO DOS ÍNDICES
+        ====================================================== -->
+
+        <section>
+
+            <h2>⚠️ Índices também possuem custos</h2>
+
+            <p>
+                É tentador pensar que quanto mais índices tivermos,
+                melhor será a aplicação.
+            </p>
+
+            <p>
+                Porém, isso não é verdade.
+            </p>
+
+
+            <p>
+                Índices também ocupam espaço e precisam ser mantidos
+                quando os dados são inseridos, atualizados ou removidos.
+            </p>
+
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <div class="icon">
+                        💾
+                    </div>
+
+                    <h3>
+                        Espaço
+                    </h3>
+
+                    <p>
+                        Índices consomem armazenamento.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        ✏️
+                    </div>
+
+                    <h3>
+                        Escritas
+                    </h3>
+
+                    <p>
+                        Operações de escrita precisam manter
+                        os índices atualizados.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🧠
+                    </div>
+
+                    <h3>
+                        Complexidade
+                    </h3>
+
+                    <p>
+                        Muitos índices podem dificultar
+                        a manutenção e o planejamento.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           QUANDO CRIAR
+        ====================================================== -->
+
+        <section>
+
+            <h2>🤔 Quando devemos criar um índice?</h2>
+
+            <p>
+                Não existe uma regra universal que determine
+                exatamente quais campos devem receber índices.
+            </p>
+
+
+            <p>
+                A decisão deve considerar principalmente
+                o comportamento da aplicação.
+            </p>
+
+
+            <ul>
+
+                <li>
+                    Campos frequentemente utilizados em consultas.
+                </li>
+
+                <li>
+                    Campos utilizados para ordenação.
+                </li>
+
+                <li>
+                    Campos utilizados em filtros importantes.
+                </li>
+
+                <li>
+                    Campos utilizados em determinadas combinações
+                    de consultas.
+                </li>
+
+                <li>
+                    Requisitos de unicidade.
+                </li>
+
+            </ul>
+
+
+            <div class="highlight">
+
+                <strong>
+                    Regra prática:
+                </strong>
+
+                <p>
+                    Primeiro conheça as consultas da aplicação.
+                    Depois escolha os índices que atendem a esses
+                    padrões.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           QUANDO NÃO CRIAR
+        ====================================================== -->
+
+        <section>
+
+            <h2>🚫 Quando um índice pode não ser necessário?</h2>
+
+            <p>
+                Criar índices indiscriminadamente pode aumentar
+                custos sem trazer benefícios relevantes.
+            </p>
+
+
+            <p>
+                Por exemplo, um campo que quase nunca participa
+                de consultas pode não justificar um índice.
+            </p>
+
+
+            <p>
+                Também devemos considerar o tamanho e o comportamento
+                da coleção.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>
+                    Índice é uma ferramenta de otimização.
+                </strong>
+
+                <p>
+                    Ele deve existir para atender uma necessidade
+                    real da aplicação.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           REMOVENDO INDEX
+        ====================================================== -->
+
+        <section>
+
+            <h2>🗑️ Removendo um índice</h2>
+
+            <p>
+                Quando um índice deixa de ser necessário,
+                podemos removê-lo.
+            </p>
+
+
+            <p>
+                Primeiro podemos verificar os índices existentes:
+            </p>
+
+
+            <pre><code>db.usuarios.getIndexes()</code></pre>
+
+
+            <p>
+                Depois podemos remover um índice pelo nome:
+            </p>
+
+
+            <pre><code>db.usuarios.dropIndex("email_1")</code></pre>
+
+
+            <p>
+                O nome do índice pode ser encontrado no resultado
+                de <strong>getIndexes()</strong>.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+           EXEMPLO COMPLETO
+        ====================================================== -->
+
+        <section>
+
+            <h2>🔥 Exemplo completo</h2>
+
+            <p>
+                Imagine uma aplicação que possui milhões de pedidos.
+            </p>
+
+
+            <p>
+                Frequentemente precisamos buscar pedidos de um
+                determinado cliente:
+            </p>
+
+
+            <pre><code>db.pedidos.find({
+
+    clienteId: 1001
+
+})</code></pre>
+
+
+            <p>
+                Podemos criar:
+            </p>
+
+
+            <pre><code>db.pedidos.createIndex({
+
+    clienteId: 1
+
+})</code></pre>
+
+
+            <p>
+                Depois podemos analisar a consulta:
+            </p>
+
+
+            <pre><code>db.pedidos.find({
+
+    clienteId: 1001
+
+}).explain("executionStats")</code></pre>
+
+
+            <p>
+                A partir das informações retornadas pelo
+                <strong>explain()</strong>, podemos avaliar como
+                a consulta está sendo executada.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+           FLUXO
+        ====================================================== -->
+
+        <section>
+
+            <h2>🔄 Um fluxo para otimizar consultas</h2>
+
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <h3>
+                        1️⃣ Observar
+                    </h3>
+
+                    <p>
+                        Identifique consultas importantes
+                        da aplicação.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        2️⃣ Medir
+                    </h3>
+
+                    <p>
+                        Utilize explain() para analisar
+                        a execução.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        3️⃣ Planejar
+                    </h3>
+
+                    <p>
+                        Escolha índices compatíveis
+                        com os padrões de consulta.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        4️⃣ Testar
+                    </h3>
+
+                    <p>
+                        Compare o comportamento antes
+                        e depois da alteração.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           TABELA RESUMO
+        ====================================================== -->
+
+        <section>
+
+            <h2>📚 Resumo dos principais comandos</h2>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Comando
+                            </th>
+
+                            <th>
+                                Função
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>
+                                createIndex()
+                            </td>
+
+                            <td>
+                                Cria um índice.
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                getIndexes()
+                            </td>
+
+                            <td>
+                                Lista os índices da coleção.
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                dropIndex()
+                            </td>
+
+                            <td>
+                                Remove um índice.
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                explain()
+                            </td>
+
+                            <td>
+                                Analisa como uma operação é executada.
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           CHECKPOINT
+        ====================================================== -->
+
+        <section>
+
+            <h2>🧠 Checkpoint</h2>
+
+            <p>
+                Antes de avançar, tente responder:
+            </p>
+
+
+            <ol>
+
+                <li>
+                    O que é um índice?
+                </li>
+
+                <li>
+                    Por que índices podem melhorar consultas?
+                </li>
+
+                <li>
+                    O MongoDB cria algum índice automaticamente?
+                </li>
+
+                <li>
+                    Para que serve createIndex()?
+                </li>
+
+                <li>
+                    Para que serve getIndexes()?
+                </li>
+
+                <li>
+                    Qual é a diferença entre COLLSCAN e IXSCAN?
+                </li>
+
+                <li>
+                    Para que serve explain("executionStats")?
+                </li>
+
+                <li>
+                    O que representa totalDocsExamined?
+                </li>
+
+                <li>
+                    O que é um índice composto?
+                </li>
+
+                <li>
+                    Por que não devemos criar índices indiscriminadamente?
+                </li>
+
+            </ol>
+
+        </section>
+
+
+        <!-- =====================================================
+           DESAFIO
+        ====================================================== -->
+
+        <section>
+
+            <h2>🧪 Desafio da aula</h2>
+
+            <p>
+                Imagine uma coleção chamada
+                <strong>produtos</strong>:
+            </p>
+
+
+            <pre><code>{
+    nome: "Notebook",
+
+    categoria: "Eletrônicos",
+
+    preco: 4500,
+
+    estoque: 20
+}</code></pre>
+
+
+            <p>
+                Crie os comandos necessários para:
+            </p>
+
+
+            <ol>
+
+                <li>
+                    Criar um índice no campo categoria.
+                </li>
+
+                <li>
+                    Criar um índice no campo preco.
+                </li>
+
+                <li>
+                    Criar um índice composto utilizando categoria
+                    e preco.
+                </li>
+
+                <li>
+                    Listar os índices existentes.
+                </li>
+
+                <li>
+                    Executar uma consulta filtrando pela categoria.
+                </li>
+
+                <li>
+                    Utilizar explain() nessa consulta.
+                </li>
+
+                <li>
+                    Criar uma consulta que filtre categoria
+                    e ordene por preço.
+                </li>
+
+                <li>
+                    Analisar o plano de execução dessa consulta.
+                </li>
+
+                <li>
+                    Identificar se a consulta está utilizando
+                    um índice.
+                </li>
+
+            </ol>
+
+
+            <div class="highlight">
+
+                <strong>
+                    Desafio extra 🚀
+                </strong>
+
+                <p>
+                    Imagine que a coleção possui
+                    <strong>10 milhões de produtos</strong>.
+                </p>
+
+                <p>
+                    Pense em quais consultas seriam mais importantes
+                    para a aplicação e quais índices poderiam ajudar
+                    essas consultas.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           RESUMO
+        ====================================================== -->
+
+        <section>
+
+            <h2>📝 Resumindo</h2>
+
+
+            <div class="highlight">
+
+                <p>
+                    Um <strong>índice</strong> é uma estrutura que pode
+                    ajudar o MongoDB a localizar dados de maneira mais
+                    eficiente.
+                </p>
+
+                <p>
+                    O método <strong>createIndex()</strong> é utilizado
+                    para criar índices.
+                </p>
+
+                <p>
+                    O método <strong>getIndexes()</strong> permite
+                    visualizar os índices existentes.
+                </p>
+
+                <p>
+                    O <strong>explain()</strong> permite analisar
+                    como uma consulta foi executada.
+                </p>
+
+                <p>
+                    <strong>COLLSCAN</strong> representa uma varredura
+                    da coleção, enquanto <strong>IXSCAN</strong>
+                    indica a utilização de um índice em uma etapa
+                    da execução.
+                </p>
+
+                <p>
+                    Índices podem melhorar consultas, mas também
+                    possuem custos de armazenamento e manutenção.
+                </p>
+
+                <p>
+                    Por isso, bons índices devem ser escolhidos
+                    considerando os padrões reais de consulta
+                    da aplicação.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           CTA
+        ====================================================== -->
+
+        <section class="cta">
+
+            <h2>
+                🚀 Próxima aula: Transações no MongoDB
+            </h2>
+
+            <p>
+                Agora que você já sabe trabalhar com consultas,
+                Aggregation Pipeline e índices, vamos estudar como
+                garantir que várias operações sejam tratadas como
+                uma única unidade de trabalho.
+            </p>
+
+            <p>
+                Na próxima aula veremos
+                <strong>transações, atomicidade e consistência</strong>.
+            </p>
+
+
+            <a href="./29.html" class="cta-button">
+                Aula 29 →
+            </a>
+
+        </section>
+
+
+    </main>
+
+
+    <!-- =====================================================
+       FOOTER
+    ====================================================== -->
+
+    <footer>
+
+        <p>
+            Guia de Banco de Dados
+        </p>
+
+        <p>
+            Aula 28 • Índices e Performance no MongoDB
+        </p>
+
+    </footer>
+
+
+    <!-- =====================================================
+       JAVASCRIPT — DARK / LIGHT MODE
+    ====================================================== -->
+
+    <script src="./script.js"></script>
+
+</body>
+
+</html>

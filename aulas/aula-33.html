@@ -1,0 +1,1549 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="./style.css">
+
+    <link rel="icon" type="image/png" href="./assets/images/logo.png">
+
+    <title>Aula 33 — DuckDB + Parquet</title>
+
+</head>
+
+<body>
+
+
+    <!-- =====================================================
+       HEADER
+    ====================================================== -->
+
+    <header>
+
+        <button class="theme-toggle" id="themeToggle" type="button" aria-label="Alternar tema">
+
+            <span class="theme-icon" id="themeIcon">
+                ☀️
+            </span>
+
+            <span class="theme-label" id="themeLabel">
+                Modo claro
+            </span>
+
+        </button>
+
+
+        <div class="header-content">
+
+            <span class="eyebrow">
+                AULA 33 • BIG DATA
+            </span>
+
+            <h1>
+                DuckDB + Parquet
+            </h1>
+
+            <p>
+                Aprenda a consultar arquivos Parquet diretamente usando
+                SQL com o DuckDB.
+            </p>
+
+        </div>
+
+    </header>
+
+
+    <!-- =====================================================
+       CONTEÚDO
+    ====================================================== -->
+
+    <main>
+
+
+        <!-- =====================================================
+           OBJETIVOS
+        ====================================================== -->
+
+        <section>
+
+            <h2>🎯 Objetivos da aula</h2>
+
+            <p>
+                Na aula anterior aprendemos que o
+                <strong>Parquet</strong> é um formato de arquivo
+                orientado a colunas, muito utilizado em cenários
+                de análise de grandes volumes de dados.
+            </p>
+
+            <p>
+                Agora vamos dar um passo importante:
+                <strong>consultar esses arquivos utilizando SQL</strong>.
+            </p>
+
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <div class="icon">
+                        🦆
+                    </div>
+
+                    <h3>
+                        DuckDB
+                    </h3>
+
+                    <p>
+                        Entender o que é e para que serve.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        📄
+                    </div>
+
+                    <h3>
+                        Parquet
+                    </h3>
+
+                    <p>
+                        Consultar arquivos Parquet diretamente.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🔎
+                    </div>
+
+                    <h3>
+                        SQL
+                    </h3>
+
+                    <p>
+                        Utilizar SELECT, WHERE e outras operações.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        📊
+                    </div>
+
+                    <h3>
+                        Análise
+                    </h3>
+
+                    <p>
+                        Criar consultas sobre grandes conjuntos de dados.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           O QUE É DUCKDB
+        ====================================================== -->
+
+        <section>
+
+            <h2>🦆 O que é DuckDB?</h2>
+
+            <p>
+                <strong>DuckDB</strong> é um banco de dados analítico
+                projetado para executar consultas de forma eficiente,
+                especialmente em cargas de trabalho analíticas.
+            </p>
+
+            <p>
+                Ele pode funcionar dentro de aplicações e ferramentas
+                de análise de dados sem exigir uma arquitetura tradicional
+                de servidor de banco de dados para começar a trabalhar.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>
+                    Uma ideia importante:
+                </strong>
+
+                <p>
+                    DuckDB permite utilizar SQL para analisar dados
+                    armazenados em arquivos, incluindo arquivos Parquet.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           DUCKDB NÃO É PARQUET
+        ====================================================== -->
+
+        <section>
+
+            <h2>🧩 DuckDB x Parquet</h2>
+
+            <p>
+                É importante não confundir os dois.
+            </p>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Tecnologia
+                            </th>
+
+                            <th>
+                                O que é?
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>
+                                Parquet
+                            </td>
+
+                            <td>
+                                Formato de arquivo para armazenamento
+                                eficiente de dados.
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                DuckDB
+                            </td>
+
+                            <td>
+                                Sistema de banco de dados analítico
+                                que pode consultar e processar dados.
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                SQL
+                            </td>
+
+                            <td>
+                                Linguagem utilizada para realizar consultas
+                                e manipular dados.
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+            <div class="highlight">
+
+                <p>
+                    Podemos pensar de maneira simplificada:
+                </p>
+
+                <p>
+                    <strong>Parquet = onde os dados estão armazenados.</strong>
+                </p>
+
+                <p>
+                    <strong>DuckDB = ferramenta que pode consultar esses dados.</strong>
+                </p>
+
+                <p>
+                    <strong>SQL = linguagem utilizada para fazer a consulta.</strong>
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           ARQUITETURA
+        ====================================================== -->
+
+        <section>
+
+            <h2>🏗️ Como as peças trabalham juntas?</h2>
+
+
+            <pre><code>
+              ARQUIVO PARQUET
+                     │
+                     │
+                     ↓
+                ┌─────────┐
+                │ DuckDB  │
+                └─────────┘
+                     │
+                     │ SQL
+                     ↓
+               RESULTADO
+                     │
+                     ↓
+                ANALISTA
+            </code></pre>
+
+
+            <p>
+                O arquivo Parquet contém os dados.
+            </p>
+
+            <p>
+                O DuckDB processa esses dados.
+            </p>
+
+            <p>
+                O SQL descreve o que queremos consultar.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+           PREPARANDO O EXEMPLO
+        ====================================================== -->
+
+        <section>
+
+            <h2>📁 Nosso arquivo de exemplo</h2>
+
+            <p>
+                Imagine que temos um arquivo chamado:
+            </p>
+
+
+            <pre><code>vendas.parquet</code></pre>
+
+
+            <p>
+                Ele contém milhões de vendas.
+            </p>
+
+
+            <p>
+                Cada registro possui informações como:
+            </p>
+
+
+            <pre><code>id
+cliente_id
+produto
+categoria
+cidade
+data
+quantidade
+preco</code></pre>
+
+        </section>
+
+
+        <!-- =====================================================
+           SELECT
+        ====================================================== -->
+
+        <section>
+
+            <h2>🔎 Primeiro SELECT</h2>
+
+            <p>
+                Podemos consultar o arquivo Parquet utilizando
+                uma instrução SQL.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span> *
+<span class="sql-keyword">FROM</span> <span class="sql-string">'vendas.parquet'</span>;</code></pre>
+
+
+            <p>
+                A ideia é simples:
+            </p>
+
+
+            <ul>
+
+                <li>
+                    <strong>SELECT</strong> indica quais dados queremos.
+                </li>
+
+                <li>
+                    <strong>*</strong> significa todas as colunas.
+                </li>
+
+                <li>
+                    <strong>FROM</strong> indica a origem dos dados.
+                </li>
+
+                <li>
+                    <strong>'vendas.parquet'</strong> é o arquivo que será consultado.
+                </li>
+
+            </ul>
+
+        </section>
+
+
+        <!-- =====================================================
+           COLUNAS
+        ====================================================== -->
+
+        <section>
+
+            <h2>🎯 Selecionando apenas algumas colunas</h2>
+
+            <p>
+                Não precisamos consultar todas as colunas.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span>
+    produto,
+    categoria,
+    preco
+<span class="sql-keyword">FROM</span> <span class="sql-string">'vendas.parquet'</span>;</code></pre>
+
+
+            <p>
+                Dessa forma estamos interessados apenas em:
+            </p>
+
+
+            <ul>
+
+                <li>
+                    Produto
+                </li>
+
+                <li>
+                    Categoria
+                </li>
+
+                <li>
+                    Preço
+                </li>
+
+            </ul>
+
+
+            <div class="highlight">
+
+                <strong>
+                    Esse é um dos pontos interessantes do armazenamento
+                    colunar: ferramentas podem aproveitar a estrutura
+                    do arquivo para trabalhar apenas com as colunas
+                    necessárias.
+                </strong>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           WHERE
+        ====================================================== -->
+
+        <section>
+
+            <h2>🔍 Utilizando WHERE</h2>
+
+            <p>
+                Podemos filtrar os dados.
+            </p>
+
+
+            <p>
+                Por exemplo, queremos apenas vendas da cidade
+                do Rio de Janeiro:
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span> *
+<span class="sql-keyword">FROM</span> <span class="sql-string">'vendas.parquet'</span>
+<span class="sql-keyword">WHERE</span> cidade = <span class="sql-string">'Rio de Janeiro'</span>;</code></pre>
+
+        </section>
+
+
+        <!-- =====================================================
+           LIMIT
+        ====================================================== -->
+
+        <section>
+
+            <h2>🔢 Utilizando LIMIT</h2>
+
+            <p>
+                Se o arquivo possuir milhões de registros,
+                provavelmente não queremos visualizar tudo.
+            </p>
+
+
+            <p>
+                Podemos limitar o resultado:
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span> *
+<span class="sql-keyword">FROM</span> <span class="sql-string">'vendas.parquet'</span>
+<span class="sql-keyword">LIMIT</span> 10;</code></pre>
+
+
+            <p>
+                Isso retorna apenas os primeiros 10 registros
+                do resultado.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+           ORDER BY
+        ====================================================== -->
+
+        <section>
+
+            <h2>↕️ Ordenando resultados</h2>
+
+            <p>
+                Podemos utilizar <strong>ORDER BY</strong>.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span>
+    produto,
+    preco
+<span class="sql-keyword">FROM</span> <span class="sql-string">'vendas.parquet'</span>
+<span class="sql-keyword">ORDER BY</span> preco <span class="sql-keyword">DESC</span>
+<span class="sql-keyword">LIMIT</span> 10;</code></pre>
+
+
+            <p>
+                Nesse exemplo estamos procurando os
+                produtos com os maiores preços.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+           COUNT
+        ====================================================== -->
+
+        <section>
+
+            <h2>🔢 COUNT</h2>
+
+            <p>
+                Também podemos descobrir quantos registros existem.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span>
+    <span class="sql-keyword">COUNT</span>(*) <span class="sql-keyword">AS</span> total_vendas
+<span class="sql-keyword">FROM</span> <span class="sql-string">'vendas.parquet'</span>;</code></pre>
+
+
+            <p>
+                O resultado pode ser algo como:
+            </p>
+
+
+            <pre><code>total_vendas
+-------------
+500000000</code></pre>
+
+
+            <p>
+                Ou seja, nosso arquivo poderia conter
+                <strong>500 milhões de registros</strong>.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+           SUM
+        ====================================================== -->
+
+        <section>
+
+            <h2>💰 SUM</h2>
+
+            <p>
+                Podemos calcular o faturamento.
+            </p>
+
+
+            <p>
+                Suponha que temos:
+            </p>
+
+
+            <pre><code>quantidade
+preco</code></pre>
+
+
+            <p>
+                Podemos calcular:
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span>
+    <span class="sql-keyword">SUM</span>(quantidade * preco) <span class="sql-keyword">AS</span> faturamento
+<span class="sql-keyword">FROM</span> <span class="sql-string">'vendas.parquet'</span>;</code></pre>
+
+        </section>
+
+
+        <!-- =====================================================
+           GROUP BY
+        ====================================================== -->
+
+        <section>
+
+            <h2>📊 GROUP BY</h2>
+
+            <p>
+                Agora vamos começar a fazer uma análise mais interessante.
+            </p>
+
+
+            <p>
+                Queremos descobrir o faturamento por categoria.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span>
+    categoria,
+    <span class="sql-keyword">SUM</span>(quantidade * preco) <span class="sql-keyword">AS</span> faturamento
+<span class="sql-keyword">FROM</span> <span class="sql-string">'vendas.parquet'</span>
+<span class="sql-keyword">GROUP BY</span> categoria;</code></pre>
+
+
+            <p>
+                O resultado poderia ser:
+            </p>
+
+
+            <pre><code>categoria       faturamento
+---------------------------
+Eletrônicos     12500000
+Informática      9800000
+Celulares       15300000
+Móveis           7200000</code></pre>
+
+        </section>
+
+
+        <!-- =====================================================
+           PARQUET + SQL
+        ====================================================== -->
+
+        <section>
+
+            <h2>🚀 O poder da combinação</h2>
+
+            <p>
+                Agora temos uma combinação bastante interessante:
+            </p>
+
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <div class="icon">
+                        📦
+                    </div>
+
+                    <h3>
+                        Parquet
+                    </h3>
+
+                    <p>
+                        Armazena grandes volumes de dados
+                        de maneira eficiente.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        🦆
+                    </div>
+
+                    <h3>
+                        DuckDB
+                    </h3>
+
+                    <p>
+                        Processa e consulta os dados.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">
+                        💬
+                    </div>
+
+                    <h3>
+                        SQL
+                    </h3>
+
+                    <p>
+                        Permite expressar as consultas.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="highlight">
+
+                <strong>
+                    Resultado:
+                </strong>
+
+                <p>
+                    Podemos realizar análises sobre grandes conjuntos
+                    de dados utilizando uma linguagem que já conhecemos:
+                    <strong>SQL</strong>.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           CSV VS PARQUET
+        ====================================================== -->
+
+        <section>
+
+            <h2>⚖️ CSV x Parquet na análise</h2>
+
+            <p>
+                Imagine dois arquivos contendo os mesmos dados:
+            </p>
+
+
+            <pre><code>vendas.csv
+vendas.parquet</code></pre>
+
+
+            <p>
+                Com DuckDB, podemos consultar os dois formatos.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span> *
+<span class="sql-keyword">FROM</span> <span class="sql-string">'vendas.csv'</span>
+<span class="sql-keyword">LIMIT</span> 10;</code></pre>
+
+
+            <p>
+                E:
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span> *
+<span class="sql-keyword">FROM</span> <span class="sql-string">'vendas.parquet'</span>
+<span class="sql-keyword">LIMIT</span> 10;</code></pre>
+
+
+            <p>
+                A sintaxe básica é muito parecida.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>
+                    A grande diferença está na forma como os dados
+                    são armazenados e nas características de cada formato.
+                </strong>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           VÁRIOS ARQUIVOS
+        ====================================================== -->
+
+        <section>
+
+            <h2>📁 Consultando vários arquivos</h2>
+
+            <p>
+                Em projetos reais, os dados podem estar divididos
+                em vários arquivos.
+            </p>
+
+
+            <pre><code>
+vendas/
+├── vendas_2024.parquet
+├── vendas_2025.parquet
+└── vendas_2026.parquet
+            </code></pre>
+
+
+            <p>
+                O DuckDB pode trabalhar com múltiplos arquivos
+                Parquet em uma única consulta.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span>
+    <span class="sql-keyword">COUNT</span>(*)
+<span class="sql-keyword">FROM</span> <span class="sql-string">'vendas/*.parquet'</span>;</code></pre>
+
+
+            <p>
+                Nesse caso, o padrão
+                <strong>*.parquet</strong> representa os arquivos
+                que correspondem ao padrão indicado.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+           PARTICIONAMENTO
+        ====================================================== -->
+
+        <section>
+
+            <h2>🗂️ Dados particionados</h2>
+
+            <p>
+                Em grandes ambientes de dados, os arquivos podem
+                ser organizados em diretórios de acordo com determinadas
+                características.
+            </p>
+
+
+            <pre><code>
+vendas/
+│
+├── ano=2025/
+│   ├── mes=01/
+│   ├── mes=02/
+│   └── mes=03/
+│
+└── ano=2026/
+    ├── mes=01/
+    ├── mes=02/
+    └── mes=03/
+            </code></pre>
+
+
+            <p>
+                Essa organização é conhecida como
+                <strong>particionamento</strong>.
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>
+                    Particionar dados pode ajudar sistemas analíticos
+                    a evitar o processamento de arquivos que não são
+                    relevantes para determinada consulta.
+                </strong>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           CONSULTA PARTICIONADA
+        ====================================================== -->
+
+        <section>
+
+            <h2>🔎 Consultando apenas um período</h2>
+
+            <p>
+                Imagine que queremos analisar apenas as vendas de 2026.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span>
+    categoria,
+    <span class="sql-keyword">SUM</span>(quantidade * preco) <span class="sql-keyword">AS</span> faturamento
+<span class="sql-keyword">FROM</span> <span class="sql-string">'vendas/**/*.parquet'</span>
+<span class="sql-keyword">WHERE</span> ano = 2026
+<span class="sql-keyword">GROUP BY</span> categoria;</code></pre>
+
+
+            <p>
+                Em arquiteturas apropriadas, a organização dos dados
+                pode permitir que apenas as partições relevantes
+                sejam consideradas.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+           DUCKDB COMO FERRAMENTA
+        ====================================================== -->
+
+        <section>
+
+            <h2>🛠️ DuckDB não precisa substituir seu banco operacional</h2>
+
+            <p>
+                Imagine uma aplicação utilizando PostgreSQL
+                para suas operações do dia a dia.
+            </p>
+
+
+            <pre><code>
+              APLICAÇÃO
+                  │
+                  ↓
+             PostgreSQL
+                  │
+                  │
+              Exportação
+                  │
+                  ↓
+              Parquet
+                  │
+                  ↓
+              DuckDB
+                  │
+                  ↓
+              ANÁLISES
+            </code></pre>
+
+
+            <p>
+                Nesse cenário, cada tecnologia possui uma função
+                diferente.
+            </p>
+
+
+            <ul>
+
+                <li>
+                    <strong>PostgreSQL:</strong>
+                    banco operacional.
+                </li>
+
+                <li>
+                    <strong>Parquet:</strong>
+                    formato de armazenamento.
+                </li>
+
+                <li>
+                    <strong>DuckDB:</strong>
+                    processamento analítico.
+                </li>
+
+                <li>
+                    <strong>SQL:</strong>
+                    linguagem de consulta.
+                </li>
+
+            </ul>
+
+        </section>
+
+
+        <!-- =====================================================
+           SQL QUE JÁ CONHECEMOS
+        ====================================================== -->
+
+        <section>
+
+            <h2>📚 SQL que já conhecemos</h2>
+
+            <p>
+                Observe quantos conceitos de SQL continuam válidos:
+            </p>
+
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <h3>
+                        SELECT
+                    </h3>
+
+                    <p>
+                        Escolher dados.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        WHERE
+                    </h3>
+
+                    <p>
+                        Filtrar dados.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        GROUP BY
+                    </h3>
+
+                    <p>
+                        Agrupar dados.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        SUM / COUNT
+                    </h3>
+
+                    <p>
+                        Fazer agregações.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <p>
+                A linguagem continua sendo SQL.
+                O que muda é o ambiente em que os dados estão
+                armazenados e processados.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+           BANCO RELACIONAL VS DUCKDB
+        ====================================================== -->
+
+        <section>
+
+            <h2>🧩 Banco operacional x banco analítico</h2>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Característica
+                            </th>
+
+                            <th>
+                                Banco operacional
+                            </th>
+
+                            <th>
+                                DuckDB / análise
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>
+                                Objetivo
+                            </td>
+
+                            <td>
+                                Operações da aplicação
+                            </td>
+
+                            <td>
+                                Análise de dados
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Carga
+                            </td>
+
+                            <td>
+                                Muitas operações transacionais
+                            </td>
+
+                            <td>
+                                Consultas analíticas
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Exemplo
+                            </td>
+
+                            <td>
+                                Pedidos de uma loja
+                            </td>
+
+                            <td>
+                                Análise de milhões de vendas
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Dados
+                            </td>
+
+                            <td>
+                                Frequentemente atuais
+                            </td>
+
+                            <td>
+                                Frequentemente históricos ou analíticos
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           EXEMPLO COMPLETO
+        ====================================================== -->
+
+        <section>
+
+            <h2>🚀 Exemplo completo</h2>
+
+            <p>
+                Vamos imaginar que queremos descobrir
+                quais categorias geraram mais faturamento
+                no Rio de Janeiro.
+            </p>
+
+
+            <pre><code><span class="sql-keyword">SELECT</span>
+    categoria,
+    <span class="sql-keyword">SUM</span>(quantidade * preco) <span class="sql-keyword">AS</span> faturamento
+<span class="sql-keyword">FROM</span> <span class="sql-string">'vendas.parquet'</span>
+<span class="sql-keyword">WHERE</span> cidade = <span class="sql-string">'Rio de Janeiro'</span>
+<span class="sql-keyword">GROUP BY</span> categoria
+<span class="sql-keyword">ORDER BY</span> faturamento <span class="sql-keyword">DESC</span>;</code></pre>
+
+
+            <p>
+                Observe a sequência:
+            </p>
+
+
+            <ol>
+
+                <li>
+                    <strong>FROM</strong> → escolhemos a origem.
+                </li>
+
+                <li>
+                    <strong>WHERE</strong> → filtramos os dados.
+                </li>
+
+                <li>
+                    <strong>GROUP BY</strong> → agrupamos por categoria.
+                </li>
+
+                <li>
+                    <strong>SUM</strong> → calculamos o faturamento.
+                </li>
+
+                <li>
+                    <strong>ORDER BY</strong> → ordenamos o resultado.
+                </li>
+
+            </ol>
+
+        </section>
+
+
+        <!-- =====================================================
+           CONCEITO IMPORTANTE
+        ====================================================== -->
+
+        <section>
+
+            <h2>💡 Uma ideia importante</h2>
+
+            <div class="highlight">
+
+                <p>
+                    Você não precisa aprender uma linguagem completamente
+                    nova para começar a trabalhar com dados em Parquet.
+                </p>
+
+                <p>
+                    Se você conhece SQL, já possui uma ferramenta
+                    extremamente importante para realizar análises.
+                </p>
+
+                <p>
+                    O próximo passo é aprender como os dados são
+                    armazenados, organizados e processados em escala.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           RESUMO
+        ====================================================== -->
+
+        <section>
+
+            <h2>📝 Resumindo</h2>
+
+
+            <div class="highlight">
+
+                <p>
+                    <strong>DuckDB</strong> é um sistema de banco de dados
+                    voltado para cargas analíticas.
+                </p>
+
+                <p>
+                    <strong>Parquet</strong> é um formato de arquivo
+                    orientado a colunas.
+                </p>
+
+                <p>
+                    <strong>SQL</strong> é a linguagem utilizada
+                    para realizar consultas.
+                </p>
+
+                <p>
+                    DuckDB consegue consultar arquivos Parquet
+                    diretamente.
+                </p>
+
+                <p>
+                    Podemos utilizar comandos como
+                    <strong>SELECT, WHERE, GROUP BY, ORDER BY,
+                    COUNT e SUM</strong>.
+                </p>
+
+                <p>
+                    Vários arquivos Parquet podem fazer parte
+                    de uma mesma análise.
+                </p>
+
+                <p>
+                    Particionamento pode ajudar a organizar grandes
+                    conjuntos de dados.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           CHECKPOINT
+        ====================================================== -->
+
+        <section>
+
+            <h2>🧠 Checkpoint</h2>
+
+            <p>
+                Tente responder sem consultar o conteúdo:
+            </p>
+
+
+            <ol>
+
+                <li>
+                    O que é DuckDB?
+                </li>
+
+                <li>
+                    Qual é a diferença entre DuckDB e Parquet?
+                </li>
+
+                <li>
+                    Qual é o papel do SQL nessa arquitetura?
+                </li>
+
+                <li>
+                    Como consultar um arquivo Parquet?
+                </li>
+
+                <li>
+                    Para que serve o comando WHERE?
+                </li>
+
+                <li>
+                    Para que serve GROUP BY?
+                </li>
+
+                <li>
+                    Como calcular o número de registros?
+                </li>
+
+                <li>
+                    Como calcular um faturamento total?
+                </li>
+
+                <li>
+                    Por que consultar apenas algumas colunas pode ser vantajoso?
+                </li>
+
+                <li>
+                    O que é particionamento?
+                </li>
+
+            </ol>
+
+        </section>
+
+
+        <!-- =====================================================
+           DESAFIO
+        ====================================================== -->
+
+        <section>
+
+            <h2>🧪 Desafio da aula</h2>
+
+            <p>
+                Considere o arquivo:
+            </p>
+
+
+            <pre><code>vendas.parquet</code></pre>
+
+
+            <p>
+                Com as seguintes colunas:
+            </p>
+
+
+            <pre><code>
+id
+produto
+categoria
+cidade
+quantidade
+preco
+data
+            </code></pre>
+
+
+            <p>
+                Escreva consultas SQL para responder:
+            </p>
+
+
+            <ol>
+
+                <li>
+                    Quantas vendas existem?
+                </li>
+
+                <li>
+                    Qual é o faturamento total?
+                </li>
+
+                <li>
+                    Qual é o faturamento por categoria?
+                </li>
+
+                <li>
+                    Qual é o faturamento apenas de São Paulo?
+                </li>
+
+                <li>
+                    Quais são os 10 produtos mais caros?
+                </li>
+
+                <li>
+                    Quantas vendas foram realizadas em cada cidade?
+                </li>
+
+            </ol>
+
+
+            <div class="highlight">
+
+                <strong>
+                    🚀 Desafio extra
+                </strong>
+
+                <p>
+                    Tente criar uma consulta que mostre:
+                </p>
+
+                <pre><code>
+categoria
+quantidade de vendas
+faturamento total
+faturamento médio
+                </code></pre>
+
+                <p>
+                    ordenando as categorias pelo maior faturamento.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+           PRÓXIMA AULA
+        ====================================================== -->
+
+        <section class="cta">
+
+            <h2>
+                🚀 Próxima aula: SQL para análise de dados
+            </h2>
+
+            <p>
+                Na próxima aula vamos aprofundar o uso de SQL
+                para análise de grandes conjuntos de dados.
+            </p>
+
+            <p>
+                Vamos trabalhar com agregações, filtros, funções
+                e consultas analíticas utilizando Parquet e DuckDB.
+            </p>
+
+
+            <a href="./34.html" class="cta-button">
+                Aula 34 →
+            </a>
+
+        </section>
+
+
+    </main>
+
+
+    <!-- =====================================================
+       FOOTER
+    ====================================================== -->
+
+    <footer>
+
+        <p>
+            Guia de Banco de Dados
+        </p>
+
+        <p>
+            Aula 33 • DuckDB + Parquet
+        </p>
+
+    </footer>
+
+
+    <!-- =====================================================
+       JAVASCRIPT — DARK / LIGHT MODE
+    ====================================================== -->
+
+    <script src="./script.js"></script>
+
+</body>
+
+</html>
