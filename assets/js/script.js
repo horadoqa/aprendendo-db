@@ -92,3 +92,4 @@ const body = document.body;
          */
 
         updateThemeButton();
+        
