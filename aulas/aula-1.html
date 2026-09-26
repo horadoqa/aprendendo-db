@@ -17,12 +17,7 @@
 
         <img class="header-logo" src="../assets/images/logo.png" alt="Hora do QA">
 
-        <button
-            class="theme-toggle"
-            id="themeToggle"
-            type="button"
-            aria-label="Alternar tema"
-        >
+        <button class="theme-toggle" id="themeToggle" type="button" aria-label="Alternar tema">
             <span class="theme-icon" id="themeIcon">
                 ☀️
             </span>
@@ -1125,45 +1120,51 @@
              CHECKPOINT
         ====================================================== -->
 
-        <section>
+        <section class="quiz-section">
 
-            <h2>
-                Você entendeu?
-            </h2>
+            <div id="quiz-container">
 
-            <p>
-                Antes de avançar para a próxima aula, tente responder:
-            </p>
+                <div id="tela-quiz">
 
-            <ul>
+                    <h1>
+                        QUIZ sobre a aula 1
+                    </h1>
 
-                <li>
-                    O que é um banco de dados?
-                </li>
+                    <div id="contador"></div>
 
-                <li>
-                    Qual é a função de um SGBD?
-                </li>
+                    <div id="pergunta"></div>
 
-                <li>
-                    Qual é a função de uma aplicação?
-                </li>
+                    <div id="opcoes"></div>
 
-                <li>
-                    O que é SQL?
-                </li>
+                    <div id="feedback"></div>
 
-                <li>
-                    PostgreSQL é banco de dados, SGBD ou linguagem?
-                </li>
+                    <button id="proxima-btn">
+                        Próxima pergunta →
+                    </button>
 
-                <li>
-                    Qual é a relação entre aplicação, SGBD e banco de dados?
-                </li>
+                </div>
 
-            </ul>
+
+                <div id="tela-resultado">
+
+                    <h2>
+                        Quiz finalizado!
+                    </h2>
+
+                    <div id="pontuacao-final"></div>
+
+                    <div id="mensagem-final"></div>
+
+                    <button id="reiniciar-btn">
+                        Jogar novamente
+                    </button>
+
+                </div>
+
+            </div>
 
         </section>
+
 
 
         <!-- =====================================================
@@ -1181,10 +1182,7 @@
                 SGBD, aplicação e SQL.
             </p>
 
-            <a
-                href="../aulas/aula-2.html"
-                class="cta-button"
-            >
+            <a href="../aulas/aula-2.html" class="cta-button">
                 Aula 2 →
             </a>
 
@@ -1215,6 +1213,7 @@
     ====================================================== -->
 
     <script src="../assets/js/script.js"></script>
+    <script src="../assets/js/aula-1.js"></script>
 
 </body>
 
